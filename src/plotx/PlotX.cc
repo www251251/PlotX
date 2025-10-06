@@ -15,7 +15,18 @@
 
 namespace plotx {
 
-PlotX::PlotX() : self_(*ll::mod::NativeMod::current()) {}
+
+struct PlotX::Impl {
+    ll::mod::NativeMod&                     self_;
+    std::unique_ptr<PlotEventDriven>        plotEventDriven_{nullptr};
+    std::unique_ptr<PlotRegistry>           registry_{nullptr};
+    std::unique_ptr<script::InternalEngine> engine_{nullptr};
+
+    explicit Impl() : self_(*ll::mod::NativeMod::current()) {}
+};
+
+PlotX::PlotX() : impl_(std::make_unique<Impl>()) {}
+
 PlotX& PlotX::getInstance() {
     static PlotX instance;
     return instance;
@@ -37,16 +48,16 @@ bool PlotX::load() {
     loadConfig();
 
     logger.trace("Initialize PlotRegistry");
-    registry_ = std::make_unique<PlotRegistry>(*this);
+    impl_->registry_ = std::make_unique<PlotRegistry>(*this);
 
     logger.trace("Initialize InternalEngine");
-    engine_ = std::make_unique<script::InternalEngine>(*this);
+    impl_->engine_ = std::make_unique<script::InternalEngine>(*this);
 
     return true;
 }
 
 bool PlotX::enable() {
-    plotEventDriven_ = std::make_unique<PlotEventDriven>();
+    impl_->plotEventDriven_ = std::make_unique<PlotEventDriven>();
 
     PlotCommand::setup();
 
@@ -54,16 +65,17 @@ bool PlotX::enable() {
 }
 
 bool PlotX::disable() {
-    engine_.reset();
+    impl_->engine_.reset();
 
-    plotEventDriven_.reset();
-    registry_.reset();
+    impl_->plotEventDriven_.reset();
+    impl_->registry_.reset();
 
     return true;
 }
 
 
-ll::mod::NativeMod& PlotX::getSelf() const { return self_; }
+ll::mod::NativeMod& PlotX::getSelf() const { return impl_->self_; }
+ll::io::Logger&     PlotX::getLogger() const { return impl_->self_.getLogger(); }
 
 std::filesystem::path PlotX::getConfigPath() const { return getSelf().getConfigDir() / ConfigFileName; }
 

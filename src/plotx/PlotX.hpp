@@ -24,6 +24,8 @@ public:
 
     [[nodiscard]] ll::mod::NativeMod& getSelf() const;
 
+    [[nodiscard]] ll::io::Logger& getLogger() const;
+
     PXAPI static PlotX& getInstance();
 
     PXNDAPI std::filesystem::path getConfigPath() const;
@@ -39,10 +41,8 @@ private:
     static constexpr std::string_view DimensionName   = "plotx";
     static constexpr std::string_view DatabaseDirName = "PlotXDB";
 
-    ll::mod::NativeMod&                     self_;
-    std::unique_ptr<PlotEventDriven>        plotEventDriven_{nullptr};
-    std::unique_ptr<PlotRegistry>           registry_{nullptr};
-    std::unique_ptr<script::InternalEngine> engine_{nullptr};
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 };
 
 } // namespace plotx

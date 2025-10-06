@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "plotx/core/PlotCommand.hpp"
-#include "plotx/script/InternalEngine.hpp"
+#include "script/InternalEngine.hpp"
 
 namespace plotx {
 

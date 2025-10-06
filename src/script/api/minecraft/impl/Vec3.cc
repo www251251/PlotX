@@ -1,7 +1,7 @@
 #include "mc/deps/core/math/Vec3.h"
 #include "mc/world/level/BlockPos.h"
-#include "plotx/script/api/Helper.hpp"
-#include "plotx/script/api/minecraft/defs.hpp"
+#include "script/api/Helper.hpp"
+#include "script/api/minecraft/defs.hpp"
 #include "qjspp/Binding.hpp"
 
 

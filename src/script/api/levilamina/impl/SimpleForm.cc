@@ -1,6 +1,6 @@
 #include "ll/api/form/SimpleForm.h"
-#include "plotx/script/api/Helper.hpp"
-#include "plotx/script/api/levilamina/defs.hpp"
+#include "script/api/Helper.hpp"
+#include "script/api/levilamina/defs.hpp"
 
 
 namespace plotx::script::api::inline levilamina {

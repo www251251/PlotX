@@ -6,9 +6,6 @@
 #include <string_view>
 
 #include "plotx/Global.hpp"
-#include "plotx/core/PlotEventDriven.hpp"
-#include "plotx/core/PlotRegistry.hpp"
-#include "plotx/script/InternalEngine.hpp"
 
 namespace plotx {
 

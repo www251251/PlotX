@@ -23,20 +23,38 @@ target("PlotX") -- Change this to your mod name.
     add_rules("@levibuildscript/linkrule")
     add_rules("@levibuildscript/modpacker")
     add_rules("plugin.compile_commands.autoupdate")
-    add_cxflags("/EHa", "/utf-8", "/W4", "/w44265", "/w44289", "/w44296", "/w45263", "/w44738", "/w45204")
-    add_defines("NOMINMAX", "UNICODE", "PLOTX_EXPORT")
+    add_cxflags(
+        "/EHa",
+        "/utf-8",
+        "/W4",
+        "/w44265",
+        "/w44289",
+        "/w44296",
+        "/w45263",
+        "/w44738",
+        "/w45204"
+    )
+    add_defines(
+        "NOMINMAX",
+        "UNICODE",
+        "PLOTX_EXPORT"
+    )
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")
     set_languages("c++20")
     set_symbols("debug")
     add_headerfiles(
-        "src/(PlotX/**.hpp)"
+        "src/(plotX/**.hpp)"
+    )
+    add_includedirs(
+        "src",
+        "patches"
     )
     add_files(
         "src/**.cpp",
         "src/**.cc"
     )
-    add_includedirs("src", "patches")
+
     add_packages("levilamina", "qjspp")
     add_defines("QJSPP_INT64_OR_UINT64_ALWAYS_USE_NUMBER_OF_BIGINT_IN_TYPE_CONVERTER")
 

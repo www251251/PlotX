@@ -1,6 +1,6 @@
 #include "ll/api/io/Logger.h"
 #include "plotx/PlotX.hpp"
-#include "plotx/script/api/plotx/defs.hpp"
+#include "script/api/plotx/defs.hpp"
 #include "qjspp/Binding.hpp"
 #include "qjspp/Values.hpp"
 

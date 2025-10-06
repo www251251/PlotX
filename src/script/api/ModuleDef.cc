@@ -1,11 +1,11 @@
 #include "ModuleDef.hpp"
 #include "qjspp/Module.hpp"
 
-#include "plotx/script/api/levilamina/defs.hpp"
+#include "script/api/levilamina/defs.hpp"
 
-#include "plotx/script/api/minecraft/defs.hpp"
+#include "script/api/minecraft/defs.hpp"
 
-#include "plotx/script/api/plotx/defs.hpp"
+#include "script/api/plotx/defs.hpp"
 
 namespace plotx::script {
 

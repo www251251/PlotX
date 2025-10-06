@@ -1,5 +1,5 @@
-#include "plotx/script/api/Helper.hpp"
-#include "plotx/script/api/minecraft/defs.hpp"
+#include "script/api/Helper.hpp"
+#include "script/api/minecraft/defs.hpp"
 
 
 namespace plotx::script::api::inline minecraft {

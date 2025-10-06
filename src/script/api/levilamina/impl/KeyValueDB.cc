@@ -1,6 +1,6 @@
 #include "ll/api/data/KeyValueDB.h"
-#include "plotx/script/api/Helper.hpp"
-#include "plotx/script/api/levilamina/defs.hpp"
+#include "script/api/Helper.hpp"
+#include "script/api/levilamina/defs.hpp"
 #include "qjspp/Binding.hpp"
 #include "qjspp/Definitions.hpp"
 #include "qjspp/JsException.hpp"

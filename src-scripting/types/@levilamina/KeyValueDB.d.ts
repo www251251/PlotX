@@ -1,4 +1,4 @@
-declare module "levilamina" {
+declare module "@levilamina" {
     export class KeyValueDB {
         constructor(path: string);
 
@@ -26,6 +26,9 @@ declare module "levilamina" {
         /**
          * Close the database file.
          * @returns `true` if the file was closed successfully,
+         *
+         * @exception ReferenceError if the database is not open or has already been closed.
+         * @note Once closed, the instance is no longer usable.
          */
         close(): boolean;
     }

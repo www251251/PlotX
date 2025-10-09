@@ -1,6 +1,6 @@
-import { CustomForm, EventBus, EventPriority, KeyValueDB, ModalFormSelectedButton } from "levilamina";
-import { BlockPos, ModalFormCancelReason, Player } from "minecraft";
-import { logger, PlotAABB } from "plotx";
+import {CustomForm, EventBus, EventPriority, KeyValueDB, ModalFormSelectedButton} from "@levilamina";
+import {BlockPos, ModalFormCancelReason, Player} from "minecraft";
+import {logger, PlotAABB} from "plotx";
 
 /**
  * @param {Player} pl
@@ -73,7 +73,9 @@ try {
     db.close();
     db.set("test", "testaaaaa"); // error
 } catch (e) {
-    logger.error(e, "\n", e.stack);
+    if (e instanceof ReferenceError) {
+        logger.error(e, "\n", e.stack);
+    }
 }
 
 let min = new BlockPos(0, 0, 0);

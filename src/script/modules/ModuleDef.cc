@@ -1,7 +1,7 @@
 #include "ModuleDef.hpp"
 #include "qjspp/Module.hpp"
 
-#include "script/modules/levilamina/defs.hpp"
+#include "script/modules/levilamina/Defines.hpp"
 
 #include "script/modules/minecraft/defs.hpp"
 
@@ -9,22 +9,6 @@
 
 namespace plotx::script {
 
-
-qjspp::ModuleDefine const& GetLeviLaminaModuleDef() {
-    static auto def = qjspp::defineModule("levilamina")
-                          .exportClass(api::SimpleFormDef_)
-                          .exportClass(api::CustomFormDef_)
-                          .exportClass(api::ModalFormDef_)
-                          .exportEnum(api::ModalFormSelectedButtonDef_)
-                          .exportClass(api::EventBusDef_)
-                          .exportClass(api::EventDef_)
-                          .exportClass(api::CancellableEventDef_)
-                          .exportClass(api::PlayerJoinEventDef_)
-                          .exportEnum(api::EventPriorityDef_)
-                          .exportClass(api::KeyValueDBDef_)
-                          .build();
-    return def;
-}
 
 qjspp::ModuleDefine const& GetMinecraftModuleDef() {
     static auto def = qjspp::defineModule("minecraft")

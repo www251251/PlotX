@@ -12,16 +12,18 @@
         "noEmit": true, // 不生成文件
         "strict": true, // 严格模式
         "strictNullChecks": true, // 严格空值检查
-        "baseUrl": ".",
+        "noImplicitAny": true, // 不允许隐式any类型
+        "noEmitHelpers": true, // 不生成辅助代码
+        "baseUrl": "src/",
         "paths": {
-            "levilamina": [
-                "types/levilamina/index.d.ts"
+            "@levilamina": [
+                "../types/@levilamina/index.d.ts"
             ],
             "minecraft": [
-                "types/minecraft/index.d.ts"
+                "../types/minecraft/index.d.ts"
             ],
             "plotx": [
-                "types/plotx/index.d.ts"
+                "../types/plotx/index.d.ts"
             ]
         }
     },

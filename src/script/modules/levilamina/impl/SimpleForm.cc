@@ -1,13 +1,13 @@
 #include "ll/api/form/SimpleForm.h"
 #include "script/modules/Helper.hpp"
-#include "script/modules/levilamina/defs.hpp"
+#include "script/modules/levilamina/Defines.hpp"
 
 
-namespace plotx::script::api::inline levilamina {
+namespace plotx::script::api::levilamina {
 
 using namespace ll::form;
 
-qjspp::ClassDefine const SimpleFormDef_ =
+qjspp::ClassDefine const Defines::SimpleForm =
     qjspp::defineClass<SimpleForm>("SimpleForm")
         .constructor<>()
         .instanceMethod("setTitle", &SimpleForm::setTitle)
@@ -29,4 +29,4 @@ qjspp::ClassDefine const SimpleFormDef_ =
         .instanceMethod("sendUpdate", &SimpleForm::sendUpdate)
         .build();
 
-} // namespace plotx::script::api::inline levilamina
+} // namespace plotx::script::api::levilamina

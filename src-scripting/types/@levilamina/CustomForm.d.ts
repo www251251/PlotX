@@ -1,6 +1,6 @@
 import { Player } from "minecraft";
 
-declare module "levilamina" {
+declare module "@levilamina" {
     export type CustomFormElementResult = variant<
         [null | number | string] // std::monostate, uint64, double, std::string
     >;

@@ -1,5 +1,5 @@
 import { ModalFormCancelReason } from "minecraft";
 
-declare module "levilamina" {
+declare module "@levilamina" {
     export type FormCancelReason = optional<ModalFormCancelReason>;
 }

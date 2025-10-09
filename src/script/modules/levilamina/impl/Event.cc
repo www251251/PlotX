@@ -9,22 +9,22 @@
 #include "qjspp/JsScope.hpp"
 #include "qjspp/Values.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/levilamina/defs.hpp"
+#include "script/modules/levilamina/Defines.hpp"
 #include <string>
 
 
-namespace plotx::script::api::inline levilamina {
+namespace plotx::script::api::levilamina {
 
 
-qjspp::EnumDefine const EventPriorityDef_ = qjspp::defineEnum<ll::event::EventPriority>("EventPriority")
-                                                .value("Highest", ll::event::EventPriority::Highest)
-                                                .value("High", ll::event::EventPriority::High)
-                                                .value("Normal", ll::event::EventPriority::Normal)
-                                                .value("Low", ll::event::EventPriority::Low)
-                                                .value("Lowest", ll::event::EventPriority::Lowest)
-                                                .build();
+qjspp::EnumDefine const Defines::EventPriority = qjspp::defineEnum<ll::event::EventPriority>("EventPriority")
+                                                         .value("Highest", ll::event::EventPriority::Highest)
+                                                         .value("High", ll::event::EventPriority::High)
+                                                         .value("Normal", ll::event::EventPriority::Normal)
+                                                         .value("Low", ll::event::EventPriority::Low)
+                                                         .value("Lowest", ll::event::EventPriority::Lowest)
+                                                         .build();
 
-qjspp::ClassDefine const EventDef_ =
+qjspp::ClassDefine const Defines::Event =
     qjspp::defineClass<ll::event::Event>("Event")
         .disableConstructor()
         .instanceMethod(
@@ -36,24 +36,26 @@ qjspp::ClassDefine const EventDef_ =
         .build();
 
 
-using CancellableEventCRTP                    = ll::event::Cancellable<ll::event::Event>; // CRTP
-qjspp::ClassDefine const CancellableEventDef_ = qjspp::defineClass<CancellableEventCRTP>("CancellableEvent")
-                                                    .disableConstructor()
-                                                    .extends(EventDef_)
-                                                    .instanceMethod("isCancelled", &CancellableEventCRTP::isCancelled)
-                                                    .instanceMethod("setCancelled", &CancellableEventCRTP::setCancelled)
-                                                    .instanceMethod("cancel", &CancellableEventCRTP::cancel)
-                                                    .build();
+using CancellableEventCRTP = ll::event::Cancellable<ll::event::Event>; // CRTP
+qjspp::ClassDefine const Defines::CancellableEvent =
+    qjspp::defineClass<CancellableEventCRTP>("CancellableEvent")
+        .disableConstructor()
+        .extends(Event)
+        .instanceMethod("isCancelled", &CancellableEventCRTP::isCancelled)
+        .instanceMethod("setCancelled", &CancellableEventCRTP::setCancelled)
+        .instanceMethod("cancel", &CancellableEventCRTP::cancel)
+        .build();
 
-qjspp::ClassDefine const PlayerJoinEventDef_ = qjspp::defineClass<ll::event::PlayerJoinEvent>("PlayerJoinEvent")
-                                                   .disableConstructor()
-                                                   .extends(CancellableEventDef_)
-                                                   .instanceMethod("self", &ll::event::PlayerJoinEvent::self)
-                                                   .build();
+qjspp::ClassDefine const Defines::PlayerJoinEvent =
+    qjspp::defineClass<ll::event::PlayerJoinEvent>("PlayerJoinEvent")
+        .disableConstructor()
+        .extends(CancellableEvent)
+        .instanceMethod("self", &ll::event::PlayerJoinEvent::self)
+        .build();
 
 
 #define GET_EVENT_BUS() ll::event::EventBus::getInstance()
-qjspp::ClassDefine const EventBusDef_ =
+qjspp::ClassDefine const Defines::EventBus =
     qjspp::defineClass<void>("EventBus")
         .function(
             "emplaceListener",
@@ -84,7 +86,7 @@ qjspp::ClassDefine const EventBusDef_ =
 
                             auto cb = sc.value().asFunction();
                             try {
-                                cb.call({}, {engine->newInstanceOfView(PlayerJoinEventDef_, &ev)});
+                                cb.call({}, {engine->newInstanceOfView(PlayerJoinEvent, &ev)});
                             } catch (qjspp::JsException const& e) {
                                 PlotX::getInstance().getSelf().getLogger().error(
                                     "[Scripting] Error while handling PlayerJoinEvent: {}\n{}",
@@ -120,4 +122,4 @@ qjspp::ClassDefine const EventBusDef_ =
         .build();
 
 
-} // namespace plotx::script::api::inline levilamina
+} // namespace plotx::script::api::levilamina

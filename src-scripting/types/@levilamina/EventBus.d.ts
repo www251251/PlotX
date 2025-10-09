@@ -1,4 +1,4 @@
-declare module "levilamina" {
+declare module "@levilamina" {
     import { Player } from "minecraft";
 
     interface _EventMap_ {

@@ -39,8 +39,9 @@ inline qjspp::Object newInstanceOfGameWeak(qjspp::ClassDefine const& def, Player
             if (player) return static_cast<void*>(player);
             return nullptr;
         },
-        [](void*) -> void {
+        [](void* res) -> void {
             // The game weak ref is not owned by the engine, so we don't need to do anything
+            delete static_cast<Control*>(res);
         }
     );
     return engine.newInstance(def, std::move(wrap));

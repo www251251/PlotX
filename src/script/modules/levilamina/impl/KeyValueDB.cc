@@ -5,10 +5,10 @@
 #include "qjspp/Types.hpp"
 #include "qjspp/Values.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/levilamina/Defines.hpp"
+#include "script/modules/levilamina/LeviLaminaDef.hpp"
 
 
-namespace plotx::script::api::levilamina {
+namespace plotx::script::modules {
 
 using namespace ll::data;
 
@@ -29,32 +29,33 @@ qjspp::Value iter(void* inst, qjspp::Arguments const& args) {
                 break; // break the iteration
             }
         } catch (qjspp::JsException const& exc) {
-            args.engine()->invokeUnhandledJsExceptionCallback(exc, qjspp::UnhandledExceptionOrigin::Callback);
+            args.engine()->invokeUnhandledJsException(exc, qjspp::UnhandledExceptionOrigin::Callback);
             return qjspp::Boolean{false};
         }
     }
     return qjspp::Boolean{true};
 }
 
-qjspp::ClassDefine const Defines::KeyValueDB = qjspp::defineClass<KeyValueDB>("KeyValueDB")
-                                                       .constructor<std::string>()
-                                                       .instanceMethod("get", &KeyValueDB::get)
-                                                       .instanceMethod("has", &KeyValueDB::has)
-                                                       .instanceMethod("set", &KeyValueDB::set)
-                                                       .instanceMethod("empty", &KeyValueDB::empty)
-                                                       .instanceMethod("del", &KeyValueDB::del)
-                                                       .instanceMethod("iter", &iter)
-                                                       .instanceMethod(
-                                                           "close",
-                                                           [](void*, qjspp::Arguments const& args) -> qjspp::Value {
-                                                               if (args.hasWrappedResource()) {
-                                                                   args.getWrappedResource()->freeResource();
-                                                                   return qjspp::Boolean{true};
-                                                               }
-                                                               return qjspp::Boolean{false};
-                                                           }
-                                                       )
-                                                       .build();
+qjspp::ClassDefine const LeviLaminaDef::KeyValueDBDef_ =
+    qjspp::defineClass<ll::data::KeyValueDB>("KeyValueDB")
+        .constructor<std::string>()
+        .instanceMethod("get", &KeyValueDB::get)
+        .instanceMethod("has", &KeyValueDB::has)
+        .instanceMethod("set", &KeyValueDB::set)
+        .instanceMethod("empty", &KeyValueDB::empty)
+        .instanceMethod("del", &KeyValueDB::del)
+        .instanceMethod("iter", &iter)
+        .instanceMethod(
+            "close",
+            [](void*, qjspp::Arguments const& args) -> qjspp::Value {
+                if (args.hasWrappedResource()) {
+                    args.getWrappedResource()->finalize();
+                    return qjspp::Boolean{true};
+                }
+                return qjspp::Boolean{false};
+            }
+        )
+        .build();
 
 
-} // namespace plotx::script::api::levilamina
+} // namespace plotx::script::modules

@@ -1,16 +1,16 @@
 #include "mc/world/level/BlockPos.h"
 #include "qjspp/Binding.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/minecraft/defs.hpp"
+#include "script/modules/minecraft/MinecraftDef.hpp"
 
 
-namespace plotx::script::api::inline minecraft {
+namespace plotx::script::modules {
 
-qjspp::ClassDefine const BlockPosDef_ = qjspp::defineClass<BlockPos>("BlockPos")
-                                            .constructor<int, int, int>()
-                                            .instanceProperty("x", &BlockPos::x)
-                                            .instanceProperty("y", &BlockPos::y)
-                                            .instanceProperty("z", &BlockPos::z)
-                                            .build();
+qjspp::ClassDefine const MinecraftDef::BlockPosDef_ = qjspp::defineClass<::BlockPos>("BlockPos")
+                                                          .constructor<int, int, int>()
+                                                          .instanceProperty("x", &BlockPos::x)
+                                                          .instanceProperty("y", &BlockPos::y)
+                                                          .instanceProperty("z", &BlockPos::z)
+                                                          .build();
 
 }

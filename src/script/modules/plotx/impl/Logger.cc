@@ -2,10 +2,10 @@
 #include "plotx/PlotX.hpp"
 #include "qjspp/Binding.hpp"
 #include "qjspp/Values.hpp"
-#include "script/modules/plotx/defs.hpp"
+#include "script/modules/plotx/PlotXDef.hpp"
 
 
-namespace plotx::script::api::inline plotx {
+namespace plotx::script::modules {
 
 
 std::string formatArgs(qjspp::Arguments const& args) {
@@ -35,7 +35,7 @@ qjspp::Value logImpl(qjspp::Arguments const& args, ll::io::LogLevel level) {
 }
 
 
-qjspp::ClassDefine const LoggerDef_ =
+qjspp::ClassDefine const PlotXDef::LoggerDef_ =
     qjspp::defineClass<void>("logger")
         .function(
             "trace",
@@ -64,4 +64,4 @@ qjspp::ClassDefine const LoggerDef_ =
         .build();
 
 
-} // namespace plotx::script::api::inline plotx
+} // namespace plotx::script::modules

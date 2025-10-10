@@ -1,29 +1,31 @@
 #include "script/modules/Helper.hpp"
-#include "script/modules/minecraft/defs.hpp"
+#include "script/modules/minecraft/MinecraftDef.hpp"
 
 
-namespace plotx::script::api::inline minecraft {
+namespace plotx::script::modules {
 
-qjspp::ClassDefine const PlayerDef_ =
-    qjspp::defineClass<Player>("Player")
+qjspp::ClassDefine const MinecraftDef::PlayerDef_ =
+    qjspp::defineClass<::Player>("Player")
         .disableConstructor()
         .instanceProperty(
             "uuid",
             [](void* inst, qjspp::Arguments const& args) {
                 return args.engine()->newInstanceOfView(
                     UUIDDef_,
-                    const_cast<mce::UUID*>(&static_cast<Player*>(inst)->getUuid()),
+                    const_cast<mce::UUID*>(&static_cast<::Player*>(inst)->getUuid()),
                     args.thiz() // 关联生命周期
                 );
             }
         )
         .instanceProperty(
             "realName",
-            [](void* inst, qjspp::Arguments const&) { return qjspp::String{static_cast<Player*>(inst)->getRealName()}; }
+            [](void* inst, qjspp::Arguments const&) {
+                return qjspp::String{static_cast<::Player*>(inst)->getRealName()};
+            }
         )
         .instanceMethod("sendMessage", &Player::sendMessage)
         .instanceMethod("isOperator", &Player::isOperator)
         .instanceMethod("getLocaleCode", &Player::getLocaleCode)
         .build();
 
-} // namespace plotx::script::api::inline minecraft
+} // namespace plotx::script::modules

@@ -7,8 +7,10 @@
 #include <memory>
 #include <thread>
 
-#include "modules/ModuleDef.hpp"
-#include "modules/levilamina/Defines.hpp"
+#include "modules/levilamina/LeviLaminaDef.hpp"
+#include "modules/minecraft/MinecraftDef.hpp"
+#include "modules/plotx/PlotXDef.hpp"
+
 #include "qjspp/JsEngine.hpp"
 #include "qjspp/JsException.hpp"
 #include "qjspp/JsScope.hpp"
@@ -20,9 +22,9 @@ InternalEngine::InternalEngine(PlotX& plotx) {
     engine_ = new qjspp::JsEngine();
     qjspp::JsScope lock{engine_};
 
-    engine_->registerNativeModule(GetMinecraftModuleDef());
-    engine_->registerNativeModule(api::levilamina::Defines::getModuleDef());
-    engine_->registerNativeModule(GetPlotXModuleDef());
+    engine_->registerModule(modules::MinecraftDef::getModuleDef());
+    engine_->registerModule(modules::LeviLaminaDef::getModuleDef());
+    engine_->registerModule(modules::PlotXDef::getModuleDef());
 
     engine_->setUnhandledJsExceptionCallback(
         [](qjspp::JsEngine* engine, qjspp::JsException const& exc, qjspp::UnhandledExceptionOrigin ori) {

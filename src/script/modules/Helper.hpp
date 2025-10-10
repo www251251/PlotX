@@ -8,19 +8,14 @@
 
 #include "qjspp/Binding.hpp"
 #include "qjspp/JsEngine.hpp"
+#include "qjspp/JsManagedResource.hpp"
 #include "qjspp/JsScope.hpp"
 #include "qjspp/TypeConverter.hpp"
 #include "qjspp/Values.hpp"
 
 #include <memory>
 
-// forward declarations
-namespace plotx::script::api::inline minecraft {
-extern qjspp::ClassDefine const PlayerDef_;
-extern qjspp::ClassDefine const UUIDDef_;
-extern qjspp::ClassDefine const BlockPosDef_;
-extern qjspp::ClassDefine const Vec3Def_;
-} // namespace plotx::script::api::inline minecraft
+#include "script/modules/minecraft/MinecraftDef.hpp"
 
 namespace plotx::script {
 
@@ -31,7 +26,7 @@ inline qjspp::Object newInstanceOfGameWeak(qjspp::ClassDefine const& def, Player
         explicit Control(Player* pl) : player_{pl->getWeakEntity()} {}
     };
     auto control = std::make_unique<Control>(player);
-    auto wrap    = qjspp::WrappedResource::make(
+    auto wrap    = qjspp::JsManagedResource::make(
         control.release(),
         [](void* res) -> void* {
             auto control = static_cast<Control*>(res);
@@ -56,7 +51,10 @@ namespace qjspp {
 template <>
 struct TypeConverter<Player> {
     static Value toJs(Player* player) {
-        return plotx::script::newInstanceOfGameWeak(plotx::script::api::PlayerDef_, player);
+        return plotx::script::newInstanceOfGameWeak(
+            plotx::script::modules::MinecraftDef::MinecraftDef::PlayerDef_,
+            player
+        );
     }
     static Value toJs(Player& player) { return toJs(&player); }
 
@@ -66,7 +64,7 @@ struct TypeConverter<Player> {
         }
         return JsScope::currentEngineChecked().getNativeInstanceOf<Player>(
             value.asObject(),
-            plotx::script::api::PlayerDef_
+            plotx::script::modules::MinecraftDef::MinecraftDef::PlayerDef_
         );
     }
 };
@@ -81,7 +79,10 @@ template <>
 struct TypeConverter<mce::UUID> {
     static Value toJs(mce::UUID uuid) { // 值传递，创建一个副本
         auto unique = std::make_unique<mce::UUID>(uuid);
-        return JsScope::currentEngineChecked().newInstanceOfUnique(plotx::script::api::UUIDDef_, std::move(unique));
+        return JsScope::currentEngineChecked().newInstanceOfUnique(
+            plotx::script::modules::MinecraftDef::UUIDDef_,
+            std::move(unique)
+        );
     }
 
     static mce::UUID* toCpp(Value const& value) {
@@ -90,7 +91,7 @@ struct TypeConverter<mce::UUID> {
         }
         return JsScope::currentEngineChecked().getNativeInstanceOf<mce::UUID>(
             value.asObject(),
-            plotx::script::api::UUIDDef_
+            plotx::script::modules::MinecraftDef::UUIDDef_
         );
     }
 };
@@ -101,7 +102,7 @@ template <>
 struct TypeConverter<Vec3> {
     static Value toJs(Vec3 vec) {
         return JsScope::currentEngineChecked().newInstanceOfRaw(
-            plotx::script::api::Vec3Def_,
+            plotx::script::modules::MinecraftDef::Vec3Def_,
             new Vec3(vec.x, vec.y, vec.z)
         );
     }
@@ -111,7 +112,7 @@ struct TypeConverter<Vec3> {
         }
         return JsScope::currentEngineChecked().getNativeInstanceOf<Vec3>(
             value.asObject(),
-            plotx::script::api::Vec3Def_
+            plotx::script::modules::MinecraftDef::Vec3Def_
         );
     }
 };
@@ -121,7 +122,7 @@ template <>
 struct TypeConverter<BlockPos> {
     static Value toJs(BlockPos pos) {
         return JsScope::currentEngineChecked().newInstanceOfRaw(
-            plotx::script::api::BlockPosDef_,
+            plotx::script::modules::MinecraftDef::BlockPosDef_,
             new BlockPos(pos.x, pos.y, pos.z)
         );
     }
@@ -131,7 +132,7 @@ struct TypeConverter<BlockPos> {
         }
         return JsScope::currentEngineChecked().getNativeInstanceOf<BlockPos>(
             value.asObject(),
-            plotx::script::api::BlockPosDef_
+            plotx::script::modules::MinecraftDef::BlockPosDef_
         );
     }
 };

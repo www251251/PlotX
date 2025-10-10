@@ -1,14 +1,14 @@
 #include "ll/api/form/CustomForm.h"
 #include "script/modules/Helper.hpp"
-#include "script/modules/levilamina/Defines.hpp"
+#include "script/modules/levilamina/LeviLaminaDef.hpp"
 
 
-namespace plotx::script::api::levilamina {
+namespace plotx::script::modules {
 
 using namespace ll::form;
 
-qjspp::ClassDefine const Defines::CustomForm =
-    qjspp::defineClass<CustomForm>("CustomForm")
+qjspp::ClassDefine const LeviLaminaDef::CustomFormDef_ =
+    qjspp::defineClass<ll::form::CustomForm>("CustomForm")
         .constructor<>()
         .instanceMethod("setTitle", &CustomForm::setTitle)
         .instanceMethod("setSubmitButton", &CustomForm::setSubmitButton)
@@ -25,4 +25,4 @@ qjspp::ClassDefine const Defines::CustomForm =
         .instanceMethod("getFormData", &CustomForm::getFormData)
         .build();
 
-} // namespace plotx::script::api::levilamina
+} // namespace plotx::script::modules

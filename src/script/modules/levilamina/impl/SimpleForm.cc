@@ -1,14 +1,14 @@
 #include "ll/api/form/SimpleForm.h"
 #include "script/modules/Helper.hpp"
-#include "script/modules/levilamina/Defines.hpp"
+#include "script/modules/levilamina/LeviLaminaDef.hpp"
 
 
-namespace plotx::script::api::levilamina {
+namespace plotx::script::modules {
 
 using namespace ll::form;
 
-qjspp::ClassDefine const Defines::SimpleForm =
-    qjspp::defineClass<SimpleForm>("SimpleForm")
+qjspp::ClassDefine const LeviLaminaDef::SimpleFormDef_ =
+    qjspp::defineClass<ll::form::SimpleForm>("SimpleForm")
         .constructor<>()
         .instanceMethod("setTitle", &SimpleForm::setTitle)
         .instanceMethod("setContent", &SimpleForm::setContent)
@@ -17,11 +17,11 @@ qjspp::ClassDefine const Defines::SimpleForm =
         .instanceMethod("appendDivider", &SimpleForm::appendDivider)
         .instanceMethod(
             "appendButton",
-            static_cast<SimpleForm& (SimpleForm::*)(std::string const&,
-                                                    std::string const&,
-                                                    std::string const&,
-                                                    SimpleForm::ButtonCallback)>(&SimpleForm::appendButton),
-            static_cast<SimpleForm& (SimpleForm::*)(std::string const&, SimpleForm::ButtonCallback)>(
+            static_cast<ll::form::SimpleForm& (SimpleForm::*)(std::string const&,
+                                                              std::string const&,
+                                                              std::string const&,
+                                                              SimpleForm::ButtonCallback)>(&SimpleForm::appendButton),
+            static_cast<ll::form::SimpleForm& (SimpleForm::*)(std::string const&, SimpleForm::ButtonCallback)>(
                 &SimpleForm::appendButton
             )
         )
@@ -29,4 +29,4 @@ qjspp::ClassDefine const Defines::SimpleForm =
         .instanceMethod("sendUpdate", &SimpleForm::sendUpdate)
         .build();
 
-} // namespace plotx::script::api::levilamina
+} // namespace plotx::script::modules

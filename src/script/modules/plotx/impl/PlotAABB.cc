@@ -6,20 +6,21 @@
 #include "qjspp/JsException.hpp"
 #include "qjspp/Values.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/plotx/defs.hpp"
+#include "script/modules/minecraft/MinecraftDef.hpp"
+#include "script/modules/plotx/PlotXDef.hpp"
 
 
-namespace plotx::script::api::inline plotx {
+namespace plotx::script::modules {
 
 
-qjspp::ClassDefine const PlotAABBDef_ =
+qjspp::ClassDefine const PlotXDef::PlotAABBDef_ =
     qjspp::defineClass<PlotAABB>("PlotAABB")
         .constructor<BlockPos const&, BlockPos const&>() // constructor(min, max)
         .instanceProperty(
             "min",
             [](void* inst, qjspp::Arguments const& args) -> qjspp::Value {
                 return args.engine()->newInstanceOfView(
-                    BlockPosDef_,
+                    MinecraftDef::BlockPosDef_,
                     static_cast<void*>(&static_cast<PlotAABB*>(inst)->min),
                     args.thiz() // Associated Lifecycle
                 );
@@ -67,4 +68,4 @@ qjspp::ClassDefine const PlotAABBDef_ =
         .build();
 
 
-} // namespace plotx::script::api::inline plotx
+} // namespace plotx::script::modules

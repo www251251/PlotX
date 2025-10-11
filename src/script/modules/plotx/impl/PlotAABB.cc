@@ -26,11 +26,12 @@ qjspp::ClassDefine const PlotXDef::PlotAABBDef_ =
                 );
             },
             [](void* inst, qjspp::Arguments const& args) -> qjspp::Value {
-                if (!args[0].isObject() || !args.engine()->isInstanceOf(args[0].asObject(), BlockPosDef_)) {
+                if (!args[0].isObject()
+                    || !args.engine()->isInstanceOf(args[0].asObject(), MinecraftDef::BlockPosDef_)) {
                     throw qjspp::JsException{qjspp::JsException::Type::TypeError, "Expected object of type BlockPos"};
                 }
                 static_cast<PlotAABB*>(inst)->min =
-                    *args.engine()->getNativeInstanceOf<BlockPos>(args[0].asObject(), BlockPosDef_);
+                    *args.engine()->getNativeInstanceOf<BlockPos>(args[0].asObject(), MinecraftDef::BlockPosDef_);
                 return {}; // undefined
             }
         )
@@ -38,17 +39,18 @@ qjspp::ClassDefine const PlotXDef::PlotAABBDef_ =
             "max",
             [](void* inst, qjspp::Arguments const& args) -> qjspp::Value {
                 return args.engine()->newInstanceOfView(
-                    BlockPosDef_,
+                    MinecraftDef::BlockPosDef_,
                     static_cast<void*>(&static_cast<PlotAABB*>(inst)->max),
                     args.thiz() // Associated Lifecycle
                 );
             },
             [](void* inst, qjspp::Arguments const& args) -> qjspp::Value {
-                if (!args[0].isObject() || !args.engine()->isInstanceOf(args[0].asObject(), BlockPosDef_)) {
+                if (!args[0].isObject()
+                    || !args.engine()->isInstanceOf(args[0].asObject(), MinecraftDef::BlockPosDef_)) {
                     throw qjspp::JsException{qjspp::JsException::Type::TypeError, "Expected object of type BlockPos"};
                 }
                 static_cast<PlotAABB*>(inst)->max =
-                    *args.engine()->getNativeInstanceOf<BlockPos>(args[0].asObject(), BlockPosDef_);
+                    *args.engine()->getNativeInstanceOf<BlockPos>(args[0].asObject(), MinecraftDef::BlockPosDef_);
                 return {}; // undefined
             }
         )

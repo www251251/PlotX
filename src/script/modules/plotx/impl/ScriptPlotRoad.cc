@@ -7,6 +7,7 @@ namespace plotx::script::modules {
 
 qjspp::ClassDefine const PlotXDef::PlotRoadDef_ =
     qjspp::defineClass<PlotRoad>("PlotRoad")
+        .extends(PlotAABBDef_)
         .constructor<>()
         .constructor<int, int, bool>()
         .constructor<BlockPos const&>()

@@ -1,6 +1,9 @@
 declare module "@minecraft" {
-    export class Player {
+    export class Player implements InstanceClassHelper<Player> {
+        $equals(other: Player): boolean;
+
         get uuid(): UUID;
+
         get realName(): string;
 
         sendMessage(message: string): void;

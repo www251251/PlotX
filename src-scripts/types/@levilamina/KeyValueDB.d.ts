@@ -1,6 +1,8 @@
 declare module "@levilamina" {
-    export class KeyValueDB {
+    export class KeyValueDB implements InstanceClassHelper<KeyValueDB> {
         constructor(path: string);
+
+        $equals(other: KeyValueDB): boolean;
 
         get(key: string): optional<string>;
 

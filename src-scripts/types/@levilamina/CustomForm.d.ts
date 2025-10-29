@@ -1,4 +1,4 @@
-import { Player } from "@minecraft";
+import {Player} from "@minecraft";
 
 declare module "@levilamina" {
     export type CustomFormElementResult = variant<
@@ -13,8 +13,10 @@ declare module "@levilamina" {
 
     type _NoDuplicateKey_<T extends Record<string, any>, K extends string> = K extends keyof T ? never : K;
 
-    export class CustomForm<T extends Record<string, CustomFormElementResult> = {}> {
+    export class CustomForm<T extends Record<string, CustomFormElementResult> = {}> implements InstanceClassHelper<CustomForm> {
         constructor();
+
+        $equals(other: CustomForm<{}>): boolean;
 
         setTitle(title: string): this;
 

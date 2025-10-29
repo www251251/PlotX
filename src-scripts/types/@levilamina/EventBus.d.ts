@@ -1,10 +1,11 @@
 declare module "@levilamina" {
-    import { Player } from "@minecraft";
+    import {Player} from "@minecraft";
 
     interface _EventMap_ {
         // TODO: Add more events
         PlayerJoinEvent: PlayerJoinEvent;
     }
+
     type _EventNames_ = keyof _EventMap_;
 
     export type EventListener<N extends _EventNames_, E extends _EventMap_[N]> = (event: E) => void;
@@ -27,11 +28,15 @@ declare module "@levilamina" {
     }
 
     // Event declaration
-    export class Event {
+    export class Event implements InstanceClassHelper<Event> {
+        $equals(other: Event): boolean;
+
         getId(): string;
     }
 
-    export class CancellableEvent extends Event {
+    export class CancellableEvent extends Event implements InstanceClassHelper<CancellableEvent> {
+        $equals(other: CancellableEvent): boolean;
+
         isCancelled(): boolean;
 
         setCancelled(cancelled: boolean): void;
@@ -39,7 +44,9 @@ declare module "@levilamina" {
         cancel(): void;
     }
 
-    export class PlayerJoinEvent extends CancellableEvent {
+    export class PlayerJoinEvent extends CancellableEvent implements InstanceClassHelper<PlayerJoinEvent> {
+        $equals(other: PlayerJoinEvent): boolean;
+
         self(): Player;
     }
 }

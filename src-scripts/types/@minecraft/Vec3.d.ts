@@ -1,5 +1,7 @@
 declare module "@minecraft" {
-    export class Vec3 {
+    export class Vec3 implements InstanceClassHelper<Vec3> {
+        $equals(other: Vec3): boolean;
+
         constructor(x: number, y: number, z: number);
 
         x: number;

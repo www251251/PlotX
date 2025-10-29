@@ -1,5 +1,7 @@
 declare module "@minecraft" {
-    export class UUID {
+    export class UUID implements InstanceClassHelper<UUID> {
+        $equals(other: UUID): boolean;
+
         constructor(uuid: string);
 
         asString(): string;

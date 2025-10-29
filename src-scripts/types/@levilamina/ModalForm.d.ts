@@ -1,4 +1,4 @@
-import { Player } from "@minecraft";
+import {Player} from "@minecraft";
 
 declare module "@levilamina" {
     export type ModalFormSelectedButton = NativeEnum<["Upper", "Lower"]>; // Upper: true, Lower: false
@@ -6,8 +6,10 @@ declare module "@levilamina" {
     export type ModalFormResult = optional<ModalFormSelectedButton>;
     export type ModalFormCallback = (player: Player, result: ModalFormResult, cancelReason: FormCancelReason) => void;
 
-    export class ModalForm {
+    export class ModalForm implements InstanceClassHelper<ModalForm> {
         constructor();
+
+        $equals(other: ModalForm): boolean;
 
         setTitle(title: string): this;
 

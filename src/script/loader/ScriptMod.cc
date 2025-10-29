@@ -56,6 +56,12 @@ struct TypeConverter<ll::io::Logger> {
     }
 };
 
+template <>
+struct TypeConverter<std::filesystem::path> : TypeConverter<std::string> {
+    using Base = TypeConverter<std::string>;
+    static Value toJs(std::filesystem::path const& path) { return Base::toJs(path.string()); }
+};
+
 } // namespace qjspp
 
 
@@ -98,6 +104,14 @@ qjspp::ClassDefine const ScriptMod::kClassDef_ =
         .instanceMethod("onEnable", static_cast<void (ScriptMod::*)(ScriptMod::CallbackFn)>(&ScriptMod::onEnable))
         .instanceMethod("onDisable", static_cast<void (ScriptMod::*)(ScriptMod::CallbackFn)>(&ScriptMod::onDisable))
         .instanceMethod("onUnload", static_cast<void (ScriptMod::*)(ScriptMod::CallbackFn)>(&ScriptMod::onUnload))
+        .instanceMethod("getName", &ScriptMod::getName)
+        .instanceMethod("getType", &ScriptMod::getType)
+        .instanceMethod("getModDir", &ScriptMod::getModDir)
+        .instanceMethod("getDataDir", &ScriptMod::getDataDir)
+        .instanceMethod("getConfigDir", &ScriptMod::getConfigDir)
+        .instanceMethod("getLangDir", &ScriptMod::getLangDir)
+        .instanceMethod("isEnabled", &ScriptMod::isEnabled)
+        .instanceMethod("isDisabled", &ScriptMod::isDisabled)
         .instanceMethod("getLogger", &ScriptMod::getLogger)
         .build();
 

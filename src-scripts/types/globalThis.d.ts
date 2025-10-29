@@ -11,6 +11,22 @@ declare class ScriptMod {
 
     onUnload(fn: ScriptModCallback): void;
 
+    getName(): string;
+
+    getType(): string;
+
+    getModDir(): string;
+
+    getDataDir(): string;
+
+    getConfigDir(): string;
+
+    getLangDir(): string;
+
+    isEnabled(): boolean;
+
+    isDisabled(): boolean;
+
     getLogger(): import("@levilamina").Logger;
 
     /**

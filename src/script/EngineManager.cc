@@ -2,9 +2,9 @@
 
 #include "EngineData.hpp"
 #include "loader/ScriptMod.hpp"
-#include "modules/levilamina/LeviLaminaDef.hpp"
-#include "modules/minecraft/MinecraftDef.hpp"
-#include "modules/plotx/PlotXDef.hpp"
+#include "modules/levilamina/LeviLaminaModule.hpp"
+#include "modules/minecraft/MinecraftModule.hpp"
+#include "modules/plotx/PlotXModule.hpp"
 #include "plotx/PlotX.hpp"
 
 namespace plotx::script {
@@ -111,9 +111,9 @@ void EngineManager::bindContext(qjspp::JsEngine* engine) {
     engine->registerClass(ScriptMod::kClassDef_);
 
     // 注册模块
-    engine->registerModule(modules::MinecraftDef::getModuleDef());
-    engine->registerModule(modules::LeviLaminaDef::getModuleDef());
-    engine->registerModule(modules::PlotXDef::getModuleDef());
+    engine->registerModule(modules::MinecraftModule::getModuleDef());
+    engine->registerModule(modules::LeviLaminaModule::getModuleDef());
+    engine->registerModule(modules::PlotXModule::getModuleDef());
 
     // 注册异常处理回调
     engine->setUnhandledJsExceptionCallback(onUnhandledJsException);

@@ -1,4 +1,4 @@
-#include "script/modules/levilamina/LeviLaminaDef.hpp"
+#include "script/modules/levilamina/LeviLaminaModule.hpp"
 
 #include <ll/api/io/Logger.h>
 
@@ -65,7 +65,7 @@ qjspp::Value trace(void* inst, qjspp::Arguments const& args) {
 
 
 using ll::io::Logger;
-qjspp::ClassDefine const LeviLaminaDef::ScriptLogger = qjspp::defineClass<Logger>("Logger")
+qjspp::ClassDefine const LeviLaminaModule::ScriptLogger = qjspp::defineClass<Logger>("Logger")
                                                            .disableConstructor()
                                                            .instanceMethod("log", &log)
                                                            .instanceMethod("fatal", &fatal)
@@ -83,7 +83,7 @@ qjspp::ClassDefine const LeviLaminaDef::ScriptLogger = qjspp::defineClass<Logger
                                                            .build();
 
 using ll::io::LogLevel;
-qjspp::EnumDefine const LeviLaminaDef::ScriptLogLevel = qjspp::defineEnum<LogLevel>("LogLevel")
+qjspp::EnumDefine const LeviLaminaModule::ScriptLogLevel = qjspp::defineEnum<LogLevel>("LogLevel")
                                                             .value("Off", LogLevel::Off)
                                                             .value("Fatal", LogLevel::Fatal)
                                                             .value("Error", LogLevel::Error)

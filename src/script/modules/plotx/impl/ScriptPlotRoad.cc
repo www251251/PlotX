@@ -1,13 +1,13 @@
 #include "plotx/math/PlotRoad.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/plotx/PlotXDef.hpp"
+#include "script/modules/plotx/PlotXModule.hpp"
 
 namespace plotx::script::modules {
 
 
-qjspp::ClassDefine const PlotXDef::PlotRoadDef_ =
+qjspp::ClassDefine const PlotXModule::ScriptPlotRoad =
     qjspp::defineClass<PlotRoad>("PlotRoad")
-        .extends(PlotAABBDef_)
+        .extends(ScriptPlotAABB)
         .constructor<>()
         .constructor<int, int, bool>()
         .constructor<BlockPos const&>()

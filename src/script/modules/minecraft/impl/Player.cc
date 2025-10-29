@@ -1,17 +1,17 @@
 #include "script/modules/Helper.hpp"
-#include "script/modules/minecraft/MinecraftDef.hpp"
+#include "script/modules/minecraft/MinecraftModule.hpp"
 
 
 namespace plotx::script::modules {
 
-qjspp::ClassDefine const MinecraftDef::PlayerDef_ =
+qjspp::ClassDefine const MinecraftModule::ScriptPlayer =
     qjspp::defineClass<::Player>("Player")
         .disableConstructor()
         .instanceProperty(
             "uuid",
             [](void* inst, qjspp::Arguments const& args) {
                 return args.engine()->newInstanceOfView(
-                    UUIDDef_,
+                    ScriptUUID,
                     const_cast<mce::UUID*>(&static_cast<::Player*>(inst)->getUuid()),
                     args.thiz() // 关联生命周期
                 );

@@ -2,14 +2,14 @@
 #include "qjspp/Binding.hpp"
 #include "qjspp/Definitions.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/levilamina/LeviLaminaDef.hpp"
+#include "script/modules/levilamina/LeviLaminaModule.hpp"
 
 
 namespace plotx::script::modules {
 
 using namespace ll::form;
 
-qjspp::ClassDefine const LeviLaminaDef::ModalFormDef_ =
+qjspp::ClassDefine const LeviLaminaModule::ScriptModalForm =
     qjspp::defineClass<ll::form::ModalForm>("ModalForm")
         .constructor<>()
         .instanceMethod("setTitle", &ModalForm::setTitle)
@@ -20,7 +20,7 @@ qjspp::ClassDefine const LeviLaminaDef::ModalFormDef_ =
         .instanceMethod("sendUpdate", &ModalForm::sendUpdate)
         .build();
 
-qjspp::EnumDefine const LeviLaminaDef::ModalFormSelectedButtonDef_ =
+qjspp::EnumDefine const LeviLaminaModule::ScriptModalFormSelectedButton =
     qjspp::defineEnum<ll::form::ModalFormSelectedButton>("ModalFormSelectedButton")
         .value("Upper", ModalFormSelectedButton::Upper)
         .value("Lower", ModalFormSelectedButton::Lower)

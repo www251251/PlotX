@@ -5,7 +5,7 @@
 
 #include "qjspp/JsEngine.hpp"
 #include "qjspp/Locker.hpp"
-#include "script/modules/levilamina/LeviLaminaDef.hpp"
+#include "script/modules/levilamina/LeviLaminaModule.hpp"
 
 #include <ll/api/event/EventBus.h>
 
@@ -44,14 +44,14 @@ template <>
 struct TypeConverter<ll::io::Logger> {
     static Value toJs(ll::io::Logger& ref) {
         return Locker::currentEngineChecked().newInstanceOfView(
-            plotx::script::modules::LeviLaminaDef::ScriptLogger,
+            plotx::script::modules::LeviLaminaModule::ScriptLogger,
             &ref
         );
     }
     static ll::io::Logger* toCpp(Value const& val) {
         return static_cast<ll::io::Logger*>(Locker::currentEngineChecked().getNativeInstanceOf(
             val.asObject(),
-            plotx::script::modules::LeviLaminaDef::ScriptLogger
+            plotx::script::modules::LeviLaminaModule::ScriptLogger
         ));
     }
 };

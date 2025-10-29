@@ -5,7 +5,7 @@
 #include "qjspp/Types.hpp"
 #include "qjspp/Values.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/levilamina/LeviLaminaDef.hpp"
+#include "script/modules/levilamina/LeviLaminaModule.hpp"
 
 
 namespace plotx::script::modules {
@@ -36,7 +36,7 @@ qjspp::Value iter(void* inst, qjspp::Arguments const& args) {
     return qjspp::Boolean{true};
 }
 
-qjspp::ClassDefine const LeviLaminaDef::KeyValueDBDef_ =
+qjspp::ClassDefine const LeviLaminaModule::ScriptKeyValueDB =
     qjspp::defineClass<ll::data::KeyValueDB>("KeyValueDB")
         .constructor<std::string>()
         .instanceMethod("get", &KeyValueDB::get)

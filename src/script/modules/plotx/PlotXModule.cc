@@ -1,0 +1,19 @@
+#include "PlotXModule.hpp"
+#include "qjspp/Module.hpp"
+
+
+namespace plotx::script::modules {
+
+
+qjspp::ModuleDefine const& PlotXModule::getModuleDef() {
+    static auto def = qjspp::defineModule("@plotx")
+                          .addClass(ScriptPlotAABB)
+                          .addClass(ScriptPlotCoord)
+                          .addClass(ScriptPlotRoad)
+                          .addClass(ScriptPlotCross)
+                          .build();
+    return def;
+}
+
+
+} // namespace plotx::script::modules

@@ -2,14 +2,14 @@
 
 
 #include "script/modules/Helper.hpp"
-#include "script/modules/minecraft/MinecraftDef.hpp"
-#include "script/modules/plotx/PlotXDef.hpp"
+#include "script/modules/minecraft/MinecraftModule.hpp"
+#include "script/modules/plotx/PlotXModule.hpp"
 
 namespace plotx::script::modules {
 
-qjspp::ClassDefine const PlotXDef::PlotCoordDef_ =
+qjspp::ClassDefine const PlotXModule::ScriptPlotCoord =
     qjspp::defineClass<PlotCoord>("PlotCoord")
-        .extends(PlotAABBDef_)
+        .extends(ScriptPlotAABB)
         .constructor<int, int>()
         .constructor<BlockPos const&>()
         .instanceProperty("x", &PlotCoord::x)

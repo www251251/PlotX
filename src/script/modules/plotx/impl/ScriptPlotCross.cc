@@ -1,13 +1,13 @@
 #include "plotx/math/PlotCross.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/plotx/PlotXDef.hpp"
+#include "script/modules/plotx/PlotXModule.hpp"
 
 
 namespace plotx::script::modules {
 
 
-qjspp::ClassDefine const PlotXDef::PlotCrossDef_ = qjspp::defineClass<PlotCross>("PlotCross")
-                                                       .extends(PlotAABBDef_)
+qjspp::ClassDefine const PlotXModule::ScriptPlotCross = qjspp::defineClass<PlotCross>("PlotCross")
+                                                       .extends(ScriptPlotAABB)
                                                        .constructor<>()
                                                        .constructor<int, int>()
                                                        .constructor<BlockPos const&>()

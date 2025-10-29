@@ -15,7 +15,7 @@
 
 #include <memory>
 
-#include "script/modules/minecraft/MinecraftDef.hpp"
+#include "script/modules/minecraft/MinecraftModule.hpp"
 
 namespace plotx::script {
 
@@ -52,7 +52,7 @@ template <>
 struct TypeConverter<Player> {
     static Value toJs(Player* player) {
         return plotx::script::newInstanceOfGameWeak(
-            plotx::script::modules::MinecraftDef::MinecraftDef::PlayerDef_,
+            plotx::script::modules::MinecraftModule::MinecraftModule::ScriptPlayer,
             player
         );
     }
@@ -64,7 +64,7 @@ struct TypeConverter<Player> {
         }
         return Locker::currentEngineChecked().getNativeInstanceOf<Player>(
             value.asObject(),
-            plotx::script::modules::MinecraftDef::MinecraftDef::PlayerDef_
+            plotx::script::modules::MinecraftModule::MinecraftModule::ScriptPlayer
         );
     }
 };
@@ -80,7 +80,7 @@ struct TypeConverter<mce::UUID> {
     static Value toJs(mce::UUID uuid) { // 值传递，创建一个副本
         auto unique = std::make_unique<mce::UUID>(uuid);
         return Locker::currentEngineChecked().newInstanceOfUnique(
-            plotx::script::modules::MinecraftDef::UUIDDef_,
+            plotx::script::modules::MinecraftModule::ScriptUUID,
             std::move(unique)
         );
     }
@@ -91,7 +91,7 @@ struct TypeConverter<mce::UUID> {
         }
         return Locker::currentEngineChecked().getNativeInstanceOf<mce::UUID>(
             value.asObject(),
-            plotx::script::modules::MinecraftDef::UUIDDef_
+            plotx::script::modules::MinecraftModule::ScriptUUID
         );
     }
 };
@@ -102,7 +102,7 @@ template <>
 struct TypeConverter<Vec3> {
     static Value toJs(Vec3 vec) {
         return Locker::currentEngineChecked().newInstanceOfRaw(
-            plotx::script::modules::MinecraftDef::Vec3Def_,
+            plotx::script::modules::MinecraftModule::ScriptVec3,
             new Vec3(vec.x, vec.y, vec.z)
         );
     }
@@ -112,7 +112,7 @@ struct TypeConverter<Vec3> {
         }
         return Locker::currentEngineChecked().getNativeInstanceOf<Vec3>(
             value.asObject(),
-            plotx::script::modules::MinecraftDef::Vec3Def_
+            plotx::script::modules::MinecraftModule::ScriptVec3
         );
     }
 };
@@ -122,7 +122,7 @@ template <>
 struct TypeConverter<BlockPos> {
     static Value toJs(BlockPos pos) {
         return Locker::currentEngineChecked().newInstanceOfRaw(
-            plotx::script::modules::MinecraftDef::BlockPosDef_,
+            plotx::script::modules::MinecraftModule::ScriptBlockPos,
             new BlockPos(pos.x, pos.y, pos.z)
         );
     }
@@ -132,7 +132,7 @@ struct TypeConverter<BlockPos> {
         }
         return Locker::currentEngineChecked().getNativeInstanceOf<BlockPos>(
             value.asObject(),
-            plotx::script::modules::MinecraftDef::BlockPosDef_
+            plotx::script::modules::MinecraftModule::ScriptBlockPos
         );
     }
 };

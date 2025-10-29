@@ -6,19 +6,19 @@
 #include "qjspp/JsException.hpp"
 #include "qjspp/Values.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/minecraft/MinecraftDef.hpp"
-#include "script/modules/plotx/PlotXDef.hpp"
+#include "script/modules/minecraft/MinecraftModule.hpp"
+#include "script/modules/plotx/PlotXModule.hpp"
 
 
 namespace plotx::script::modules {
 
 
-qjspp::ClassDefine const PlotXDef::PlotAABBDef_ =
+qjspp::ClassDefine const PlotXModule::ScriptPlotAABB =
     qjspp::defineClass<PlotAABB>("PlotAABB")
         .constructor<>()
         .constructor<BlockPos const&, BlockPos const&>()
-        .instancePropertyRef("min", &PlotAABB::min, MinecraftDef::BlockPosDef_)
-        .instancePropertyRef("max", &PlotAABB::max, MinecraftDef::BlockPosDef_)
+        .instancePropertyRef("min", &PlotAABB::min, MinecraftModule::ScriptBlockPos)
+        .instancePropertyRef("max", &PlotAABB::max, MinecraftModule::ScriptBlockPos)
         .instanceMethod("toString", &PlotAABB::toString)
         .instanceMethod("getMin", static_cast<BlockPos& (PlotAABB::*)()>(&PlotAABB::getMin))
         .instanceMethod("getMax", static_cast<BlockPos& (PlotAABB::*)()>(&PlotAABB::getMax))

@@ -10,14 +10,14 @@
 #include "qjspp/Values.hpp"
 #include "script/loader/ScriptMod.hpp"
 #include "script/modules/Helper.hpp"
-#include "script/modules/levilamina/LeviLaminaDef.hpp"
+#include "script/modules/levilamina/LeviLaminaModule.hpp"
 #include <string>
 
 
 namespace plotx::script::modules {
 
 
-qjspp::EnumDefine const LeviLaminaDef::EventPriorityDef_ = qjspp::defineEnum<ll::event::EventPriority>("EventPriority")
+qjspp::EnumDefine const LeviLaminaModule::ScriptEventPriority = qjspp::defineEnum<ll::event::EventPriority>("EventPriority")
                                                                .value("Highest", ll::event::EventPriority::Highest)
                                                                .value("High", ll::event::EventPriority::High)
                                                                .value("Normal", ll::event::EventPriority::Normal)
@@ -25,7 +25,7 @@ qjspp::EnumDefine const LeviLaminaDef::EventPriorityDef_ = qjspp::defineEnum<ll:
                                                                .value("Lowest", ll::event::EventPriority::Lowest)
                                                                .build();
 
-qjspp::ClassDefine const LeviLaminaDef::EventDef_ =
+qjspp::ClassDefine const LeviLaminaModule::ScriptEvent =
     qjspp::defineClass<ll::event::Event>("Event")
         .disableConstructor()
         .instanceMethod(
@@ -38,25 +38,25 @@ qjspp::ClassDefine const LeviLaminaDef::EventDef_ =
 
 
 using CancellableEventCRTP = ll::event::Cancellable<ll::event::Event>; // CRTP
-qjspp::ClassDefine const LeviLaminaDef::CancellableEventDef_ =
+qjspp::ClassDefine const LeviLaminaModule::ScriptCancellableEvent =
     qjspp::defineClass<CancellableEventCRTP>("CancellableEvent")
         .disableConstructor()
-        .extends(EventDef_)
+        .extends(ScriptEvent)
         .instanceMethod("isCancelled", &CancellableEventCRTP::isCancelled)
         .instanceMethod("setCancelled", &CancellableEventCRTP::setCancelled)
         .instanceMethod("cancel", &CancellableEventCRTP::cancel)
         .build();
 
-qjspp::ClassDefine const LeviLaminaDef::PlayerJoinEventDef_ =
+qjspp::ClassDefine const LeviLaminaModule::ScriptPlayerJoinEvent =
     qjspp::defineClass<ll::event::PlayerJoinEvent>("PlayerJoinEvent")
         .disableConstructor()
-        .extends(CancellableEventDef_)
+        .extends(ScriptCancellableEvent)
         .instanceMethod("self", &ll::event::PlayerJoinEvent::self)
         .build();
 
 
 #define GET_EVENT_BUS() ll::event::EventBus::getInstance()
-qjspp::ClassDefine const LeviLaminaDef::EventBusDef_ =
+qjspp::ClassDefine const LeviLaminaModule::ScriptEventBus =
     qjspp::defineClass<void>("EventBus")
         .function(
             "emplaceListener",
@@ -87,7 +87,7 @@ qjspp::ClassDefine const LeviLaminaDef::EventBusDef_ =
 
                             auto cb = sc.value().asFunction();
                             try {
-                                cb.call({}, {engine->newInstanceOfView(PlayerJoinEventDef_, &ev)});
+                                cb.call({}, {engine->newInstanceOfView(ScriptPlayerJoinEvent, &ev)});
                             } catch (qjspp::JsException const& e) {
                                 PlotX::getInstance().getSelf().getLogger().error(
                                     "[Scripting] Error while handling PlayerJoinEvent: {}\n{}",

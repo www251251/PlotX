@@ -1,4 +1,4 @@
-import {CustomForm, EventBus, EventPriority, KeyValueDB, ModalFormSelectedButton} from "@levilamina";
+import {CommandRegistrar, CustomForm, EventBus, EventPriority, KeyValueDB, ModalFormSelectedButton} from "@levilamina";
 import {BlockPos, ModalFormCancelReason, Player} from "@minecraft";
 import {PlotAABB} from "@plotx";
 
@@ -12,6 +12,7 @@ mod.onLoad((self) => {
 });
 mod.onEnable((self) => {
     logger.warn("ScriptMod onEnable triggered");
+    regCmd();
     return true;
 });
 mod.onDisable((self) => {
@@ -22,6 +23,17 @@ mod.onUnload((self) => {
     logger.warn("ScriptMod onUnload triggered");
     return true;
 });
+
+
+function regCmd() {
+    const cmd = CommandRegistrar.getInstance().getOrCreateCommand("test", "测试命令");
+    cmd.runtimeOverload().execute(() => {
+        logger.warn("test command executed 0");
+    })
+    cmd.runtimeOverload().text("foo").execute(() => {
+        logger.warn("test command executed 1");
+    });
+}
 
 
 /**
@@ -36,22 +48,13 @@ function main(pl) {
         .appendInput("input", "输入框", "占位符", "默认值", "输入框说明")
         .appendToggle("toggle", "开关", true, "开关说明")
         .appendDropdown("dropdown", "下拉框", ["选项1", "选项2", "选项3"], 0, "下拉框说明")
-        .appendSlider(
-            "slider",
-            "滑块",
-            0, // 最小值
+        .appendSlider("slider", "滑块", 0, // 最小值
             100, // 最大值
             1, // 步长
             50, // 默认值
-            "滑块说明"
-        )
-        .appendStepSlider(
-            "stepSlider",
-            "步进滑块",
-            ["选项1", "选项2", "选项3"],
-            0, // 默认值
-            "步进滑块说明"
-        )
+            "滑块说明")
+        .appendStepSlider("stepSlider", "步进滑块", ["选项1", "选项2", "选项3"], 0, // 默认值
+            "步进滑块说明")
         .sendTo(pl, (player, result, cancelReason) => {
             logger.debug("Form callback triggered");
             if (result === null) {

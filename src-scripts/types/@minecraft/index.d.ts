@@ -3,3 +3,6 @@
 /// <reference path="./ModalFormCancelReason.d.ts" />
 /// <reference path="./BlockPos.d.ts" />
 /// <reference path="./Vec3.d.ts" />
+/// <reference path="./CommandFlagValue.d.ts" />
+/// <reference path="./CommandParameterOption.d.ts" />
+/// <reference path="./CommandPermissionLevel.d.ts" />

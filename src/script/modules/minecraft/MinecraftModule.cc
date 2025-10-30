@@ -11,6 +11,10 @@ qjspp::ModuleDefine const& MinecraftModule::getModuleDef() {
                           .addEnum(ScriptModalFormCancelReason)
                           .addClass(ScriptBlockPos)
                           .addClass(ScriptVec3)
+                          .addEnum(ScriptCommandPermissionLevel)
+                          .addEnum(ScriptCommandFlagValue)
+                          .addEnum(ScriptCommandParameterOption)
+                          .addClass(ScriptCommandOrigin)
                           .build();
     return def;
 }

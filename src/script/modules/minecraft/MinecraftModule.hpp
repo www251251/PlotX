@@ -20,6 +20,12 @@ struct MinecraftModule {
 
     static qjspp::ClassDefine const ScriptVec3;
 
+    static qjspp::EnumDefine const  ScriptCommandPermissionLevel;
+    static qjspp::EnumDefine const  ScriptCommandFlagValue;
+    static qjspp::EnumDefine const  ScriptCommandParameterOption;
+    static qjspp::ClassDefine const ScriptCommandOrigin;
+
+
     static qjspp::ModuleDefine const& getModuleDef();
 };
 

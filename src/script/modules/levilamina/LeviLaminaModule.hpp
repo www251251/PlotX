@@ -34,6 +34,12 @@ struct LeviLaminaModule {
     static qjspp::ClassDefine const ScriptLogger;
     static qjspp::EnumDefine const  ScriptLogLevel;
 
+    // === Command API ===
+    static qjspp::ClassDefine const ScriptCommandRegistrar;
+    static qjspp::ClassDefine const ScriptCommandHandle;
+    static qjspp::ClassDefine const ScriptRuntimeOverload;
+    static qjspp::EnumDefine const  ScriptCommandParamKind;
+
     static qjspp::ModuleDefine const& getModuleDef();
 };
 

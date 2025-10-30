@@ -5,3 +5,4 @@
 /// <reference path="./EventBus.d.ts" />
 /// <reference path="./KeyValueDB.d.ts" />
 /// <reference path="./Logger.d.ts" />
+/// <reference path="./Command.d.ts" />

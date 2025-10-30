@@ -18,6 +18,10 @@ qjspp::ModuleDefine const& LeviLaminaModule::getModuleDef() {
                                          .addClass(ScriptKeyValueDB)
                                          .addClass(ScriptLogger)
                                          .addEnum(ScriptLogLevel)
+                                         .addClass(ScriptCommandRegistrar)
+                                         .addClass(ScriptCommandHandle)
+                                         .addClass(ScriptRuntimeOverload)
+                                         .addEnum(ScriptCommandParamKind)
                                          .build();
     return def;
 }

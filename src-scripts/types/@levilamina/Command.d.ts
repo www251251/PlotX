@@ -3,7 +3,7 @@ declare module "@levilamina" {
     import {
         BlockPos,
         CommandFlagValue,
-        CommandOrigin,
+        CommandOrigin, CommandOutput,
         CommandParameterOption,
         CommandPermissionLevel,
         Player,
@@ -127,8 +127,7 @@ declare module "@levilamina" {
         ): this;
 
         execute(
-            // TODO: add types for CommandOrigin and CommandOutput
-            fn: (origin: CommandOrigin, output: null, args: T) => void
+            fn: (origin: CommandOrigin, output: CommandOutput, args: T) => void
         ): this;
     }
 }

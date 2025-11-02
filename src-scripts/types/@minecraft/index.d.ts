@@ -8,3 +8,4 @@
 /// <reference path="./CommandParameterOption.d.ts" />
 /// <reference path="./CommandPermissionLevel.d.ts" />
 /// <reference path="./CommandOrigin.d.ts" />
+/// <reference path="./CommandOutput.d.ts" />

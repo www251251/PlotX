@@ -17,6 +17,7 @@ qjspp::ModuleDefine const& MinecraftModule::getModuleDef() {
                           .addEnum(ScriptCommandParameterOption)
                           .addClass(ScriptCommandOrigin)
                           .addEnum(ScriptCommandOriginType)
+                          .addClass(ScriptCommandOutput)
                           .build();
     return def;
 }

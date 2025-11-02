@@ -219,13 +219,13 @@ public:
              )](CommandOrigin const& origin, CommandOutput& output, ll::command::RuntimeCommand const& command) {
                 qjspp::Locker lock{fn.engine()};
                 try {
-                    // TODO: 解析参数回传引擎
                     auto ori = fn.engine()->newInstanceOfView(
                         MinecraftModule::ScriptCommandOrigin,
                         const_cast<CommandOrigin*>(&origin)
                     );
+                    auto out  = fn.engine()->newInstanceOfView(MinecraftModule::ScriptCommandOutput, &output);
                     auto args = _convertResult(command, params, origin);
-                    fn.value().asFunction().call({}, {ori, qjspp::Null{}, args});
+                    (void)fn.value().asFunction().call({}, {ori, out, args});
                 } catch (qjspp::JsException const& e) {
                     fn.engine()->invokeUnhandledJsException(e, qjspp::UnhandledExceptionOrigin::Callback);
                 }

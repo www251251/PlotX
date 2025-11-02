@@ -44,6 +44,22 @@ inline qjspp::Object newInstanceOfGameWeak(qjspp::ClassDefine const& def, Actor*
     return engine.newInstance(def, std::move(managed));
 }
 
+inline void formatArgsToString(qjspp::Arguments const& args, std::ostringstream& oss, size_t offset = 0) {
+    static constexpr std::string_view prefix = "[Script] ";
+    oss << prefix;
+    size_t argc = args.length();
+    if (argc < offset) {
+        return;
+    }
+    for (size_t i = offset; i < argc; ++i) {
+        auto arg = args[i];
+        oss << arg.toString().value();
+        if (i < argc - 1) {
+            oss << " ";
+        }
+    }
+}
+
 } // namespace plotx::script
 
 

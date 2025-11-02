@@ -26,6 +26,7 @@ struct MinecraftModule {
     static qjspp::EnumDefine const  ScriptCommandParameterOption;
     static qjspp::ClassDefine const ScriptCommandOrigin;
     static qjspp::EnumDefine const  ScriptCommandOriginType;
+    static qjspp::ClassDefine const ScriptCommandOutput;
 
 
     static qjspp::ModuleDefine const& getModuleDef();

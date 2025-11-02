@@ -40,6 +40,7 @@ function regCmd() {
         logger.warn("test command executed 2:", str);
         let type = ori.getOriginType();
         logger.warn("origin type:", type);
+        out.error("error message");
     })
 }
 

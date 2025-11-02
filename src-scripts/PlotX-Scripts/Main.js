@@ -1,4 +1,6 @@
-import {CommandRegistrar, CustomForm, EventBus, EventPriority, KeyValueDB, ModalFormSelectedButton} from "@levilamina";
+import {
+    CommandParamKind, CommandRegistrar, CustomForm, EventBus, EventPriority, KeyValueDB, ModalFormSelectedButton
+} from "@levilamina";
 import {BlockPos, ModalFormCancelReason, Player} from "@minecraft";
 import {PlotAABB} from "@plotx";
 
@@ -33,6 +35,10 @@ function regCmd() {
     cmd.runtimeOverload().text("foo").execute(() => {
         logger.warn("test command executed 1");
     });
+    cmd.runtimeOverload().required("str", CommandParamKind.String).execute((ori, out, args) => {
+        let str = args["str"];
+        logger.warn("test command executed 2:", str);
+    })
 }
 
 

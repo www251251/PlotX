@@ -1,6 +1,6 @@
 declare module "@levilamina" {
 
-    import {CommandFlagValue, CommandParameterOption, CommandPermissionLevel} from "@minecraft";
+    import {BlockPos, CommandFlagValue, CommandParameterOption, CommandPermissionLevel, Player, Vec3} from "@minecraft";
 
     export class CommandRegistrar implements InstanceClassHelper<CommandRegistrar> {
         $equals(other: CommandRegistrar): boolean;
@@ -18,37 +18,89 @@ declare module "@levilamina" {
     export class CommandHandle implements InstanceClassHelper<CommandHandle> {
         $equals(other: CommandHandle): boolean;
 
-        runtimeOverload(): RuntimeOverload;
+        runtimeOverload(): RuntimeOverload<Params>;
     }
 
-    // TODO: add types for CommandOrigin and CommandOutput
-    // export type RuntimeCommandCallback = (origin: CommandOrigin, output: CommandOutput) => void;
-    export type RuntimeCommandCallback = () => void;
+    export enum CommandParamKind {
+        // $name: string;
+        Int,// 0
+        Bool,// 1
+        Float,// 2
+        Dimension,// 3
+        String,// 4
+        Enum,// 5
+        SoftEnum,// 6
+        Actor,// 7
+        Player,// 8
+        BlockPos,// 9
+        Vec3,// 10
+        RawText,// 11
+        Message,// 12
+        JsonValue,// 13
+        Item,// 14
+        BlockName,// 15
+        BlockState,// 16
+        Effect,// 17
+        ActorType,// 18
+        Command,// 19
+        RelativeFloat,// 20
+        IntegerRange,// 21
+        FilePath,// 22
+        WildcardInt,// 23
+        WildcardActor,// 24
+        Count,// 25
+    }
 
-    export class RuntimeOverload implements InstanceClassHelper<RuntimeOverload> {
-        $equals(other: RuntimeOverload): boolean;
+    type KindToType<K extends CommandParamKind> =
+        K extends CommandParamKind.Int ? number :
+            K extends CommandParamKind.Float ? number :
+                K extends CommandParamKind.Enum ? string :
+                    K extends CommandParamKind.SoftEnum ? string :
+                        K extends CommandParamKind.String ? string :
+                            K extends CommandParamKind.RawText ? string :
+                                K extends CommandParamKind.Bool ? boolean :
+                                    K extends CommandParamKind.Player ? Player[] :
+                                        K extends CommandParamKind.BlockPos ? BlockPos :
+                                            K extends CommandParamKind.Vec3 ? Vec3 : never;
 
-        optional(
-            name: string,
-            kind: CommandParamKind
-        ): this;
+    type SupportedKind =
+        CommandParamKind.Int |
+        CommandParamKind.Float |
+        CommandParamKind.Enum |
+        CommandParamKind.SoftEnum |
+        CommandParamKind.String |
+        CommandParamKind.RawText |
+        CommandParamKind.Bool |
+        CommandParamKind.Player |
+        CommandParamKind.BlockPos |
+        CommandParamKind.Vec3;
 
-        required(
-            name: string,
-            kind: CommandParamKind
-        ): this;
+    type Params = Record<string, any>;
 
-        optional(
-            name: string,
-            enumKind: CommandParamKind,
+    export class RuntimeOverload<T extends Params> implements InstanceClassHelper<RuntimeOverload<T>> {
+        $equals<H extends Params>(other: RuntimeOverload<H>): boolean;
+
+        optional<N extends string, K extends CommandParamKind>(
+            name: N,
+            kind: K extends SupportedKind ? K : never
+        ): RuntimeOverload<T & { [P in N]?: KindToType<K> }>;
+
+        required<N extends string, K extends CommandParamKind>(
+            name: N,
+            kind: K extends SupportedKind ? K : never
+        ): RuntimeOverload<T & { [P in N]: KindToType<K> }>;
+
+        optional<N extends string>(
+            name: N,
+            enumKind: CommandParamKind.Enum | CommandParamKind.SoftEnum,
             enumName: string
-        ): this;
+        ): RuntimeOverload<T & { [P in N]?: string }>;
 
-        required(
-            name: string,
-            enumKind: CommandParamKind,
+        required<N extends string>(
+            name: N,
+            enumKind: CommandParamKind.Enum | CommandParamKind.SoftEnum,
             enumName: string
-        ): this;
+        ): RuntimeOverload<T & { [P in N]: string }>;
 
         text(
             text: string
@@ -67,37 +119,8 @@ declare module "@levilamina" {
         ): this;
 
         execute(
-            fn: RuntimeCommandCallback
+            // TODO: add types for CommandOrigin and CommandOutput
+            fn: (origin: null, output: null, args: T) => void
         ): this;
     }
-
-    export const CommandParamKind: CommandParamKind;
-    export type CommandParamKind = NativeEnum<[
-        "Int",
-        "Bool",
-        "Float",
-        "Dimension",
-        "String",
-        "Enum",
-        "SoftEnum",
-        "Actor",
-        "Player",
-        "BlockPos",
-        "Vec3",
-        "RawText",
-        "Message",
-        "JsonValue",
-        "Item",
-        "BlockName",
-        "BlockState",
-        "Effect",
-        "ActorType",
-        "Command",
-        "RelativeFloat",
-        "IntegerRange",
-        "FilePath",
-        "WildcardInt",
-        "WildcardActor",
-    ]>
-
 }

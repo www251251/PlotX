@@ -101,6 +101,7 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptCommandRegistrar =
 using ll::command::CommandHandle;
 using ll::command::ParamKindType;
 using ll::command::RuntimeOverload;
+using CommandParamKind = ll::command::ParamKind::Kind;
 
 /**
  * @note runtimeOverload 返回的 RuntimeOverload 属于栈内存
@@ -108,14 +109,33 @@ using ll::command::RuntimeOverload;
  * @note 如果执行了 execute 方法后，RuntimeOverload 会被 CommandHandle 内部托管，长期有效。
  * @note 此类为代理类，因为 RuntimeOverload 的生命周期不明确，无法被 Js 引擎托管
  */
-class FuckUnclearLifecycleRuntimeOverload {
+class RuntimeOverloadProxy {
 public:
+    struct OverloadParam {
+        std::string      name;
+        CommandParamKind kind;
+        std::string      enumName;
+    };
+    using OverloadParams = std::vector<OverloadParam>;
+
     std::optional<RuntimeOverload> overload_;
+    OverloadParams                 params_;
 
-    explicit FuckUnclearLifecycleRuntimeOverload(RuntimeOverload overload) : overload_(std::move(overload)) {}
-    PLOTX_DISALLOW_COPY_AND_MOVE(FuckUnclearLifecycleRuntimeOverload);
+    static std::unordered_set<CommandParamKind> const supportedKind_;
 
-    void tryFuck() const {
+    static void areSupported(ParamKindType kind) {
+        if (!supportedKind_.contains(static_cast<CommandParamKind>(kind))) {
+            throw qjspp::JsException{
+                qjspp::JsException::Type::TypeError,
+                fmt::format("unsupported parameter kind: {}", static_cast<int>(kind))
+            };
+        }
+    }
+
+    explicit RuntimeOverloadProxy(RuntimeOverload overload) : overload_(std::move(overload)) {}
+    PLOTX_DISALLOW_COPY_AND_MOVE(RuntimeOverloadProxy);
+
+    void ensureValid() const {
         if (!overload_) {
             throw qjspp::JsException{
                 qjspp::JsException::Type::ReferenceError,
@@ -124,59 +144,65 @@ public:
         }
     }
 
-    FuckUnclearLifecycleRuntimeOverload& optional(std::string_view name, ParamKindType kind) {
-        tryFuck();
+    RuntimeOverloadProxy& optional(std::string_view name, ParamKindType kind) {
+        ensureValid();
+        areSupported(kind);
         (void)overload_->optional(name, kind);
+        params_.emplace_back(std::string{name}, static_cast<CommandParamKind>(kind));
         return *this;
     }
 
-    FuckUnclearLifecycleRuntimeOverload& required(std::string_view name, ParamKindType kind) {
-        tryFuck();
+    RuntimeOverloadProxy& required(std::string_view name, ParamKindType kind) {
+        ensureValid();
+        areSupported(kind);
         (void)overload_->required(name, kind);
+        params_.emplace_back(std::string{name}, static_cast<CommandParamKind>(kind));
         return *this;
     }
 
-    FuckUnclearLifecycleRuntimeOverload&
-    optional(std::string_view name, ParamKindType enumKind, std::string_view enumName) {
-        tryFuck();
+    RuntimeOverloadProxy& optional(std::string_view name, ParamKindType enumKind, std::string_view enumName) {
+        ensureValid();
+        areSupported(enumKind);
         (void)overload_->optional(name, enumKind, enumName);
+        params_.emplace_back(std::string{name}, static_cast<CommandParamKind>(enumKind), std::string{enumName});
         return *this;
     }
 
-    FuckUnclearLifecycleRuntimeOverload&
-    required(std::string_view name, ParamKindType enumKind, std::string_view enumName) {
-        tryFuck();
+    RuntimeOverloadProxy& required(std::string_view name, ParamKindType enumKind, std::string_view enumName) {
+        ensureValid();
+        areSupported(enumKind);
         (void)overload_->required(name, enumKind, enumName);
+        params_.emplace_back(std::string{name}, static_cast<CommandParamKind>(enumKind), std::string{enumName});
         return *this;
     }
 
-    FuckUnclearLifecycleRuntimeOverload& text(std::string_view text) {
-        tryFuck();
+    RuntimeOverloadProxy& text(std::string_view text) {
+        ensureValid();
         (void)overload_->text(text);
         return *this;
     }
 
-    FuckUnclearLifecycleRuntimeOverload& postfix(std::string_view postfix) {
-        tryFuck();
+    RuntimeOverloadProxy& postfix(std::string_view postfix) {
+        ensureValid();
         (void)overload_->postfix(postfix);
         return *this;
     }
 
-    FuckUnclearLifecycleRuntimeOverload& option(CommandParameterOption option) {
-        tryFuck();
+    RuntimeOverloadProxy& option(CommandParameterOption option) {
+        ensureValid();
         (void)overload_->option(option);
         return *this;
     }
 
-    FuckUnclearLifecycleRuntimeOverload& deoption(CommandParameterOption option) {
-        tryFuck();
+    RuntimeOverloadProxy& deoption(CommandParameterOption option) {
+        ensureValid();
         (void)overload_->deoption(option);
         return *this;
     }
 
     static qjspp::Value execute(void* inst, qjspp::Arguments const& arguments) {
-        auto* fuck = static_cast<FuckUnclearLifecycleRuntimeOverload*>(inst);
-        fuck->tryFuck();
+        auto* fuck = static_cast<RuntimeOverloadProxy*>(inst);
+        fuck->ensureValid();
 
         if (arguments.length() < 1) {
             throw qjspp::JsException{"wrong argument count"};
@@ -187,28 +213,101 @@ public:
         auto engine = arguments.engine();
         auto func   = qjspp::ScopedJsValue{engine, arguments[0]};
 
-        auto callback = [fn = std::move(func)](
-                            CommandOrigin const&               origin,
-                            CommandOutput&                     output,
-                            ll::command::RuntimeCommand const& command
-                        ) {
-            qjspp::Locker lock{fn.engine()};
-            try {
-                // TODO: 解析参数回传引擎
-                fn.value().asFunction().call();
-            } catch (qjspp::JsException const& e) {
-                fn.engine()->invokeUnhandledJsException(e, qjspp::UnhandledExceptionOrigin::Callback);
-            }
-        };
+        auto callback =
+            [fn     = std::move(func),
+             params = std::move(fuck->params_
+             )](CommandOrigin const& origin, CommandOutput& output, ll::command::RuntimeCommand const& command) {
+                qjspp::Locker lock{fn.engine()};
+                try {
+                    // TODO: 解析参数回传引擎
+                    auto args = _convertResult(command, params, origin);
+                    fn.value().asFunction().call({}, {qjspp::Null{}, qjspp::Null{}, args});
+                } catch (qjspp::JsException const& e) {
+                    fn.engine()->invokeUnhandledJsException(e, qjspp::UnhandledExceptionOrigin::Callback);
+                }
+            };
 
         fuck->overload_->execute(std::move(callback));
         fuck->overload_.reset();
         if (arguments.hasJsManagedResource()) arguments.getJsManagedResource()->finalize();
         return {};
     }
-};
 
-using FuckRuntimeOverload = FuckUnclearLifecycleRuntimeOverload;
+private:
+    static qjspp::Object
+    _convertResult(ll::command::RuntimeCommand const& cmd, OverloadParams const& params, CommandOrigin const& origin) {
+        qjspp::Object result{};
+        for (auto const& [name, type, enumName] : params) {
+            try {
+                bool  isEnumKind = type == ll::command::ParamKind::Enum || type == ll::command::ParamKind::SoftEnum;
+                auto& val        = isEnumKind ? cmd[enumName] : cmd[name];
+                result.set(name, _convertImpl(val, origin));
+            } catch (std::out_of_range&) {}
+        }
+        return result;
+    }
+    static qjspp::Value _convertImpl(ll::command::ParamStorageType const& storage, CommandOrigin const& origin) {
+        if (!storage.has_value()) {
+            return qjspp::Null{};
+        }
+        if (storage.hold(CommandParamKind::Enum)) {
+            return qjspp::String{std::get<ll::command::RuntimeEnum>(storage.value()).name};
+        }
+        if (storage.hold(CommandParamKind::SoftEnum)) {
+            return qjspp::String{std::get<ll::command::RuntimeSoftEnum>(storage.value())};
+        }
+        if (storage.hold(CommandParamKind::Int)) {
+            return qjspp::Number{std::get<int>(storage.value())};
+        }
+        if (storage.hold(CommandParamKind::Bool)) {
+            return qjspp::Boolean{std::get<bool>(storage.value())};
+        }
+        if (storage.hold(CommandParamKind::Float)) {
+            return qjspp::Number{std::get<float>(storage.value())};
+        }
+        if (storage.hold(CommandParamKind::String)) {
+            return qjspp::String{std::get<std::string>(storage.value())};
+        }
+        if (storage.hold(CommandParamKind::Player)) {
+            auto players = std::get<CommandSelector<Player>>(storage.value()).results(origin);
+            auto array   = qjspp::Array{players.size()};
+            for (auto const& player : players) {
+                array.push(newInstanceOfGameWeak(MinecraftModule::ScriptPlayer, player));
+            }
+            return array;
+        }
+        if (storage.hold(CommandParamKind::BlockPos)) {
+            return qjspp::Locker::currentEngineChecked().newInstanceOfRaw(
+                MinecraftModule::ScriptBlockPos,
+                new BlockPos{std::get<CommandPosition>(storage.value())
+                                 .getBlockPos(CommandVersion::CurrentVersion(), origin, Vec3::ZERO())}
+            );
+        }
+        if (storage.hold(CommandParamKind::Vec3)) {
+            return qjspp::Locker::currentEngineChecked().newInstanceOfRaw(
+                MinecraftModule::ScriptVec3,
+                new Vec3{std::get<CommandPosition>(storage.value())
+                             .getPosition(CommandVersion::CurrentVersion(), origin, Vec3::ZERO())}
+            );
+        }
+        if (storage.hold(CommandParamKind::RawText)) {
+            return qjspp::String{std::get<CommandRawText>(storage.value()).mText};
+        }
+        return {};
+    }
+};
+std::unordered_set<CommandParamKind> const RuntimeOverloadProxy::supportedKind_ = {
+    CommandParamKind::Enum,
+    CommandParamKind::SoftEnum,
+    CommandParamKind::Int,
+    CommandParamKind::Bool,
+    CommandParamKind::Float,
+    CommandParamKind::String,
+    CommandParamKind::Player,
+    CommandParamKind::BlockPos,
+    CommandParamKind::Vec3,
+    CommandParamKind::RawText,
+};
 
 qjspp::ClassDefine const LeviLaminaModule::ScriptCommandHandle =
     qjspp::defineClass<CommandHandle>("CommandHandle")
@@ -221,7 +320,7 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptCommandHandle =
                 auto  overload = handle->runtimeOverload(engine->getData<EngineData>()->mod_);
                 return arguments.engine()->newInstanceOfRaw(
                     ScriptRuntimeOverload,
-                    new FuckRuntimeOverload(std::move(overload))
+                    new RuntimeOverloadProxy(std::move(overload))
                 );
             }
         )
@@ -229,7 +328,8 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptCommandHandle =
 
 
 qjspp::ClassDefine const LeviLaminaModule::ScriptRuntimeOverload =
-    qjspp::defineClass<FuckRuntimeOverload>("RuntimeOverload")
+    qjspp::defineClass<RuntimeOverloadProxy>("RuntimeOverload")
+        // .property("$supportedKind", &RuntimeOverloadProxy::supportedKind_)
         .customConstructor([](qjspp::Arguments const& arguments) -> void* {
             // 如果设置 disableConstructor 那么将不会生成清理函数
             // 而当前的API模型需要 RuntimeOverload 不可构造且代理类需要清理函数
@@ -238,28 +338,31 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptRuntimeOverload =
         })
         .instanceMethod(
             "optional",
-            static_cast<FuckRuntimeOverload& (FuckRuntimeOverload::*)(std::string_view, ParamKindType)>(
-                &FuckRuntimeOverload::optional
+            static_cast<RuntimeOverloadProxy& (RuntimeOverloadProxy::*)(std::string_view, ParamKindType)>(
+                &RuntimeOverloadProxy::optional
             ),
-            static_cast<FuckRuntimeOverload& (FuckRuntimeOverload::*)(std::string_view, ParamKindType, std::string_view
-            )>(&FuckRuntimeOverload::optional)
+            static_cast<
+                RuntimeOverloadProxy& (RuntimeOverloadProxy::*)(std::string_view, ParamKindType, std::string_view)>(
+                &RuntimeOverloadProxy::optional
+            )
         )
         .instanceMethod(
             "required",
-            static_cast<FuckRuntimeOverload& (FuckRuntimeOverload::*)(std::string_view, ParamKindType)>(
-                &FuckRuntimeOverload::required
+            static_cast<RuntimeOverloadProxy& (RuntimeOverloadProxy::*)(std::string_view, ParamKindType)>(
+                &RuntimeOverloadProxy::required
             ),
-            static_cast<FuckRuntimeOverload& (FuckRuntimeOverload::*)(std::string_view, ParamKindType, std::string_view
-            )>(&FuckRuntimeOverload::required)
+            static_cast<
+                RuntimeOverloadProxy& (RuntimeOverloadProxy::*)(std::string_view, ParamKindType, std::string_view)>(
+                &RuntimeOverloadProxy::required
+            )
         )
-        .instanceMethod("text", &FuckRuntimeOverload::text)
-        .instanceMethod("postfix", &FuckRuntimeOverload::postfix)
-        .instanceMethod("option", &FuckRuntimeOverload::option)
-        .instanceMethod("deoption", &FuckRuntimeOverload::deoption)
-        .instanceMethod("execute", &FuckRuntimeOverload::execute)
+        .instanceMethod("text", &RuntimeOverloadProxy::text)
+        .instanceMethod("postfix", &RuntimeOverloadProxy::postfix)
+        .instanceMethod("option", &RuntimeOverloadProxy::option)
+        .instanceMethod("deoption", &RuntimeOverloadProxy::deoption)
+        .instanceMethod("execute", &RuntimeOverloadProxy::execute)
         .build();
 
-using CommandParamKind = ll::command::ParamKind::Kind;
 qjspp::EnumDefine const LeviLaminaModule::ScriptCommandParamKind =
     qjspp::defineEnum<CommandParamKind>("CommandParamKind")
         .value("Int", CommandParamKind::Int)

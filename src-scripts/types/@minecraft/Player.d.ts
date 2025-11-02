@@ -1,5 +1,5 @@
 declare module "@minecraft" {
-    export class Player implements InstanceClassHelper<Player> {
+    export class Player extends Actor implements InstanceClassHelper<Player> {
         $equals(other: Player): boolean;
 
         get uuid(): UUID;

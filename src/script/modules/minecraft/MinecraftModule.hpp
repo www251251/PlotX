@@ -10,6 +10,7 @@ namespace plotx::script::modules {
 struct MinecraftModule {
     MinecraftModule() = delete;
 
+    static qjspp::ClassDefine const ScriptActor;
     static qjspp::ClassDefine const ScriptPlayer;
 
     static qjspp::ClassDefine const ScriptUUID;

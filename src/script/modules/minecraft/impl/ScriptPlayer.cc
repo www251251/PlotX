@@ -6,6 +6,7 @@ namespace plotx::script::modules {
 
 qjspp::ClassDefine const MinecraftModule::ScriptPlayer =
     qjspp::defineClass<::Player>("Player")
+        .extends(ScriptActor)
         .disableConstructor()
         .instanceProperty(
             "uuid",

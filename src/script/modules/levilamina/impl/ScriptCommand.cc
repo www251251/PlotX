@@ -220,8 +220,12 @@ public:
                 qjspp::Locker lock{fn.engine()};
                 try {
                     // TODO: 解析参数回传引擎
+                    auto ori = fn.engine()->newInstanceOfView(
+                        MinecraftModule::ScriptCommandOrigin,
+                        const_cast<CommandOrigin*>(&origin)
+                    );
                     auto args = _convertResult(command, params, origin);
-                    fn.value().asFunction().call({}, {qjspp::Null{}, qjspp::Null{}, args});
+                    fn.value().asFunction().call({}, {ori, qjspp::Null{}, args});
                 } catch (qjspp::JsException const& e) {
                     fn.engine()->invokeUnhandledJsException(e, qjspp::UnhandledExceptionOrigin::Callback);
                 }

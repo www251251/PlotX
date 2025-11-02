@@ -38,6 +38,8 @@ function regCmd() {
     cmd.runtimeOverload().required("str", CommandParamKind.String).execute((ori, out, args) => {
         let str = args["str"];
         logger.warn("test command executed 2:", str);
+        let type = ori.getOriginType();
+        logger.warn("origin type:", type);
     })
 }
 

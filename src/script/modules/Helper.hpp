@@ -19,27 +19,29 @@
 
 namespace plotx::script {
 
-inline qjspp::Object newInstanceOfGameWeak(qjspp::ClassDefine const& def, Player* player) {
-    auto& engine = qjspp::Locker::currentEngineChecked();
-    struct Control {
-        WeakRef<EntityContext> player_;
-        explicit Control(Player* pl) : player_{pl->getWeakEntity()} {}
-    };
-    auto control = std::make_unique<Control>(player);
-    auto wrap    = qjspp::JsManagedResource::make(
-        control.release(),
+namespace internal {
+
+struct GameWeakControl {
+    WeakRef<EntityContext> entity_;
+    bool const             isPlayer_;
+    explicit GameWeakControl(Actor* actor) : entity_(actor->getWeakEntity()), isPlayer_(actor->isPlayer()) {}
+};
+
+} // namespace internal
+
+inline qjspp::Object newInstanceOfGameWeak(qjspp::ClassDefine const& def, Actor* actor) {
+    auto& engine  = qjspp::Locker::currentEngineChecked();
+    auto  managed = qjspp::JsManagedResource::make(
+        new internal::GameWeakControl(actor),
         [](void* res) -> void* {
-            auto control = static_cast<Control*>(res);
-            auto player  = control->player_.tryUnwrap<Player>();
-            if (player) return static_cast<void*>(player);
-            return nullptr;
+            auto control = static_cast<internal::GameWeakControl*>(res);
+            auto actor   = control->isPlayer_ ? control->entity_.tryUnwrap<Player>() : control->entity_.tryUnwrap<>();
+            if (!actor.has_value()) return nullptr;
+            return actor.as_ptr();
         },
-        [](void* res) -> void {
-            // The game weak ref is not owned by the engine, so we don't need to do anything
-            delete static_cast<Control*>(res);
-        }
+        [](void* res) { delete static_cast<internal::GameWeakControl*>(res); }
     );
-    return engine.newInstance(def, std::move(wrap));
+    return engine.newInstance(def, std::move(managed));
 }
 
 } // namespace plotx::script

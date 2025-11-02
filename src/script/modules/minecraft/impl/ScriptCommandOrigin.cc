@@ -1,12 +1,52 @@
+#include "script/modules/Helper.hpp"
 #include "script/modules/minecraft/MinecraftModule.hpp"
 
 #include <mc/server/commands/CommandOrigin.h>
 
+namespace qjspp {
+
+template <>
+struct TypeConverter<Actor> {
+    static Value toJs(Actor* actor) {
+        return plotx::script::newInstanceOfGameWeak(plotx::script::modules::MinecraftModule::ScriptActor, actor);
+    }
+    static Actor* toCpp(Value const& val) {
+        return Locker::currentEngineChecked().getNativeInstanceOf<Actor>(
+            val.asObject(),
+            plotx::script::modules::MinecraftModule::ScriptActor
+        );
+    }
+};
+
+} // namespace qjspp
+
 namespace plotx::script::modules {
 
-// TODO: im
-qjspp::ClassDefine const MinecraftModule::ScriptCommandOrigin = qjspp::defineClass<CommandOrigin>("CommandOrigin")
-                                                                    .disableConstructor()
-                                                                    .build();
+qjspp::ClassDefine const MinecraftModule::ScriptCommandOrigin =
+    qjspp::defineClass<CommandOrigin>("CommandOrigin")
+        .disableConstructor()
+        .instanceMethod("getEntity", &CommandOrigin::getEntity)
+        .instanceMethod("getOriginType", &CommandOrigin::getOriginType)
+        .build();
 
-}
+qjspp::EnumDefine const MinecraftModule::ScriptCommandOriginType =
+    qjspp::defineEnum<CommandOriginType>("CommandOriginType")
+        .value("Player", CommandOriginType::Player)
+        .value("CommandBlock", CommandOriginType::CommandBlock)
+        .value("MinecartCommandBlock", CommandOriginType::MinecartCommandBlock)
+        .value("DevConsole", CommandOriginType::DevConsole)
+        .value("Test", CommandOriginType::Test)
+        .value("AutomationPlayer", CommandOriginType::AutomationPlayer)
+        .value("ClientAutomation", CommandOriginType::ClientAutomation)
+        .value("DedicatedServer", CommandOriginType::DedicatedServer)
+        .value("Entity", CommandOriginType::Entity)
+        .value("Virtual", CommandOriginType::Virtual)
+        .value("GameArgument", CommandOriginType::GameArgument)
+        .value("EntityServer", CommandOriginType::EntityServer)
+        .value("Precompiled", CommandOriginType::Precompiled)
+        .value("GameDirectorEntityServer", CommandOriginType::GameDirectorEntityServer)
+        .value("Scripting", CommandOriginType::Scripting)
+        .value("ExecuteContext", CommandOriginType::ExecuteContext)
+        .build();
+
+} // namespace plotx::script::modules

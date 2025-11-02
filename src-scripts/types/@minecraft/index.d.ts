@@ -7,3 +7,4 @@
 /// <reference path="./CommandFlagValue.d.ts" />
 /// <reference path="./CommandParameterOption.d.ts" />
 /// <reference path="./CommandPermissionLevel.d.ts" />
+/// <reference path="./CommandOrigin.d.ts" />

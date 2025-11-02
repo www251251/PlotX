@@ -1,6 +1,14 @@
 declare module "@levilamina" {
 
-    import {BlockPos, CommandFlagValue, CommandParameterOption, CommandPermissionLevel, Player, Vec3} from "@minecraft";
+    import {
+        BlockPos,
+        CommandFlagValue,
+        CommandOrigin,
+        CommandParameterOption,
+        CommandPermissionLevel,
+        Player,
+        Vec3
+    } from "@minecraft";
 
     export class CommandRegistrar implements InstanceClassHelper<CommandRegistrar> {
         $equals(other: CommandRegistrar): boolean;
@@ -120,7 +128,7 @@ declare module "@levilamina" {
 
         execute(
             // TODO: add types for CommandOrigin and CommandOutput
-            fn: (origin: null, output: null, args: T) => void
+            fn: (origin: CommandOrigin, output: null, args: T) => void
         ): this;
     }
 }

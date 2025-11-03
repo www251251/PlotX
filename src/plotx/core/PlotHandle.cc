@@ -14,145 +14,163 @@
 
 namespace plotx {
 
+struct PlotHandle::Impl {
+    PlotModel    data_{};
+    DirtyCounter dirty_{};
+    IdAllocator  commentId_{};
 
-PlotHandle::PlotHandle() = default;
-PlotHandle::PlotHandle(PlotModel record)
-: record_(std::move(record)),
-  coord_(record_.position_.x, record_.position_.z) {
-    if (!record_.comments_.empty()) {
+    // 缓存
+    PlotCoord                        coord_{};
+    mutable std::optional<mce::UUID> owner_{};
+};
+
+
+PlotHandle::PlotHandle() : impl(std::make_unique<Impl>()) {};
+PlotHandle::PlotHandle(PlotModel record) : impl(std::make_unique<Impl>()) {
+    impl->data_  = std::move(record);
+    impl->coord_ = PlotCoord{impl->data_.position_.x, impl->data_.position_.z};
+
+    if (!impl->data_.comments_.empty()) {
         // 初始化评论ID分配器
         uint32_t max = 0;
-        for (auto const& comment : record_.comments_) {
+        for (auto const& comment : impl->data_.comments_) {
             if (comment.id_ > max) {
                 max = comment.id_;
             }
         }
-        commentId_.reset(++max);
+        impl->commentId_.reset(++max);
     }
 
     // 合并后的地皮，加载实际大小
-    if (record_.isMerged_) {
-        coord_.min.x = record_.multiPlot_.currentAABB_.min.x;
-        coord_.min.z = record_.multiPlot_.currentAABB_.min.z;
-        coord_.max.x = record_.multiPlot_.currentAABB_.max.x;
-        coord_.max.z = record_.multiPlot_.currentAABB_.max.z;
+    if (impl->data_.isMerged_) {
+        impl->coord_.min.x = impl->data_.multiPlot_.currentAABB_.min.x;
+        impl->coord_.min.z = impl->data_.multiPlot_.currentAABB_.min.z;
+        impl->coord_.max.x = impl->data_.multiPlot_.currentAABB_.max.x;
+        impl->coord_.max.z = impl->data_.multiPlot_.currentAABB_.max.z;
     }
 }
 
 PlotHandle::~PlotHandle() = default;
 
-DirtyCounter& PlotHandle::getDirtyCounter() { return dirty_; }
+DirtyCounter& PlotHandle::getDirtyCounter() { return impl->dirty_; }
 
-DirtyCounter const& PlotHandle::getDirtyCounter() const { return dirty_; }
+DirtyCounter const& PlotHandle::getDirtyCounter() const { return impl->dirty_; }
 
-PlotCoord const& PlotHandle::getCoord() const { return coord_; }
+PlotCoord const& PlotHandle::getCoord() const { return impl->coord_; }
 
 mce::UUID const& PlotHandle::getOwner() const {
-    if (owner_.has_value()) {
-        return *owner_;
+    if (impl->owner_.has_value()) {
+        return *impl->owner_;
     }
-    owner_ = mce::UUID::fromString(record_.owner_);
-    return *owner_;
+    impl->owner_ = mce::UUID::fromString(impl->data_.owner_);
+    return *impl->owner_;
 }
 
 void PlotHandle::setOwner(mce::UUID const& owner) {
-    owner_         = owner; // cache the value
-    record_.owner_ = owner.asString();
-    dirty_.inc();
+    impl->owner_       = owner; // cache the value
+    impl->data_.owner_ = owner.asString();
+    impl->dirty_.inc();
 }
 
-std::string const& PlotHandle::getName() const { return record_.name_; }
+std::string const& PlotHandle::getName() const { return impl->data_.name_; }
 
 void PlotHandle::setName(std::string const& name) {
-    record_.name_ = name;
-    dirty_.inc();
+    impl->data_.name_ = name;
+    impl->dirty_.inc();
 }
 
-bool PlotHandle::isSale() const { return record_.isSale_; }
+bool PlotHandle::isSale() const { return impl->data_.isSale_; }
 
 void PlotHandle::setSale(bool sale) {
-    record_.isSale_ = sale;
-    dirty_.inc();
+    impl->data_.isSale_ = sale;
+    impl->dirty_.inc();
 }
 
-int PlotHandle::getPrice() const { return record_.price_; }
+int PlotHandle::getPrice() const { return impl->data_.price_; }
 
 void PlotHandle::setPrice(int price) {
-    record_.price_ = price;
-    dirty_.inc();
+    impl->data_.price_ = price;
+    impl->dirty_.inc();
 }
 
 bool PlotHandle::isMember(mce::UUID const& member) const {
-    return std::find(record_.members_.begin(), record_.members_.end(), member.asString()) != record_.members_.end();
+    return std::find(impl->data_.members_.begin(), impl->data_.members_.end(), member.asString())
+        != impl->data_.members_.end();
 }
 
-std::vector<std::string> const& PlotHandle::getMembers() const { return record_.members_; }
+std::vector<std::string> const& PlotHandle::getMembers() const { return impl->data_.members_; }
 
 void PlotHandle::addMember(mce::UUID const& member) {
     if (isMember(member)) {
         return;
     }
-    record_.members_.push_back(member.asString());
-    dirty_.inc();
+    impl->data_.members_.push_back(member.asString());
+    impl->dirty_.inc();
 }
 
 void PlotHandle::removeMember(mce::UUID const& member) {
-    auto it = std::find(record_.members_.begin(), record_.members_.end(), member.asString());
-    if (it == record_.members_.end()) {
+    auto it = std::find(impl->data_.members_.begin(), impl->data_.members_.end(), member.asString());
+    if (it == impl->data_.members_.end()) {
         return;
     }
-    record_.members_.erase(it);
-    dirty_.inc();
+    impl->data_.members_.erase(it);
+    impl->dirty_.inc();
 }
 
-std::vector<CommentModel> const& PlotHandle::getComments() const { return record_.comments_; }
+std::vector<CommentModel> const& PlotHandle::getComments() const { return impl->data_.comments_; }
 
 std::vector<CommentModel> PlotHandle::getComments(mce::UUID const& author) const {
     auto str = author.asString();
 
     std::vector<CommentModel> result;
-    std::copy_if(record_.comments_.begin(), record_.comments_.end(), std::back_inserter(result), [&str](auto const& c) {
-        return c.author_ == str;
-    });
+    std::copy_if(
+        impl->data_.comments_.begin(),
+        impl->data_.comments_.end(),
+        std::back_inserter(result),
+        [&str](auto const& c) { return c.author_ == str; }
+    );
     return result;
 }
 
 std::optional<CommentModel> PlotHandle::getComment(CommentID id) const {
-    auto it =
-        std::find_if(record_.comments_.begin(), record_.comments_.end(), [&id](auto const& c) { return c.id_ == id; });
-    if (it == record_.comments_.end()) {
+    auto it = std::find_if(impl->data_.comments_.begin(), impl->data_.comments_.end(), [&id](auto const& c) {
+        return c.id_ == id;
+    });
+    if (it == impl->data_.comments_.end()) {
         return std::nullopt;
     }
     return *it;
 }
 
 CommentID PlotHandle::addComment(mce::UUID const& author, std::string const& content) {
-    auto id = commentId_.next();
-    record_.comments_.emplace_back(
+    auto id = impl->commentId_.next();
+    impl->data_.comments_.emplace_back(
         id,
         author.asString(),
         content,
         "time" // TODO: get current time
     );
-    dirty_.inc();
+    impl->dirty_.inc();
     return id;
 }
 
 void PlotHandle::removeComment(CommentID id) {
-    auto it =
-        std::find_if(record_.comments_.begin(), record_.comments_.end(), [&id](auto const& c) { return c.id_ == id; });
-    if (it == record_.comments_.end()) {
+    auto it = std::find_if(impl->data_.comments_.begin(), impl->data_.comments_.end(), [&id](auto const& c) {
+        return c.id_ == id;
+    });
+    if (it == impl->data_.comments_.end()) {
         return;
     }
-    record_.comments_.erase(it);
-    dirty_.inc();
+    impl->data_.comments_.erase(it);
+    impl->dirty_.inc();
 }
 
-bool PlotHandle::isMergedMultiPlot() const { return record_.isMerged_; }
+bool PlotHandle::isMergedMultiPlot() const { return impl->data_.isMerged_; }
+int  PlotHandle::getMergeCounter() const { return impl->data_.multiPlot_.counter_; }
 
 
 // helper
-nlohmann::json PlotHandle::dump() const { return reflection::struct2json(record_); }
+nlohmann::json PlotHandle::dump() const { return reflection::struct2json(impl->data_); }
 
 std::shared_ptr<PlotHandle> PlotHandle::load(nlohmann::json& json) {
     auto record = PlotModel{};

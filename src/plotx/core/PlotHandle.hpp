@@ -20,13 +20,8 @@ namespace plotx {
  * @brief 地皮句柄，对地皮数据的操作接口
  */
 class PlotHandle {
-    PlotModel   record_{};
-    DirtyCounter dirty_{};
-    IdAllocator  commentId_{};
-
-    // 缓存
-    PlotCoord                        coord_{};
-    mutable std::optional<mce::UUID> owner_{};
+    struct Impl;
+    std::unique_ptr<Impl> impl;
 
 public:
     PLOTX_DISALLOW_COPY(PlotHandle);

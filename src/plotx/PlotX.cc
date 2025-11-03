@@ -10,8 +10,6 @@
 #include <filesystem>
 #include <memory>
 
-#include "plotx/core/PlotCommand.hpp"
-
 #include "script/EngineManager.hpp"
 #include "script/loader/ScriptLoader.hpp"
 
@@ -69,8 +67,6 @@ bool PlotX::load() {
 
 bool PlotX::enable() {
     impl_->plotEventDriven_ = std::make_unique<PlotEventDriven>();
-
-    PlotCommand::setup();
 
     return true;
 }

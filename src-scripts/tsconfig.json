@@ -7,14 +7,15 @@
             "ES2020"
         ],
         "forceConsistentCasingInFileNames": true, // 强制文件名大小写一致
-        "checkJs": true, // 检查js文件
-        "allowJs": true, // 允许编译js文件
-        "noEmit": true, // 不生成文件
+        "checkJs": false, // 检查js文件
+        "allowJs": false, // 允许编译js文件
+        "noEmit": false, // 不生成文件
         "strict": true, // 严格模式
         "strictNullChecks": true, // 严格空值检查
         "noImplicitAny": true, // 不允许隐式any类型
         "noEmitHelpers": true, // 不生成辅助代码
-        "baseUrl": "PlotX-Scripts/",
+        "baseUrl": "src",
+        "outDir": "PlotX-Scripts/",
         "paths": {
             "@levilamina": [
                 "../types/@levilamina/index.d.ts"
@@ -28,8 +29,11 @@
         }
     },
     "include": [
-        "PlotX-Scripts/**/*.js",
+        "src/**/*.ts",
         "types/qjspp.d.ts",
         "types/globalThis.d.ts"
+    ],
+    "exclude": [
+        "PlotX-Scripts/**/*.js"
     ]
 }

@@ -26,8 +26,6 @@ public:
     ~PlotRegistry();
 
     PXAPI bool isAdmin(mce::UUID const& uuid) const;
-    PXAPI bool isAdmin(std::string const& uuid) const;
-
     PXAPI void addAdmin(mce::UUID const& uuid);
     PXAPI void removeAdmin(mce::UUID const& uuid);
 

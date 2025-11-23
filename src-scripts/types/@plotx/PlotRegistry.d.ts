@@ -4,9 +4,9 @@ declare module "@plotx" {
 
     export class PlotRegistry {
         isAdmin(uuid: UUID): boolean;
-        isAdmin(uuid: string): boolean;
 
         addAdmin(uuid: UUID): void;
+
         removeAdmin(uuid: UUID): void;
     }
 

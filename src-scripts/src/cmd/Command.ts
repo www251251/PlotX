@@ -1,21 +1,44 @@
-import {CommandParamKind, CommandRegistrar} from "@levilamina";
-import {CommandOrigin, CommandOriginType, Player} from "@minecraft";
+import {CommandHandle, CommandParamKind, CommandRegistrar} from "@levilamina";
+import {CommandOriginType} from "@minecraft";
+import {ArgType} from "../utils/TypeUtils";
 
 
-function isPlayer(origin: CommandOrigin) {
-    return origin.getOriginType() == CommandOriginType.Player;
+function registerAdminSubcommand(registrar: CommandRegistrar, cmd: CommandHandle) {
+    const kPlotXAdminEnumKey = 'PlotXAdminActions';
+
+    type RuntimeEnumType = ArgType<typeof CommandRegistrar.prototype.tryRegisterRuntimeEnum, 1>;
+
+    const kPlotXAdminEnumValues: RuntimeEnumType = [['add', 0], ['remove', 1]];
+
+    if (registrar.hasEnum(kPlotXAdminEnumKey)) {
+        registrar.tryRegisterRuntimeEnum(kPlotXAdminEnumKey, kPlotXAdminEnumValues);
+    }
+
+    cmd.runtimeOverload().text("admin").required("action", CommandParamKind.Enum, kPlotXAdminEnumKey).execute(
+        (origin, output, args) => {
+            if (origin.getOriginType() != CommandOriginType.DedicatedServer) {
+                output.error("Only server can execute this command");
+                return;
+            }
+            const {action} = args;
+            switch (action) {
+                case 0:
+                    // TODO: add admin
+                    break;
+                case 1:
+                    // TODO: remove admin
+                    break;
+                default:
+                    throw new Error("Unknown action");
+            }
+        }
+    )
 }
 
-
 export function registerCommand() {
-    let cmd = CommandRegistrar.getInstance().getOrCreateCommand("plotx");
-    cmd.runtimeOverload().execute((origin, output, args) => {
-        if (!isPlayer(origin)) {
-            output.error(`This command can only be used by players.`);
-            return;
-        }
-        const player = origin.getEntity() as Player;
-        // TODO: implement
-    });
+    const registrar = CommandRegistrar.getInstance();
+    const cmd = registrar.getOrCreateCommand("plotx");
+
+    registerAdminSubcommand(registrar, cmd);
 }
 

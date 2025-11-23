@@ -11,6 +11,7 @@
 #include "plotx/infra/Config.hpp"
 #include "plotx/math/PlotAABB.hpp"
 #include <cmath>
+#include <mc/world/level/block/BlockChangeContext.h>
 
 
 namespace plotx {
@@ -90,7 +91,7 @@ void PlotRoad::removeNeighbourBorder() const {
     }
     auto& bs = dim->getBlockSourceFromMainChunkSource();
 
-    auto const& air = BlockTypeRegistry::getDefaultBlockState("minecraft:air");
+    auto const& air = BlockTypeRegistry::get().getDefaultBlockState("minecraft:air");
 
     int const borderHeight = gConfig_.generator.generatorHeight + 1;
 
@@ -100,8 +101,9 @@ void PlotRoad::removeNeighbourBorder() const {
     auto& v2       = vertices[2]; // 右上 max
     auto& v3       = vertices[3]; // 右下
 
+    auto ctx    = BlockChangeContext{};
     auto handle = [&](BlockPos const& pos) {
-        bs.setBlock(pos, air, 3, nullptr, nullptr);
+        bs.setBlock(pos, air, 3, nullptr, ctx);
         return true;
     };
 

@@ -3,7 +3,7 @@ add_rules("mode.debug", "mode.release")
 add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 add_repositories("engsr6982-repo https://github.com/engsr6982/xmake-repo.git")
 
-add_requires("levilamina 1.4.1", {configs = {target_type = "server"}})
+add_requires("levilamina 1.7.0", {configs = {target_type = "server"}})
 add_requires("levibuildscript")
 
 -- engsr6982

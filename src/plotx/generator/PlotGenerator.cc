@@ -14,7 +14,7 @@
 #include <mc/world/level/block/VanillaBlockTypeIds.h>
 #include <mc/world/level/dimension/Dimension.h>
 
-
+// #include <mc/world/level/biome/source/FixedBiomeSource.h>
 #include "minecraft/FixedBiomeSource.h"
 
 namespace plotx::generator {
@@ -49,12 +49,13 @@ PlotGenerator::PlotGenerator(Dimension& dimension, uint seed, Json::Value const&
     }
     mBiomeSource = std::make_unique<FixedBiomeSource>(*mBiome);
 
-    airBlock_     = &BlockTypeRegistry::getDefaultBlockState("minecraft:air");
-    bedrockBlock_ = &BlockTypeRegistry::getDefaultBlockState(VanillaBlockTypeIds::Bedrock());
-    surfaceBlock_ = &BlockTypeRegistry::getDefaultBlockState(cfg.surfaceBlock.c_str());
-    fillBlock_    = &BlockTypeRegistry::getDefaultBlockState(cfg.fillBlock.c_str());
-    borderBlock_  = &BlockTypeRegistry::getDefaultBlockState(cfg.borderBlock.c_str());
-    roadBlock_    = &BlockTypeRegistry::getDefaultBlockState(cfg.roadBlock.c_str());
+    auto& registry = BlockTypeRegistry::get();
+    airBlock_      = &registry.getDefaultBlockState("minecraft:air");
+    bedrockBlock_  = &registry.getDefaultBlockState(VanillaBlockTypeIds::Bedrock());
+    surfaceBlock_  = &registry.getDefaultBlockState(cfg.surfaceBlock.c_str());
+    fillBlock_     = &registry.getDefaultBlockState(cfg.fillBlock.c_str());
+    borderBlock_   = &registry.getDefaultBlockState(cfg.borderBlock.c_str());
+    roadBlock_     = &registry.getDefaultBlockState(cfg.roadBlock.c_str());
 
     if (!airBlock_ || !bedrockBlock_ || !surfaceBlock_ || !fillBlock_ || !borderBlock_ || !roadBlock_) {
         throw std::runtime_error("Failed to get block, world generator failed to initialize");
@@ -115,7 +116,7 @@ void PlotGenerator::loadChunk(LevelChunk& lc, bool /* forceImmediateReplacementD
     }
 
     lc.setBlockVolume(data->volume_, 0);
-    mBiomeSource->fillBiomes(lc, ChunkLocalNoiseCache{});
+    mBiomeSource->fillBiomes(lc, nullptr);
     lc.recomputeHeightMap(false);
     lc.setSaved();
 

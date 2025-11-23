@@ -7,6 +7,8 @@
 #include "mc/world/level/dimension/Dimension.h"
 #include "plotx/PlotX.hpp"
 #include <cstddef>
+#include <mc/world/level/BlockSource.h>
+#include <mc/world/level/block/BlockChangeContext.h>
 #include <vector>
 
 
@@ -63,8 +65,9 @@ bool PlotAABB::fillLayer(int y, Block const& block) const {
 
     auto& bs = dim->getBlockSourceFromMainChunkSource();
 
+    auto ctx = BlockChangeContext{};
     forEachLayer(y, [&](BlockPos const& pos) {
-        bs.setBlock(pos, block, 3, nullptr, nullptr);
+        bs.setBlock(pos, block, 3, nullptr, ctx);
         return true;
     });
 
@@ -116,10 +119,10 @@ bool PlotAABB::fillEdgeLayer(int y, Block const& block) const {
         return false;
     }
 
-    auto& bs = dim->getBlockSourceFromMainChunkSource();
-
+    auto& bs  = dim->getBlockSourceFromMainChunkSource();
+    auto  ctx = BlockChangeContext{};
     forEachEdgeLayer(y, [&](BlockPos const& pos) {
-        bs.setBlock(pos, block, 3, nullptr, nullptr);
+        bs.setBlock(pos, block, 3, nullptr, ctx);
         return true;
     });
 

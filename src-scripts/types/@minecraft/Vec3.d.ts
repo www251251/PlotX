@@ -12,8 +12,6 @@ declare module "@minecraft" {
 
         isNear(rhs: Vec3, e: number): boolean;
 
-        toJsonString(): string;
-
         toString(): string;
     }
 }

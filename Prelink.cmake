@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
-set(PRELINK_EXECUTABLE "C:/Users/x/AppData/Local/.xmake/packages/p/prelink/v0.5.0/73362fce69714485a48046df1405fca5/bin/prelink.exe")
-set(BEDROCK_RUNTIME_DATA "C:/Users/x/AppData/Local/.xmake/packages/b/bedrockdata/v1.21.93-server.3/dba0cdbb60d4402fba98cf10b66da003/bin/bedrock_runtime_data")
+set(PRELINK_EXECUTABLE "C:/Users/x/AppData/Local/.xmake/packages/p/prelink/v0.7.0/e452092dba0c43b996a53625acd3e6b7/bin/prelink.exe")
+set(BEDROCK_RUNTIME_DATA "C:/Users/x/AppData/Local/.xmake/packages/b/bedrockdata/v1.21.120-server.1/397de74551ca4264b7e7ae91634783c0/bin/bedrock_runtime_data")
 
 set(PLATFORM "windows")
 set(ARCH "x64")

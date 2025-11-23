@@ -15,7 +15,6 @@ qjspp::ClassDefine const MinecraftModule::ScriptVec3 = qjspp::defineClass<::Vec3
                                                       .instanceProperty("z", &Vec3::z)
                                                       .instanceMethod("isNan", &Vec3::isNan)
                                                       .instanceMethod("isNear", &Vec3::isNear)
-                                                      .instanceMethod("toJsonString", &Vec3::toJsonString)
                                                       .instanceMethod("toString", &Vec3::toString)
                                                       .build();
 

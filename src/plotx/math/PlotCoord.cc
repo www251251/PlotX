@@ -11,6 +11,7 @@
 #include "plotx/infra/Config.hpp"
 #include "plotx/math/PlotAABB.hpp"
 #include <cmath>
+#include <mc/world/level/block/BlockChangeContext.h>
 
 
 namespace plotx {
@@ -65,7 +66,7 @@ void PlotCoord::tryFixBorder() const {
         return;
     }
 
-    auto& borderBlock = BlockTypeRegistry::getDefaultBlockState(gConfig_.generator.borderBlock.c_str());
+    auto& borderBlock = BlockTypeRegistry::get().getDefaultBlockState(gConfig_.generator.borderBlock.c_str());
 
     fillEdgeLayer(gConfig_.generator.generatorHeight + 1, borderBlock);
 }
@@ -75,7 +76,7 @@ void PlotCoord::removeBorder() const {
         return;
     }
 
-    auto& air = BlockTypeRegistry::getDefaultBlockState("minecraft:air");
+    auto& air = BlockTypeRegistry::get().getDefaultBlockState("minecraft:air");
     fillEdgeLayer(gConfig_.generator.generatorHeight + 1, air);
 }
 
@@ -90,13 +91,14 @@ void PlotCoord::removeBorderCorners() const {
     }
     auto& bs = dim->getBlockSourceFromMainChunkSource();
 
-    auto const& air = BlockTypeRegistry::getDefaultBlockState("minecraft:air");
+    auto const& air = BlockTypeRegistry::get().getDefaultBlockState("minecraft:air");
 
     int const borderHeight = gConfig_.generator.generatorHeight + 1;
 
+    auto ctx = BlockChangeContext{};
     for (auto& v : getVertices(false)) {
         v.y = borderHeight;
-        bs.setBlock(v, air, 3, nullptr, nullptr);
+        bs.setBlock(v, air, 3, nullptr, ctx);
     }
 }
 

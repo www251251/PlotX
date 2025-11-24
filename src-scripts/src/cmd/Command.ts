@@ -4,28 +4,23 @@ import { ArgType } from "../utils/TypeUtils";
 
 function registerAdminSubcommand(registrar: CommandRegistrar, cmd: CommandHandle) {
     const kPlotXAdminEnumKey = "PlotXAdminActions";
+    const kPlotXAdminEnumValues = ["add", "remove"] as const;
 
-    type RuntimeEnumType = ArgType<typeof CommandRegistrar.prototype.tryRegisterRuntimeEnum, 1>;
-
-    const kPlotXAdminEnumValues: RuntimeEnumType = [
-        ["add", 0],
-        ["remove", 1],
-    ];
-
-    if (!registrar.hasEnum(kPlotXAdminEnumKey)) {
-        registrar.tryRegisterRuntimeEnum(kPlotXAdminEnumKey, kPlotXAdminEnumValues);
+    if (!registrar.hasSoftEnum(kPlotXAdminEnumKey)) {
+        type RuntimeEnumType = ArgType<typeof CommandRegistrar.prototype.tryRegisterSoftEnum, 1>;
+        registrar.tryRegisterSoftEnum(kPlotXAdminEnumKey, kPlotXAdminEnumValues as unknown as RuntimeEnumType);
     }
 
     cmd.runtimeOverload()
         .text("admin")
-        .required("action", CommandParamKind.Enum, kPlotXAdminEnumKey)
+        .required("action", CommandParamKind.SoftEnum, kPlotXAdminEnumKey)
         .execute((origin, output, args) => {
             if (origin.getOriginType() != CommandOriginType.DedicatedServer) {
                 output.error("Only server can execute this command");
                 return;
             }
-            const { action } = args;
-            ScriptMod.current().getLogger().info("Admin action: ", action);
+            ScriptMod.current().getLogger().info("Executing plotx admin command", JSON.stringify(args));
+            const action = args.action as (typeof kPlotXAdminEnumValues)[number];
             switch (action) {
                 case "add":
                     // TODO: add admin

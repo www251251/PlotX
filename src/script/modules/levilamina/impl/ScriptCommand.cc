@@ -279,8 +279,7 @@ private:
         qjspp::Object result{};
         for (auto const& [name, type, enumName] : params) {
             try {
-                bool  isEnum = isEnumKind(type);
-                auto& val    = isEnum ? cmd[enumName] : cmd[name];
+                auto& val = cmd[name];
                 result.set(name, _convertImpl(val, origin));
             } catch (std::out_of_range&) {}
         }

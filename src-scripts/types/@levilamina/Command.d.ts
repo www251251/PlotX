@@ -96,7 +96,7 @@ declare module "@levilamina" {
     type KindToType<K extends EnumValue<CommandParamKind>> =
         K extends CommandParamKind["Int"] ? number :
             K extends CommandParamKind["Float"] ? number :
-                K extends CommandParamKind["Enum"] ? number : // enum value
+                K extends CommandParamKind["Enum"] ? string :
                     K extends CommandParamKind["SoftEnum"] ? string :
                         K extends CommandParamKind["String"] ? string :
                             K extends CommandParamKind["RawText"] ? string :

@@ -136,7 +136,7 @@ public:
     };
     using OverloadParams = std::vector<OverloadParam>;
 
-    std::optional<RuntimeOverload> overload_;
+    std::optional<RuntimeOverload> impl_;
     OverloadParams                 params_;
 
     static std::unordered_set<CommandParamKind> const supportedKind_;
@@ -150,11 +150,11 @@ public:
         }
     }
 
-    explicit RuntimeOverloadProxy(RuntimeOverload overload) : overload_(std::move(overload)) {}
+    explicit RuntimeOverloadProxy(RuntimeOverload overload) : impl_(std::move(overload)) {}
     PLOTX_DISALLOW_COPY_AND_MOVE(RuntimeOverloadProxy);
 
     void ensureValid() const {
-        if (!overload_) {
+        if (!impl_) {
             throw qjspp::JsException{
                 qjspp::JsException::Type::ReferenceError,
                 "RuntimeOverload::execute has already been called"
@@ -165,7 +165,7 @@ public:
     RuntimeOverloadProxy& optional(std::string_view name, ParamKindType kind) {
         ensureValid();
         areSupported(kind);
-        (void)overload_->optional(name, kind);
+        (void)impl_->optional(name, kind);
         params_.emplace_back(std::string{name}, static_cast<CommandParamKind>(kind));
         return *this;
     }
@@ -173,7 +173,7 @@ public:
     RuntimeOverloadProxy& required(std::string_view name, ParamKindType kind) {
         ensureValid();
         areSupported(kind);
-        (void)overload_->required(name, kind);
+        (void)impl_->required(name, kind);
         params_.emplace_back(std::string{name}, static_cast<CommandParamKind>(kind));
         return *this;
     }
@@ -181,7 +181,7 @@ public:
     RuntimeOverloadProxy& optional(std::string_view name, ParamKindType enumKind, std::string_view enumName) {
         ensureValid();
         areSupported(enumKind);
-        (void)overload_->optional(name, enumKind, enumName);
+        (void)impl_->optional(name, enumKind, enumName);
         params_.emplace_back(std::string{name}, static_cast<CommandParamKind>(enumKind), std::string{enumName});
         return *this;
     }
@@ -189,38 +189,52 @@ public:
     RuntimeOverloadProxy& required(std::string_view name, ParamKindType enumKind, std::string_view enumName) {
         ensureValid();
         areSupported(enumKind);
-        (void)overload_->required(name, enumKind, enumName);
+        (void)impl_->required(name, enumKind, enumName);
         params_.emplace_back(std::string{name}, static_cast<CommandParamKind>(enumKind), std::string{enumName});
         return *this;
     }
 
     RuntimeOverloadProxy& text(std::string_view text) {
         ensureValid();
-        (void)overload_->text(text);
+        (void)impl_->text(text);
         return *this;
     }
 
     RuntimeOverloadProxy& postfix(std::string_view postfix) {
         ensureValid();
-        (void)overload_->postfix(postfix);
+        (void)impl_->postfix(postfix);
         return *this;
     }
 
     RuntimeOverloadProxy& option(CommandParameterOption option) {
         ensureValid();
-        (void)overload_->option(option);
+        (void)impl_->option(option);
         return *this;
     }
 
     RuntimeOverloadProxy& deoption(CommandParameterOption option) {
         ensureValid();
-        (void)overload_->deoption(option);
+        (void)impl_->deoption(option);
         return *this;
+    }
+
+    void ensureEnumExists() const {
+        auto& registrar = CommandRegistrar::getInstance();
+        for (auto const& [_, kind, enu] : params_) {
+            if (kind == CommandParamKind::Enum && !registrar.hasEnum(enu)
+                || kind == CommandParamKind::SoftEnum && !registrar.hasSoftEnum(enu)) [[unlikely]] {
+                throw qjspp::JsException{
+                    qjspp::JsException::Type::ReferenceError,
+                    fmt::format("Runtime enum {} not registered", enu)
+                };
+            }
+        }
     }
 
     static qjspp::Value execute(void* inst, qjspp::Arguments const& arguments) {
         auto* fuck = static_cast<RuntimeOverloadProxy*>(inst);
         fuck->ensureValid();
+        fuck->ensureEnumExists();
 
         if (arguments.length() < 1) {
             throw qjspp::JsException{"wrong argument count"};
@@ -249,20 +263,24 @@ public:
                 }
             };
 
-        fuck->overload_->execute(std::move(callback));
-        fuck->overload_.reset();
+        fuck->impl_->execute(std::move(callback));
+        fuck->impl_.reset();
         if (arguments.hasJsManagedResource()) arguments.getJsManagedResource()->finalize();
         return {};
     }
 
 private:
+    static bool isEnumKind(ParamKindType kind) noexcept {
+        return kind == CommandParamKind::Enum || kind == CommandParamKind::SoftEnum;
+    }
+
     static qjspp::Object
     _convertResult(ll::command::RuntimeCommand const& cmd, OverloadParams const& params, CommandOrigin const& origin) {
         qjspp::Object result{};
         for (auto const& [name, type, enumName] : params) {
             try {
-                bool  isEnumKind = type == ll::command::ParamKind::Enum || type == ll::command::ParamKind::SoftEnum;
-                auto& val        = isEnumKind ? cmd[enumName] : cmd[name];
+                bool  isEnum = isEnumKind(type);
+                auto& val    = isEnum ? cmd[enumName] : cmd[name];
                 result.set(name, _convertImpl(val, origin));
             } catch (std::out_of_range&) {}
         }
@@ -273,7 +291,7 @@ private:
             return qjspp::Null{};
         }
         if (storage.hold(CommandParamKind::Enum)) {
-            return qjspp::Number{static_cast<int>(std::get<ll::command::RuntimeEnum>(storage.value()).index)};
+            return qjspp::String{std::get<ll::command::RuntimeEnum>(storage.value()).name};
         }
         if (storage.hold(CommandParamKind::SoftEnum)) {
             return qjspp::String{std::get<ll::command::RuntimeSoftEnum>(storage.value())};
@@ -337,12 +355,12 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptCommandHandle =
         .instanceMethod(
             "runtimeOverload",
             [](void* inst, qjspp::Arguments const& arguments) -> qjspp::Value {
-                auto* handle   = static_cast<CommandHandle*>(inst);
-                auto  engine   = arguments.engine();
-                auto  overload = handle->runtimeOverload(engine->getData<EngineData>()->mod_);
+                auto* handle = static_cast<CommandHandle*>(inst);
+                auto  engine = arguments.engine();
+                auto  impl   = handle->runtimeOverload(engine->getData<EngineData>()->mod_);
                 return arguments.engine()->newInstanceOfRaw(
                     ScriptRuntimeOverload,
-                    new RuntimeOverloadProxy(std::move(overload))
+                    new RuntimeOverloadProxy(std::move(impl))
                 );
             }
         )

@@ -1,4 +1,4 @@
-import {registerCommand} from "./cmd/Command.js";
+import { registerCommand } from "./cmd/Command.js";
 
 const self = ScriptMod.current();
 self.onLoad(() => {

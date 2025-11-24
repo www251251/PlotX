@@ -64,7 +64,17 @@ function(add_prelink_rule TARGET_NAME)
     add_custom_command(
             TARGET ${TARGET_NAME}
             POST_BUILD
+            # remove bedrock_server_api.lib
             COMMAND ${CMAKE_COMMAND} -E remove_directory "${LIB_DIR}"
-            COMMENT "[prelink_rule] Cleaning up ${LIB_DIR}..."
+            # copy artifacts to bin
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:${TARGET_NAME}>"
+            "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_PDB_FILE:${TARGET_NAME}>"
+            "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}/$<TARGET_FILE_BASE_NAME:${TARGET_NAME}>.pdb"
+            VERBATIM
+            COMMENT "[prelink_rule] Cleaning up and copying ${TARGET_NAME} artifacts..."
     )
 endfunction()

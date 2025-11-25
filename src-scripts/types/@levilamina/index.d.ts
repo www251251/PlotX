@@ -6,3 +6,4 @@
 /// <reference path="./KeyValueDB.d.ts" />
 /// <reference path="./Logger.d.ts" />
 /// <reference path="./Command.d.ts" />
+/// <reference path="./PlayerInfo.d.ts" />

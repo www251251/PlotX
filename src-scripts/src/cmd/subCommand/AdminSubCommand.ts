@@ -1,4 +1,4 @@
-import { CommandHandle, CommandParamKind, CommandRegistrar } from "@levilamina";
+import { CommandHandle, CommandParamKind, CommandRegistrar, PlayerInfo } from "@levilamina";
 import { CommandOriginType, UUID } from "@minecraft";
 
 import { ArgType } from "../../utils/TypeUtils";
@@ -43,8 +43,12 @@ export default function registerAdminSubcommand(registrar: CommandRegistrar, cmd
                 output.error("No real name specified");
                 return;
             }
-            // TODO: bind PlayerInfo API, query player uuid by real name
-            // handleAction(action as AdminEnumType, realName);
+            const entry = PlayerInfo.fromName(realName);
+            if (entry === null) {
+                output.error(`The player ${realName} does not exists`);
+                return;
+            }
+            handleAction(action as AdminActionEnumNameType, entry.uuid);
         });
 
     // plotx admins <add|remove> <players: target>

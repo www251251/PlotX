@@ -257,7 +257,7 @@ public:
                     );
                     auto out  = fn.engine()->newInstanceOfView(MinecraftModule::ScriptCommandOutput, &output);
                     auto args = _convertResult(command, params, origin);
-                    (void)fn.value().asFunction().call({}, {ori, out, args});
+                    (void)fn.value().asFunction().call({}, ori, out, args);
                 } catch (qjspp::JsException const& e) {
                     fn.engine()->invokeUnhandledJsException(e, qjspp::UnhandledExceptionOrigin::Callback);
                 }

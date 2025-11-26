@@ -2,6 +2,7 @@ import { CommandHandle, CommandParamKind, CommandRegistrar, PlayerInfo } from "@
 import { CommandOriginType, UUID } from "@minecraft";
 
 import { ArgType } from "../../utils/TypeUtils";
+import { tr } from "../../i18n/I18n.js";
 
 const kPlotXAdminEnumKey = "PlotXAdminActions";
 const kPlotXAdminEnumValues = [
@@ -27,7 +28,6 @@ export default function registerAdminSubcommand(registrar: CommandRegistrar, cmd
         registrar.tryRegisterRuntimeEnum(kPlotXAdminEnumKey, kPlotXAdminEnumValues as unknown as RuntimeEnumType);
     }
 
-    // TODO: bind i18n API, change all output to i18n
     // plotx admin <add|remove> <realName: string>
     cmd.runtimeOverload()
         .text("admin")
@@ -35,17 +35,17 @@ export default function registerAdminSubcommand(registrar: CommandRegistrar, cmd
         .required("realName", CommandParamKind.String)
         .execute((origin, output, args) => {
             if (origin.getOriginType() != CommandOriginType.DedicatedServer) {
-                output.error("Only server can execute this command");
+                output.error(tr("Only server can execute this command"));
                 return;
             }
             const { realName, action } = args;
             if (!realName) {
-                output.error("No real name specified");
+                output.error(tr("No real name specified"));
                 return;
             }
             const entry = PlayerInfo.fromName(realName);
             if (entry === null) {
-                output.error(`The player ${realName} does not exists`);
+                output.error(tr("The player {} does not exists", realName));
                 return;
             }
             handleAction(action as AdminActionEnumNameType, entry.uuid);
@@ -58,19 +58,19 @@ export default function registerAdminSubcommand(registrar: CommandRegistrar, cmd
         .required("players", CommandParamKind.Player)
         .execute((origin, output, args) => {
             if (origin.getOriginType() !== CommandOriginType.DedicatedServer) {
-                output.error("Only server can execute this command");
+                output.error(tr("Only server can execute this command"));
                 return;
             }
             const { players, action } = args;
             switch (players.length) {
                 case 0:
-                    output.error("No players specified");
+                    output.error(tr("No players specified"));
                     return;
                 case 1:
                     handleAction(action as AdminActionEnumNameType, players[0].uuid);
                     break;
                 default:
-                    output.error("Only one player can be specified");
+                    output.error(tr("Only one player can be specified"));
             }
         });
 }

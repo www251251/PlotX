@@ -23,6 +23,7 @@ qjspp::ModuleDefine const& LeviLaminaModule::getModuleDef() {
                                          .addClass(ScriptRuntimeOverload)
                                          .addEnum(ScriptCommandParamKind)
                                          .addClass(ScriptPlayerInfo)
+                                         .addClass(ScriptI18n)
                                          .build();
     return def;
 }

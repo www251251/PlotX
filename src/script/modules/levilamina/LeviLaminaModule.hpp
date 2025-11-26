@@ -36,6 +36,8 @@ struct LeviLaminaModule {
 
     static qjspp::ClassDefine const ScriptPlayerInfo;
 
+    static qjspp::ClassDefine const ScriptI18n;
+
     // === Command API ===
     static qjspp::ClassDefine const ScriptCommandRegistrar;
     static qjspp::ClassDefine const ScriptCommandHandle;

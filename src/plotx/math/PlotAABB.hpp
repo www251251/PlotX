@@ -1,9 +1,9 @@
 #pragma once
-#include "mc/world/level/BlockPos.h"
 #include "plotx/Global.hpp"
 #include <functional>
 #include <vector>
 
+#include "mc/world/level/BlockPos.h"
 
 class Block;
 namespace plotx {

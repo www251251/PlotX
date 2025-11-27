@@ -17,8 +17,6 @@ struct PlotXModule {
     // === math ===
     static qjspp::ClassDefine const ScriptPlotAABB;
     static qjspp::ClassDefine const ScriptPlotCoord;
-    static qjspp::ClassDefine const ScriptPlotRoad;
-    static qjspp::ClassDefine const ScriptPlotCross;
 
     static qjspp::ModuleDefine const& getModuleDef();
 };

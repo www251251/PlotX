@@ -11,8 +11,6 @@ qjspp::ModuleDefine const& PlotXModule::getModuleDef() {
                           .addClass(ScriptPlotRegistry)
                           .addClass(ScriptPlotAABB)
                           .addClass(ScriptPlotCoord)
-                          .addClass(ScriptPlotRoad)
-                          .addClass(ScriptPlotCross)
                           .build();
     return def;
 }

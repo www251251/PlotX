@@ -14,8 +14,6 @@
 #include "plotx/events/PlayerEnterPlotEvent.hpp"
 #include "plotx/events/PlayerLeavePlotEvent.hpp"
 #include "plotx/math/PlotCoord.hpp"
-#include "plotx/math/PlotCross.hpp"
-#include "plotx/math/PlotRoad.hpp"
 #include <vector>
 
 
@@ -141,10 +139,6 @@ void PlotEventDriven::updateTip(Player* player, Vec3 const& pos, PlotCoord const
 
     if (coord.isValid()) {
         pkt.mMessage = coord.toString();
-    } else if (auto road = PlotRoad{pos}; road.isValid()) {
-        pkt.mMessage = road.toString();
-    } else if (auto cross = PlotCross{pos}; cross.isValid()) {
-        pkt.mMessage = cross.toString();
     } else {
         pkt.mMessage = "Unknown";
     }

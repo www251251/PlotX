@@ -76,10 +76,6 @@ public:
 
     PXAPI void removeComment(CommentID id);
 
-    PXNDAPI bool isMergedMultiPlot() const; // 是否为合并多块地皮
-
-    PXNDAPI int getMergeCounter() const; // 合并地皮次数
-
     // helper
     PXNDAPI nlohmann::json dump() const;
 

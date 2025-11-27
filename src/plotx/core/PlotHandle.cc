@@ -28,7 +28,6 @@ struct PlotHandle::Impl {
 PlotHandle::PlotHandle() : impl(std::make_unique<Impl>()) {};
 PlotHandle::PlotHandle(PlotModel record) : impl(std::make_unique<Impl>()) {
     impl->data_  = std::move(record);
-    impl->coord_ = PlotCoord{impl->data_.position_.x, impl->data_.position_.z};
 
     if (!impl->data_.comments_.empty()) {
         // 初始化评论ID分配器
@@ -39,14 +38,6 @@ PlotHandle::PlotHandle(PlotModel record) : impl(std::make_unique<Impl>()) {
             }
         }
         impl->commentId_.reset(++max);
-    }
-
-    // 合并后的地皮，加载实际大小
-    if (impl->data_.isMerged_) {
-        impl->coord_.min.x = impl->data_.multiPlot_.currentAABB_.min.x;
-        impl->coord_.min.z = impl->data_.multiPlot_.currentAABB_.min.z;
-        impl->coord_.max.x = impl->data_.multiPlot_.currentAABB_.max.x;
-        impl->coord_.max.z = impl->data_.multiPlot_.currentAABB_.max.z;
     }
 }
 
@@ -164,9 +155,6 @@ void PlotHandle::removeComment(CommentID id) {
     impl->data_.comments_.erase(it);
     impl->dirty_.inc();
 }
-
-bool PlotHandle::isMergedMultiPlot() const { return impl->data_.isMerged_; }
-int  PlotHandle::getMergeCounter() const { return impl->data_.multiPlot_.counter_; }
 
 
 // helper

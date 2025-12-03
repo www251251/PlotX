@@ -88,6 +88,8 @@ ll::io::Logger&                       PlotX::getLogger() const { return impl_->s
 script::EngineManager*                PlotX::getEngineManager() const { return impl_->engineManager_.get(); }
 std::shared_ptr<script::ScriptLoader> PlotX::getScriptLoader() const { return impl_->scriptLoader_; }
 
+PlotRegistry* PlotX::getPlotRegistry() const { return impl_->registry_.get(); }
+
 std::filesystem::path PlotX::getConfigPath() const { return getSelf().getConfigDir() / ConfigFileName; }
 
 std::filesystem::path PlotX::getDatabasePath() const { return getSelf().getDataDir() / DatabaseDirName; }

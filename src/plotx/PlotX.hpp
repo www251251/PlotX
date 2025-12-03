@@ -34,6 +34,8 @@ public:
 public:
     PXAPI static PlotX& getInstance();
 
+    PXAPI class PlotRegistry* getPlotRegistry() const;
+
     PXNDAPI std::filesystem::path getConfigPath() const;
     PXNDAPI std::filesystem::path getDatabasePath() const;
 

@@ -1,5 +1,9 @@
+#include "plotx/PlotX.hpp"
 #include "plotx/core/PlotRegistry.hpp"
 
+#include "qjspp/types/Arguments.hpp"
+#include "qjspp/types/Null.hpp"
+#include "qjspp/types/Value.hpp"
 #include "script/modules/Helper.hpp"
 #include "script/modules/plotx/PlotXModule.hpp"
 
@@ -11,10 +15,10 @@ namespace qjspp::bind {
 template <>
 struct TypeConverter<std::shared_ptr<plotx::PlotHandle>> {
     static Value toJs(std::shared_ptr<plotx::PlotHandle> sptr) {
-        return sptr ? Null{}
-                    : Locker::currentEngineChecked()
+        return sptr ? Locker::currentEngineChecked()
                           .newInstanceOfShared(plotx::script::modules::PlotXModule::ScriptPlotHandle, std::move(sptr))
-                          .asValue();
+                          .asValue()
+                    : Null{};
     }
     static plotx::PlotHandle* toCpp(Value const&) {
         throw JsException{JsException::Type::InternalError, "Cannot convert JS value to PlotHandle"};
@@ -30,6 +34,16 @@ namespace plotx::script::modules {
 qjspp::bind::meta::ClassDefine const PlotXModule::ScriptPlotRegistry =
     qjspp::bind::defineClass<PlotRegistry>("PlotRegistry")
         .disableConstructor()
+        .function(
+            "getInstance",
+            [](qjspp::Arguments const& args) -> qjspp::Value {
+                auto inst = PlotX::getInstance().getPlotRegistry();
+                if (!inst) {
+                    return qjspp::Null{};
+                }
+                return args.engine()->newInstanceOfView(ScriptPlotRegistry, inst);
+            }
+        )
         .instanceMethod("isAdmin", &PlotRegistry::isAdmin)
         .instanceMethod("addAdmin", &PlotRegistry::addAdmin)
         .instanceMethod("removeAdmin", &PlotRegistry::removeAdmin)
@@ -60,4 +74,4 @@ qjspp::bind::meta::ClassDefine const PlotXModule::ScriptPlotRegistry =
         .build();
 
 
-}
+} // namespace plotx::script::modules

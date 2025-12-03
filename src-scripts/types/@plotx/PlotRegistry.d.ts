@@ -2,7 +2,7 @@ declare module "@plotx" {
     import { UUID } from "@minecraft";
 
     export class PlotRegistry {
-        static getInstance(): PlotRegistry;
+        static getInstance(): optional<PlotRegistry>;
 
         isAdmin(uuid: UUID): boolean;
 

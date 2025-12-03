@@ -2,8 +2,10 @@
 #include "script/modules/minecraft/MinecraftModule.hpp"
 
 #include <mc/server/commands/CommandOrigin.h>
+#include <qjspp/bind/builder/ClassDefineBuilder.hpp>
+#include <qjspp/bind/builder/EnumDefineBuilder.hpp>
 
-namespace qjspp {
+namespace qjspp::bind {
 
 template <>
 struct TypeConverter<Actor> {
@@ -18,19 +20,19 @@ struct TypeConverter<Actor> {
     }
 };
 
-} // namespace qjspp
+} // namespace qjspp::bind
 
 namespace plotx::script::modules {
 
-qjspp::ClassDefine const MinecraftModule::ScriptCommandOrigin =
-    qjspp::defineClass<CommandOrigin>("CommandOrigin")
+qjspp::bind::meta::ClassDefine const MinecraftModule::ScriptCommandOrigin =
+    qjspp::bind::defineClass<CommandOrigin>("CommandOrigin")
         .disableConstructor()
         .instanceMethod("getEntity", &CommandOrigin::getEntity)
         .instanceMethod("getOriginType", &CommandOrigin::getOriginType)
         .build();
 
-qjspp::EnumDefine const MinecraftModule::ScriptCommandOriginType =
-    qjspp::defineEnum<CommandOriginType>("CommandOriginType")
+qjspp::bind::meta::EnumDefine const MinecraftModule::ScriptCommandOriginType =
+    qjspp::bind::defineEnum<CommandOriginType>("CommandOriginType")
         .value("Player", CommandOriginType::Player)
         .value("CommandBlock", CommandOriginType::CommandBlock)
         .value("MinecartCommandBlock", CommandOriginType::MinecartCommandBlock)

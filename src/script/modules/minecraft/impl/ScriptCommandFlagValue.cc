@@ -2,11 +2,12 @@
 #include "script/modules/minecraft/MinecraftModule.hpp"
 
 #include <mc/server/commands/CommandFlag.h>
+#include <qjspp/bind/builder/EnumDefineBuilder.hpp>
 
 namespace plotx::script::modules {
 
-qjspp::EnumDefine const MinecraftModule::ScriptCommandFlagValue =
-    qjspp::defineEnum<CommandFlagValue>("CommandFlagValue")
+qjspp::bind::meta::EnumDefine const MinecraftModule::ScriptCommandFlagValue =
+    qjspp::bind::defineEnum<CommandFlagValue>("CommandFlagValue")
         .value("None", CommandFlagValue::None)
         .value("UsageTest", CommandFlagValue::UsageTest)
         .value("HiddenFromCommandBlockOrigin", CommandFlagValue::HiddenFromCommandBlockOrigin)

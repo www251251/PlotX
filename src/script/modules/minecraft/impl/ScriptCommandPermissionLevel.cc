@@ -1,13 +1,14 @@
 #include "script/modules/minecraft/MinecraftModule.hpp"
 
-#include "qjspp/Binding.hpp"
+#include "qjspp/bind/meta/ClassDefine.hpp"
 
 #include <mc/server/commands/CommandPermissionLevel.h>
+#include <qjspp/bind/builder/EnumDefineBuilder.hpp>
 
 namespace plotx::script::modules {
 
-qjspp::EnumDefine const MinecraftModule::ScriptCommandPermissionLevel =
-    qjspp::defineEnum<CommandPermissionLevel>("CommandPermissionLevel")
+qjspp::bind::meta::EnumDefine const MinecraftModule::ScriptCommandPermissionLevel =
+    qjspp::bind::defineEnum<CommandPermissionLevel>("CommandPermissionLevel")
         .value("Any", CommandPermissionLevel::Any)
         .value("GameDirectors", CommandPermissionLevel::GameDirectors)
         .value("Admin", CommandPermissionLevel::Admin)

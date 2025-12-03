@@ -1,12 +1,8 @@
 #include "ll/api/data/KeyValueDB.h"
-#include "qjspp/Binding.hpp"
-#include "qjspp/Definitions.hpp"
-#include "qjspp/JsException.hpp"
-#include "qjspp/Types.hpp"
-#include "qjspp/Values.hpp"
 #include "script/modules/Helper.hpp"
 #include "script/modules/levilamina/LeviLaminaModule.hpp"
 
+#include "qjspp/bind/builder/ClassDefineBuilder.hpp"
 
 namespace plotx::script::modules {
 
@@ -29,15 +25,15 @@ qjspp::Value iter(void* inst, qjspp::Arguments const& args) {
                 break; // break the iteration
             }
         } catch (qjspp::JsException const& exc) {
-            args.engine()->invokeUnhandledJsException(exc, qjspp::UnhandledExceptionOrigin::Callback);
+            args.engine()->invokeUnhandledJsException(exc, qjspp::ExceptionDispatchOrigin::Callback);
             return qjspp::Boolean{false};
         }
     }
     return qjspp::Boolean{true};
 }
 
-qjspp::ClassDefine const LeviLaminaModule::ScriptKeyValueDB =
-    qjspp::defineClass<ll::data::KeyValueDB>("KeyValueDB")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptKeyValueDB =
+    qjspp::bind::defineClass<KeyValueDB>("KeyValueDB")
         .constructor<std::string>()
         .instanceMethod("get", &KeyValueDB::get)
         .instanceMethod("has", &KeyValueDB::has)

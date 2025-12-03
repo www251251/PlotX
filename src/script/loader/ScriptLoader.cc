@@ -4,6 +4,10 @@
 #include "plotx/PlotX.hpp"
 #include "script/EngineManager.hpp"
 
+#include <qjspp/runtime/JsException.hpp>
+#include <qjspp/runtime/Locker.hpp>
+#include <qjspp/types/Value.hpp>
+
 
 namespace plotx::script {
 

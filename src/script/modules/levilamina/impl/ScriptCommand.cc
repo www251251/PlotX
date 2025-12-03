@@ -10,8 +10,10 @@
 #include "script/loader/ScriptMod.hpp"
 
 #include <ll/api/command/CommandHandle.h>
+#include <qjspp/bind/builder/ClassDefineBuilder.hpp>
+#include <qjspp/bind/builder/EnumDefineBuilder.hpp>
 
-namespace qjspp {
+namespace qjspp::bind {
 
 template <>
 struct TypeConverter<CommandFlag> {
@@ -36,14 +38,14 @@ struct TypeConverter<ll::command::CommandRegistrar> {
 };
 
 
-} // namespace qjspp
+} // namespace qjspp::bind
 
 
 namespace plotx ::script::modules {
 
 using ll::command::CommandRegistrar;
-qjspp::ClassDefine const LeviLaminaModule::ScriptCommandRegistrar =
-    qjspp::defineClass<CommandRegistrar>("CommandRegistrar")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptCommandRegistrar =
+    qjspp::bind::defineClass<CommandRegistrar>("CommandRegistrar")
         .disableConstructor()
         .function("getInstance", &CommandRegistrar::getInstance)
         .instanceMethod(
@@ -72,7 +74,7 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptCommandRegistrar =
                     if (!arguments[2].isNumber()) {
                         throw qjspp::JsException{"wrong argument type"};
                     }
-                    requirement = qjspp::ConvertToCpp<CommandPermissionLevel>(arguments[2]);
+                    requirement = qjspp::bind::ConvertToCpp<CommandPermissionLevel>(arguments[2]);
                 }
 
                 CommandFlag flag = CommandFlagValue::NotCheat;
@@ -80,7 +82,7 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptCommandRegistrar =
                     if (!arguments[3].isNumber()) {
                         throw qjspp::JsException{"wrong argument type"};
                     }
-                    flag = qjspp::ConvertToCpp<CommandFlag>(arguments[3]);
+                    flag = qjspp::bind::ConvertToCpp<CommandFlag>(arguments[3]);
                 }
 
                 return arguments.engine()->newInstanceOfView(
@@ -259,7 +261,7 @@ public:
                     auto args = _convertResult(command, params, origin);
                     (void)fn.value().asFunction().call({}, ori, out, args);
                 } catch (qjspp::JsException const& e) {
-                    fn.engine()->invokeUnhandledJsException(e, qjspp::UnhandledExceptionOrigin::Callback);
+                    fn.engine()->invokeUnhandledJsException(e, qjspp::ExceptionDispatchOrigin::Callback);
                 }
             };
 
@@ -276,7 +278,7 @@ private:
 
     static qjspp::Object
     _convertResult(ll::command::RuntimeCommand const& cmd, OverloadParams const& params, CommandOrigin const& origin) {
-        qjspp::Object result{};
+        auto result = qjspp::Object::newObject();
         for (auto const& [name, type, enumName] : params) {
             try {
                 auto& val = cmd[name];
@@ -309,7 +311,7 @@ private:
         }
         if (storage.hold(CommandParamKind::Player)) {
             auto players = std::get<CommandSelector<Player>>(storage.value()).results(origin);
-            auto array   = qjspp::Array{players.size()};
+            auto array   = qjspp::Array::newArray(players.size());
             for (auto const& player : players) {
                 array.push(newInstanceOfGameWeak(MinecraftModule::ScriptPlayer, player));
             }
@@ -348,8 +350,8 @@ std::unordered_set<CommandParamKind> const RuntimeOverloadProxy::supportedKind_ 
     CommandParamKind::RawText,
 };
 
-qjspp::ClassDefine const LeviLaminaModule::ScriptCommandHandle =
-    qjspp::defineClass<CommandHandle>("CommandHandle")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptCommandHandle =
+    qjspp::bind::defineClass<CommandHandle>("CommandHandle")
         .disableConstructor()
         .instanceMethod(
             "runtimeOverload",
@@ -366,8 +368,8 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptCommandHandle =
         .build();
 
 
-qjspp::ClassDefine const LeviLaminaModule::ScriptRuntimeOverload =
-    qjspp::defineClass<RuntimeOverloadProxy>("RuntimeOverload")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptRuntimeOverload =
+    qjspp::bind::defineClass<RuntimeOverloadProxy>("RuntimeOverload")
         // .property("$supportedKind", &RuntimeOverloadProxy::supportedKind_)
         .customConstructor([](qjspp::Arguments const& arguments) -> void* {
             // 如果设置 disableConstructor 那么将不会生成清理函数
@@ -402,8 +404,8 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptRuntimeOverload =
         .instanceMethod("execute", &RuntimeOverloadProxy::execute)
         .build();
 
-qjspp::EnumDefine const LeviLaminaModule::ScriptCommandParamKind =
-    qjspp::defineEnum<CommandParamKind>("CommandParamKind")
+qjspp::bind::meta::EnumDefine const LeviLaminaModule::ScriptCommandParamKind =
+    qjspp::bind::defineEnum<CommandParamKind>("CommandParamKind")
         .value("Int", CommandParamKind::Int)
         .value("Bool", CommandParamKind::Bool)
         .value("Float", CommandParamKind::Float)

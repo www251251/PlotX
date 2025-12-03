@@ -1,8 +1,7 @@
 #pragma once
-#include "qjspp/Binding.hpp"
-#include "qjspp/Definitions.hpp"
-#include "qjspp/Module.hpp"
-
+#include "qjspp/bind/meta/ClassDefine.hpp"
+#include "qjspp/bind/meta/EnumDefine.hpp"
+#include "qjspp/bind/meta/ModuleDefine.hpp"
 
 namespace plotx::script::modules {
 
@@ -10,26 +9,26 @@ namespace plotx::script::modules {
 struct MinecraftModule {
     MinecraftModule() = delete;
 
-    static qjspp::ClassDefine const ScriptActor;
-    static qjspp::ClassDefine const ScriptPlayer;
+    static qjspp::bind::meta::ClassDefine const ScriptActor;
+    static qjspp::bind::meta::ClassDefine const ScriptPlayer;
 
-    static qjspp::ClassDefine const ScriptUUID;
+    static qjspp::bind::meta::ClassDefine const ScriptUUID;
 
-    static qjspp::EnumDefine const ScriptModalFormCancelReason;
+    static qjspp::bind::meta::EnumDefine const ScriptModalFormCancelReason;
 
-    static qjspp::ClassDefine const ScriptBlockPos;
+    static qjspp::bind::meta::ClassDefine const ScriptBlockPos;
 
-    static qjspp::ClassDefine const ScriptVec3;
+    static qjspp::bind::meta::ClassDefine const ScriptVec3;
 
-    static qjspp::EnumDefine const  ScriptCommandPermissionLevel;
-    static qjspp::EnumDefine const  ScriptCommandFlagValue;
-    static qjspp::EnumDefine const  ScriptCommandParameterOption;
-    static qjspp::ClassDefine const ScriptCommandOrigin;
-    static qjspp::EnumDefine const  ScriptCommandOriginType;
-    static qjspp::ClassDefine const ScriptCommandOutput;
+    static qjspp::bind::meta::EnumDefine const  ScriptCommandPermissionLevel;
+    static qjspp::bind::meta::EnumDefine const  ScriptCommandFlagValue;
+    static qjspp::bind::meta::EnumDefine const  ScriptCommandParameterOption;
+    static qjspp::bind::meta::ClassDefine const ScriptCommandOrigin;
+    static qjspp::bind::meta::EnumDefine const  ScriptCommandOriginType;
+    static qjspp::bind::meta::ClassDefine const ScriptCommandOutput;
 
 
-    static qjspp::ModuleDefine const& getModuleDef();
+    static qjspp::bind::meta::ModuleDefine const& getModuleDef();
 };
 
 

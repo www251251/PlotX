@@ -5,13 +5,11 @@
 #include "mc/platform/UUID.h"
 #include "mc/server/ServerPlayer.h"
 #include "mc/world/actor/player/Player.h"
+#include "plotx/PlotXModule.hpp"
+#include "plotx/math/PlotCoord.hpp"
 
-#include "qjspp/Binding.hpp"
-#include "qjspp/JsEngine.hpp"
-#include "qjspp/JsManagedResource.hpp"
-#include "qjspp/Locker.hpp"
-#include "qjspp/TypeConverter.hpp"
-#include "qjspp/Values.hpp"
+#include "qjspp/bind/TypeConverter.hpp"
+#include "qjspp/bind/meta/ClassDefine.hpp"
 
 #include <memory>
 
@@ -29,9 +27,9 @@ struct GameWeakControl {
 
 } // namespace internal
 
-inline qjspp::Object newInstanceOfGameWeak(qjspp::ClassDefine const& def, Actor* actor) {
+inline qjspp::Object newInstanceOfGameWeak(qjspp::bind::meta::ClassDefine const& def, Actor* actor) {
     auto& engine  = qjspp::Locker::currentEngineChecked();
-    auto  managed = qjspp::JsManagedResource::make(
+    auto  managed = qjspp::bind::JsManagedResource::make(
         new internal::GameWeakControl(actor),
         [](void* res) -> void* {
             auto control = static_cast<internal::GameWeakControl*>(res);
@@ -63,7 +61,7 @@ inline void formatArgsToString(qjspp::Arguments const& args, std::ostringstream&
 } // namespace plotx::script
 
 
-namespace qjspp {
+namespace qjspp::bind {
 
 
 template <>
@@ -155,4 +153,24 @@ struct TypeConverter<BlockPos> {
     }
 };
 
-} // namespace qjspp
+
+template <>
+struct TypeConverter<plotx::PlotCoord> {
+    static Value toJs(plotx::PlotCoord const& coord) {
+        return Locker::currentEngineChecked().newInstanceOfView(
+            plotx::script::modules::PlotXModule::ScriptPlotCoord,
+            const_cast<plotx::PlotCoord*>(&coord)
+        );
+    }
+    static plotx::PlotCoord* toCpp(Value const& value) {
+        if (!value.isObject()) {
+            return nullptr;
+        }
+        return Locker::currentEngineChecked().getNativeInstanceOf<plotx::PlotCoord>(
+            value.asObject(),
+            plotx::script::modules::PlotXModule::ScriptPlotCoord
+        );
+    }
+};
+
+} // namespace qjspp::bind

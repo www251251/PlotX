@@ -1,5 +1,7 @@
 #pragma once
-#include "qjspp/Definitions.hpp"
+#include "qjspp/bind/meta/ClassDefine.hpp"
+#include "qjspp/bind/meta/EnumDefine.hpp"
+#include "qjspp/bind/meta/ModuleDefine.hpp"
 
 
 namespace plotx::script::modules {
@@ -9,42 +11,42 @@ struct LeviLaminaModule {
     LeviLaminaModule() = delete;
 
     // === Form API ===
-    static qjspp::ClassDefine const ScriptSimpleForm;
+    static qjspp::bind::meta::ClassDefine const ScriptSimpleForm;
 
-    static qjspp::ClassDefine const ScriptCustomForm;
+    static qjspp::bind::meta::ClassDefine const ScriptCustomForm;
 
-    static qjspp::ClassDefine const ScriptModalForm;
+    static qjspp::bind::meta::ClassDefine const ScriptModalForm;
 
-    static qjspp::EnumDefine const ScriptModalFormSelectedButton;
+    static qjspp::bind::meta::EnumDefine const ScriptModalFormSelectedButton;
 
     // === Event API ===
-    static qjspp::ClassDefine const ScriptEventBus;
+    static qjspp::bind::meta::ClassDefine const ScriptEventBus;
 
-    static qjspp::ClassDefine const ScriptEvent;
+    static qjspp::bind::meta::ClassDefine const ScriptEvent;
 
-    static qjspp::ClassDefine const ScriptCancellableEvent;
+    static qjspp::bind::meta::ClassDefine const ScriptCancellableEvent;
 
-    static qjspp::ClassDefine const ScriptPlayerJoinEvent;
+    static qjspp::bind::meta::ClassDefine const ScriptPlayerJoinEvent;
 
-    static qjspp::EnumDefine const ScriptEventPriority;
+    static qjspp::bind::meta::EnumDefine const ScriptEventPriority;
 
     // === Data API ===
-    static qjspp::ClassDefine const ScriptKeyValueDB;
+    static qjspp::bind::meta::ClassDefine const ScriptKeyValueDB;
 
-    static qjspp::ClassDefine const ScriptLogger;
-    static qjspp::EnumDefine const  ScriptLogLevel;
+    static qjspp::bind::meta::ClassDefine const ScriptLogger;
+    static qjspp::bind::meta::EnumDefine const  ScriptLogLevel;
 
-    static qjspp::ClassDefine const ScriptPlayerInfo;
+    static qjspp::bind::meta::ClassDefine const ScriptPlayerInfo;
 
-    static qjspp::ClassDefine const ScriptI18n;
+    static qjspp::bind::meta::ClassDefine const ScriptI18n;
 
     // === Command API ===
-    static qjspp::ClassDefine const ScriptCommandRegistrar;
-    static qjspp::ClassDefine const ScriptCommandHandle;
-    static qjspp::ClassDefine const ScriptRuntimeOverload;
-    static qjspp::EnumDefine const  ScriptCommandParamKind;
+    static qjspp::bind::meta::ClassDefine const ScriptCommandRegistrar;
+    static qjspp::bind::meta::ClassDefine const ScriptCommandHandle;
+    static qjspp::bind::meta::ClassDefine const ScriptRuntimeOverload;
+    static qjspp::bind::meta::EnumDefine const  ScriptCommandParamKind;
 
-    static qjspp::ModuleDefine const& getModuleDef();
+    static qjspp::bind::meta::ModuleDefine const& getModuleDef();
 };
 
 

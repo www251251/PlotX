@@ -1,13 +1,15 @@
-#include "script/modules/minecraft/MinecraftModule.hpp"
 #include "script/modules/Helper.hpp"
+#include "script/modules/minecraft/MinecraftModule.hpp"
+
 
 #include <mc/world/actor/Actor.h>
+#include <qjspp/bind/builder/ClassDefineBuilder.hpp>
 
 namespace plotx::script::modules {
 
 
-qjspp::ClassDefine const MinecraftModule::ScriptActor =
-    qjspp::defineClass<Actor>("Actor")
+qjspp::bind::meta::ClassDefine const MinecraftModule::ScriptActor =
+    qjspp::bind::defineClass<Actor>("Actor")
         .disableConstructor()
         .instanceMethod("getTypeName", &Actor::getTypeName)
         .instanceMethod("getFeetPos", &Actor::getFeetPos)

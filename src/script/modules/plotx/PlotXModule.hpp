@@ -1,7 +1,6 @@
 #pragma once
-#include "qjspp/Binding.hpp"
-#include "qjspp/Definitions.hpp"
-#include "qjspp/Module.hpp"
+#include "qjspp/bind/meta/ClassDefine.hpp"
+#include "qjspp/bind/meta/ModuleDefine.hpp"
 
 
 namespace plotx::script::modules {
@@ -11,14 +10,14 @@ struct PlotXModule {
     PlotXModule() = delete;
 
     // === core ===
-    static qjspp::ClassDefine const ScriptPlotHandle;
-    static qjspp::ClassDefine const ScriptPlotRegistry;
+    static qjspp::bind::meta::ClassDefine const ScriptPlotHandle;
+    static qjspp::bind::meta::ClassDefine const ScriptPlotRegistry;
 
     // === math ===
-    static qjspp::ClassDefine const ScriptPlotAABB;
-    static qjspp::ClassDefine const ScriptPlotCoord;
+    static qjspp::bind::meta::ClassDefine const ScriptPlotAABB;
+    static qjspp::bind::meta::ClassDefine const ScriptPlotCoord;
 
-    static qjspp::ModuleDefine const& getModuleDef();
+    static qjspp::bind::meta::ModuleDefine const& getModuleDef();
 };
 
 

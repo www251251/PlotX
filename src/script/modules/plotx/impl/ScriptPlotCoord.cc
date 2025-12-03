@@ -5,10 +5,12 @@
 #include "script/modules/minecraft/MinecraftModule.hpp"
 #include "script/modules/plotx/PlotXModule.hpp"
 
+#include <qjspp/bind/builder/ClassDefineBuilder.hpp>
+
 namespace plotx::script::modules {
 
-qjspp::ClassDefine const PlotXModule::ScriptPlotCoord =
-    qjspp::defineClass<PlotCoord>("PlotCoord")
+qjspp::bind::meta::ClassDefine const PlotXModule::ScriptPlotCoord =
+    qjspp::bind::defineClass<PlotCoord>("PlotCoord")
         .extends(ScriptPlotAABB)
         .constructor<int, int>()
         .constructor<BlockPos const&>()

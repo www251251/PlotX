@@ -1,11 +1,13 @@
 #include "script/modules/Helper.hpp"
 #include "script/modules/minecraft/MinecraftModule.hpp"
 
+#include <qjspp/bind/builder/ClassDefineBuilder.hpp>
+
 
 namespace plotx::script::modules {
 
-qjspp::ClassDefine const MinecraftModule::ScriptPlayer =
-    qjspp::defineClass<::Player>("Player")
+qjspp::bind::meta::ClassDefine const MinecraftModule::ScriptPlayer =
+    qjspp::bind::defineClass<::Player>("Player")
         .extends(ScriptActor)
         .disableConstructor()
         .instanceProperty(

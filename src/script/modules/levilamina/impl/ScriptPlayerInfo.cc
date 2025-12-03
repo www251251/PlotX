@@ -1,9 +1,12 @@
-#include "qjspp/Binding.hpp"
 #include "script/modules/Helper.hpp"
 #include "script/modules/levilamina/LeviLaminaModule.hpp"
 #include "script/modules/minecraft/MinecraftModule.hpp"
 
 #include <ll/api/service/PlayerInfo.h>
+
+#include "qjspp/bind/TypeConverter.hpp"
+#include "qjspp/bind/builder/ClassDefineBuilder.hpp"
+#include "qjspp/bind/meta/ClassDefine.hpp"
 
 namespace plotx::script::modules {
 
@@ -14,8 +17,8 @@ qjspp::Value PlayerInfo_CopyValue(ReturnType const& p) {
     if (!p.has_value()) {
         return qjspp::Null{};
     }
-    qjspp::Object result{};
-    auto          uuid =
+    auto result = qjspp::Object::newObject();
+    auto uuid =
         qjspp::Locker::currentEngineChecked().newInstanceOfRaw(MinecraftModule::ScriptUUID, new mce::UUID(p->uuid));
     result.set("uuid", uuid);
     result.set("xuid", qjspp::String{p->xuid});
@@ -27,7 +30,7 @@ qjspp::Value PlayerInfo_FromUuid(qjspp::Arguments const& arguments) {
     if (arguments.length() != 1) {
         throw qjspp::JsException{qjspp::JsException::Type::TypeError, "fromUuid expects 1 argument"};
     }
-    auto uuid = qjspp::ConvertToCpp<mce::UUID*>(arguments[0]);
+    auto uuid = qjspp::bind::ConvertToCpp<mce::UUID*>(arguments[0]);
     if (!uuid) {
         throw qjspp::JsException{qjspp::JsException::Type::TypeError, "fromUuid expects a UUID argument"};
     }
@@ -46,11 +49,11 @@ qjspp::Value PlayerInfo_FromName(qjspp::Arguments const& arguments) {
     return PlayerInfo_CopyValue(PlayerInfo::getInstance().fromName(arguments[0].asString().value()));
 }
 
-qjspp::ClassDefine const LeviLaminaModule::ScriptPlayerInfo = qjspp::defineClass<void>("PlayerInfo")
-                                                                  .function("fromUuid", PlayerInfo_FromUuid)
-                                                                  .function("fromXuid", PlayerInfo_FromXuid)
-                                                                  .function("fromName", PlayerInfo_FromName)
-                                                                  .build();
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptPlayerInfo = qjspp::bind::defineClass<void>("PlayerInfo")
+                                                                              .function("fromUuid", PlayerInfo_FromUuid)
+                                                                              .function("fromXuid", PlayerInfo_FromXuid)
+                                                                              .function("fromName", PlayerInfo_FromName)
+                                                                              .build();
 
 
 } // namespace plotx::script::modules

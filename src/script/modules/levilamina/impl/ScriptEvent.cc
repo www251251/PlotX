@@ -1,32 +1,36 @@
-#include "ll/api/event/Event.h"
 #include "ll/api/event/Cancellable.h"
+#include "ll/api/event/Event.h"
 #include "ll/api/event/EventBus.h"
 #include "ll/api/event/EventId.h"
 #include "ll/api/event/ListenerBase.h"
 #include "ll/api/event/player/PlayerJoinEvent.h"
+
 #include "plotx/PlotX.hpp"
-#include "qjspp/Definitions.hpp"
-#include "qjspp/Locker.hpp"
-#include "qjspp/Values.hpp"
+
 #include "script/loader/ScriptMod.hpp"
 #include "script/modules/Helper.hpp"
 #include "script/modules/levilamina/LeviLaminaModule.hpp"
+
+#include "qjspp/bind/builder/ClassDefineBuilder.hpp"
+#include "qjspp/bind/builder/EnumDefineBuilder.hpp"
+
 #include <string>
 
 
 namespace plotx::script::modules {
 
 
-qjspp::EnumDefine const LeviLaminaModule::ScriptEventPriority = qjspp::defineEnum<ll::event::EventPriority>("EventPriority")
-                                                               .value("Highest", ll::event::EventPriority::Highest)
-                                                               .value("High", ll::event::EventPriority::High)
-                                                               .value("Normal", ll::event::EventPriority::Normal)
-                                                               .value("Low", ll::event::EventPriority::Low)
-                                                               .value("Lowest", ll::event::EventPriority::Lowest)
-                                                               .build();
+qjspp::bind::meta::EnumDefine const LeviLaminaModule::ScriptEventPriority =
+    qjspp::bind::defineEnum<ll::event::EventPriority>("EventPriority")
+        .value("Highest", ll::event::EventPriority::Highest)
+        .value("High", ll::event::EventPriority::High)
+        .value("Normal", ll::event::EventPriority::Normal)
+        .value("Low", ll::event::EventPriority::Low)
+        .value("Lowest", ll::event::EventPriority::Lowest)
+        .build();
 
-qjspp::ClassDefine const LeviLaminaModule::ScriptEvent =
-    qjspp::defineClass<ll::event::Event>("Event")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptEvent =
+    qjspp::bind::defineClass<ll::event::Event>("Event")
         .disableConstructor()
         .instanceMethod(
             "getId",
@@ -38,8 +42,8 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptEvent =
 
 
 using CancellableEventCRTP = ll::event::Cancellable<ll::event::Event>; // CRTP
-qjspp::ClassDefine const LeviLaminaModule::ScriptCancellableEvent =
-    qjspp::defineClass<CancellableEventCRTP>("CancellableEvent")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptCancellableEvent =
+    qjspp::bind::defineClass<CancellableEventCRTP>("CancellableEvent")
         .disableConstructor()
         .extends(ScriptEvent)
         .instanceMethod("isCancelled", &CancellableEventCRTP::isCancelled)
@@ -47,8 +51,8 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptCancellableEvent =
         .instanceMethod("cancel", &CancellableEventCRTP::cancel)
         .build();
 
-qjspp::ClassDefine const LeviLaminaModule::ScriptPlayerJoinEvent =
-    qjspp::defineClass<ll::event::PlayerJoinEvent>("PlayerJoinEvent")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptPlayerJoinEvent =
+    qjspp::bind::defineClass<ll::event::PlayerJoinEvent>("PlayerJoinEvent")
         .disableConstructor()
         .extends(ScriptCancellableEvent)
         .instanceMethod("self", &ll::event::PlayerJoinEvent::self)
@@ -56,8 +60,8 @@ qjspp::ClassDefine const LeviLaminaModule::ScriptPlayerJoinEvent =
 
 
 #define GET_EVENT_BUS() ll::event::EventBus::getInstance()
-qjspp::ClassDefine const LeviLaminaModule::ScriptEventBus =
-    qjspp::defineClass<void>("EventBus")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptEventBus =
+    qjspp::bind::defineClass<void>("EventBus")
         .function(
             "emplaceListener",
             [](qjspp::Arguments const& args) -> qjspp::Value {

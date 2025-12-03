@@ -2,6 +2,7 @@
 #include "script/modules/minecraft/MinecraftModule.hpp"
 
 #include <mc/server/commands/CommandOutput.h>
+#include <qjspp/bind/builder/ClassDefineBuilder.hpp>
 
 namespace plotx::script::modules {
 
@@ -11,8 +12,8 @@ void impl(CommandOutput& output, qjspp::Arguments const& arguments, bool isSucce
     isSuccess ? output.success(oss.str()) : output.error(oss.str());
 }
 
-qjspp::ClassDefine const MinecraftModule::ScriptCommandOutput =
-    qjspp::defineClass<CommandOutput>("CommandOutput")
+qjspp::bind::meta::ClassDefine const MinecraftModule::ScriptCommandOutput =
+    qjspp::bind::defineClass<CommandOutput>("CommandOutput")
         .disableConstructor()
         .instanceMethod(
             "success",

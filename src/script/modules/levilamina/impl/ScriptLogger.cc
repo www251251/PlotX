@@ -2,7 +2,11 @@
 
 #include <ll/api/io/Logger.h>
 
-#include "qjspp/Binding.hpp"
+#include "qjspp/bind/TypeConverter.hpp"
+#include "qjspp/bind/builder/ClassDefineBuilder.hpp"
+#include "qjspp/bind/builder/EnumDefineBuilder.hpp"
+#include "qjspp/bind/meta/ClassDefine.hpp"
+#include "qjspp/bind/meta/EnumDefine.hpp"
 #include "script/modules/Helper.hpp"
 
 
@@ -23,7 +27,7 @@ qjspp::Value log(void* inst, qjspp::Arguments const& args) {
         throw qjspp::JsException(qjspp::JsException::Type::TypeError, "log requires first argument to be a LogLevel");
     }
     auto logger = static_cast<ll::io::Logger*>(inst);
-    auto level  = qjspp::ConvertToCpp<ll::io::LogLevel>(args[0]);
+    auto level  = qjspp::bind::ConvertToCpp<ll::io::LogLevel>(args[0]);
     return impl(*logger, level, args, 1);
 }
 
@@ -48,33 +52,34 @@ qjspp::Value trace(void* inst, qjspp::Arguments const& args) {
 
 
 using ll::io::Logger;
-qjspp::ClassDefine const LeviLaminaModule::ScriptLogger = qjspp::defineClass<Logger>("Logger")
-                                                              .disableConstructor()
-                                                              .instanceMethod("log", &log)
-                                                              .instanceMethod("fatal", &fatal)
-                                                              .instanceMethod("error", &error)
-                                                              .instanceMethod("warn", &warn)
-                                                              .instanceMethod("info", &info)
-                                                              .instanceMethod("debug", &debug)
-                                                              .instanceMethod("trace", &trace)
-                                                              .instanceMethod("getTitle", &Logger::getTitle)
-                                                              .instanceMethod("getLevel", &Logger::getLevel)
-                                                              .instanceMethod("shouldLog", &Logger::shouldLog)
-                                                              .instanceMethod("setLevel", &Logger::setLevel)
-                                                              .instanceMethod("setFlushLevel", &Logger::setFlushLevel)
-                                                              .instanceMethod("flush", &Logger::flush)
-                                                              .build();
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptLogger =
+    qjspp::bind::defineClass<Logger>("Logger")
+        .disableConstructor()
+        .instanceMethod("log", &log)
+        .instanceMethod("fatal", &fatal)
+        .instanceMethod("error", &error)
+        .instanceMethod("warn", &warn)
+        .instanceMethod("info", &info)
+        .instanceMethod("debug", &debug)
+        .instanceMethod("trace", &trace)
+        .instanceMethod("getTitle", &Logger::getTitle)
+        .instanceMethod("getLevel", &Logger::getLevel)
+        .instanceMethod("shouldLog", &Logger::shouldLog)
+        .instanceMethod("setLevel", &Logger::setLevel)
+        .instanceMethod("setFlushLevel", &Logger::setFlushLevel)
+        .instanceMethod("flush", &Logger::flush)
+        .build();
 
 using ll::io::LogLevel;
-qjspp::EnumDefine const LeviLaminaModule::ScriptLogLevel = qjspp::defineEnum<LogLevel>("LogLevel")
-                                                               .value("Off", LogLevel::Off)
-                                                               .value("Fatal", LogLevel::Fatal)
-                                                               .value("Error", LogLevel::Error)
-                                                               .value("Warn", LogLevel::Warn)
-                                                               .value("Info", LogLevel::Info)
-                                                               .value("Debug", LogLevel::Debug)
-                                                               .value("Trace", LogLevel::Trace)
-                                                               .build();
+qjspp::bind::meta::EnumDefine const LeviLaminaModule::ScriptLogLevel = qjspp::bind::defineEnum<LogLevel>("LogLevel")
+                                                                           .value("Off", LogLevel::Off)
+                                                                           .value("Fatal", LogLevel::Fatal)
+                                                                           .value("Error", LogLevel::Error)
+                                                                           .value("Warn", LogLevel::Warn)
+                                                                           .value("Info", LogLevel::Info)
+                                                                           .value("Debug", LogLevel::Debug)
+                                                                           .value("Trace", LogLevel::Trace)
+                                                                           .build();
 
 
 } // namespace plotx::script::modules

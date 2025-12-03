@@ -4,7 +4,8 @@
 
 #include <memory>
 
-#include <qjspp/JsEngine.hpp>
+#include "qjspp/Forward.hpp"
+#include <qjspp/runtime/JsEngine.hpp>
 
 namespace plotx {
 class PlotX;
@@ -36,9 +37,9 @@ public:
     static void bindContext(qjspp::JsEngine* engine);
 
     static void onUnhandledJsException(
-        qjspp::JsEngine*                engine,
-        qjspp::JsException const&       exception,
-        qjspp::UnhandledExceptionOrigin origin
+        qjspp::JsEngine*               engine,
+        qjspp::JsException const&      exception,
+        qjspp::ExceptionDispatchOrigin origin
     );
 };
 

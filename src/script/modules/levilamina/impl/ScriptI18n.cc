@@ -1,13 +1,18 @@
 #include "script/modules/levilamina/LeviLaminaModule.hpp"
 
-#include "qjspp/Binding.hpp"
 #include "script/EngineData.hpp"
 
 #include "fmt/args.h"
 #include "fmt/core.h"
 #include "fmt/format.h"
 
+#include "qjspp/bind/builder/ClassDefineBuilder.hpp"
 #include <ll/api/i18n/I18n.h>
+#include <qjspp/runtime/JsEngine.hpp>
+#include <qjspp/runtime/JsException.hpp>
+#include <qjspp/types/Arguments.hpp>
+#include <qjspp/types/String.hpp>
+#include <qjspp/types/Value.hpp>
 
 namespace plotx::script::modules {
 
@@ -106,8 +111,8 @@ struct ScriptI18nProxy {
 };
 
 
-qjspp::ClassDefine const LeviLaminaModule::ScriptI18n =
-    qjspp::defineClass<void>("I18n")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptI18n =
+    qjspp::bind::defineClass<void>("I18n")
         .function("getDefaultLocaleCode", ll::i18n::getDefaultLocaleCode)
         .function("load", ScriptI18nProxy::load)
         .function("clear", ScriptI18nProxy::clear)

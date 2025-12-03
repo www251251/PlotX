@@ -3,14 +3,17 @@
 
 #include "plotx/PlotX.hpp"
 
-#include "qjspp/JsEngine.hpp"
-#include "qjspp/Locker.hpp"
+#include "qjspp/bind/TypeConverter.hpp"
+#include "qjspp/bind/meta/ClassDefine.hpp"
+#include "qjspp/runtime/JsEngine.hpp"
+#include "qjspp/runtime/Locker.hpp"
+
 #include "script/modules/levilamina/LeviLaminaModule.hpp"
 
 #include <ll/api/event/EventBus.h>
+#include <qjspp/bind/builder/ClassDefineBuilder.hpp>
 
-
-namespace qjspp {
+namespace qjspp::bind {
 
 template <>
 struct TypeConverter<std::shared_ptr<ll::mod::Mod>> {
@@ -62,7 +65,7 @@ struct TypeConverter<std::filesystem::path> : TypeConverter<std::string> {
     static Value toJs(std::filesystem::path const& path) { return Base::toJs(path.string()); }
 };
 
-} // namespace qjspp
+} // namespace qjspp::bind
 
 
 namespace plotx::script {
@@ -96,8 +99,8 @@ std::shared_ptr<ll::mod::Mod> ScriptMod::current() {
 
 
 static_assert(std::is_base_of_v<ll::mod::Mod, ScriptMod>);
-qjspp::ClassDefine const ScriptMod::kClassDef_ =
-    qjspp::defineClass<ScriptMod>("ScriptMod")
+qjspp::bind::meta::ClassDefine const ScriptMod::kClassDef_ =
+    qjspp::bind::defineClass<ScriptMod>("ScriptMod")
         .function("current", &ScriptMod::current)
         .disableConstructor()
         .instanceMethod("onLoad", static_cast<void (ScriptMod::*)(ScriptMod::CallbackFn)>(&ScriptMod::onLoad))

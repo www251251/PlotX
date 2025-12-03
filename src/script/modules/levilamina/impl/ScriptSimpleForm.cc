@@ -2,13 +2,15 @@
 #include "script/modules/Helper.hpp"
 #include "script/modules/levilamina/LeviLaminaModule.hpp"
 
+#include <qjspp/bind/builder/ClassDefineBuilder.hpp>
+
 
 namespace plotx::script::modules {
 
 using namespace ll::form;
 
-qjspp::ClassDefine const LeviLaminaModule::ScriptSimpleForm =
-    qjspp::defineClass<ll::form::SimpleForm>("SimpleForm")
+qjspp::bind::meta::ClassDefine const LeviLaminaModule::ScriptSimpleForm =
+    qjspp::bind::defineClass<ll::form::SimpleForm>("SimpleForm")
         .constructor<>()
         .instanceMethod("setTitle", &SimpleForm::setTitle)
         .instanceMethod("setContent", &SimpleForm::setContent)

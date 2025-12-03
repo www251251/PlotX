@@ -7,6 +7,9 @@
 #include "modules/plotx/PlotXModule.hpp"
 #include "plotx/PlotX.hpp"
 
+#include <qjspp/runtime/JsException.hpp>
+#include <qjspp/runtime/Locker.hpp>
+
 namespace plotx::script {
 
 struct EngineManager::Impl {
@@ -94,7 +97,7 @@ void EngineManager::loop() const {
         try {
             loop(engine.get());
         } catch (qjspp::JsException const& exception) {
-            engine->invokeUnhandledJsException(exception, qjspp::UnhandledExceptionOrigin::Unknown);
+            engine->invokeUnhandledJsException(exception, qjspp::ExceptionDispatchOrigin::Unknown);
         }
     }
 }
@@ -120,9 +123,9 @@ void EngineManager::bindContext(qjspp::JsEngine* engine) {
 }
 
 void EngineManager::onUnhandledJsException(
-    qjspp::JsEngine*                engine,
-    qjspp::JsException const&       exception,
-    qjspp::UnhandledExceptionOrigin origin
+    qjspp::JsEngine*               engine,
+    qjspp::JsException const&      exception,
+    qjspp::ExceptionDispatchOrigin origin
 ) {
     auto& logger = PlotX::getInstance().getSelf().getLogger();
 

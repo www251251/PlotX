@@ -5,7 +5,7 @@
 #include <ll/api/event/ListenerBase.h>
 #include <ll/api/mod/Mod.h>
 
-#include <qjspp/Definitions.hpp>
+#include "qjspp/bind/meta/ClassDefine.hpp"
 
 namespace plotx::script {
 
@@ -26,7 +26,7 @@ public:
 
     static std::shared_ptr<ll::mod::Mod> current();
 
-    static qjspp::ClassDefine const kClassDef_;
+    static qjspp::bind::meta::ClassDefine const kClassDef_;
 };
 
 } // namespace plotx::script

@@ -10,6 +10,7 @@
 
 #include "qjspp/bind/TypeConverter.hpp"
 #include "qjspp/bind/meta/ClassDefine.hpp"
+#include "qjspp/types/Arguments.hpp"
 
 #include <memory>
 

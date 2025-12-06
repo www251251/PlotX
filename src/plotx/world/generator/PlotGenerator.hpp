@@ -1,15 +1,16 @@
 #pragma once
-#include "Helper.hpp"
 #include "mc/world/level/levelgen/flat/FlatWorldGenerator.h"
-#include "plotx/Global.hpp"
 
-namespace plotx::generator {
+#include "plotx/Global.hpp"
+#include "plotx/world/Helper.hpp"
+
+namespace plotx::world {
 
 class PlotGenerator final : public FlatWorldGenerator {
 public:
     struct ThreadData {
-        ArrayBuffer buffer_;
-        BlockVolume volume_;
+        helper::ArrayBuffer buffer_;
+        BlockVolume         volume_;
 
         explicit ThreadData(PlotGenerator& generator);
         ~ThreadData() = default;
@@ -33,4 +34,4 @@ private:
     friend struct ThreadData;
 };
 
-} // namespace plotx::generator
+} // namespace plotx::world

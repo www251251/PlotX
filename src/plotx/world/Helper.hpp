@@ -4,7 +4,8 @@
 #include <array>
 
 #include "plotx/infra/Concepts.hpp"
-namespace plotx::generator {
+
+namespace plotx::world::helper {
 
 
 constexpr int ChunkWidth       = 16;                                         // 区块宽度(长宽)
@@ -67,4 +68,4 @@ inline void fillRange(BufferSpanMut& buffer, Block const* block, int startY, int
 }
 
 
-} // namespace plotx::generator
+} // namespace plotx::world::helper

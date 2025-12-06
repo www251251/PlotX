@@ -1,8 +1,8 @@
 #include "PlotCoord.hpp"
 #include "plotx/PlotX.hpp"
-#include "plotx/generator/Helper.hpp"
 #include "plotx/infra/Config.hpp"
 #include "plotx/math/PlotAABB.hpp"
+#include "plotx/world/Helper.hpp"
 
 #include "fmt/format.h"
 #include "ll/api/service/Bedrock.h"
@@ -22,8 +22,8 @@ PlotCoord::PlotCoord(int x, int z) : x(x), z(z) {
     auto const& cfg = gConfig_.generator;
 
     int total = cfg.plotWidth + cfg.roadWidth;
-    min       = BlockPos{x * total, generator::WorldMinHeight, z * total};
-    max       = BlockPos{min.x + cfg.plotWidth - 1, generator::WorldMaxHeight, min.z + cfg.plotWidth - 1};
+    min       = BlockPos{x * total, world::helper::WorldMinHeight, z * total};
+    max       = BlockPos{min.x + cfg.plotWidth - 1, world::helper::WorldMaxHeight, min.z + cfg.plotWidth - 1};
     valid_    = true;
 }
 
@@ -53,8 +53,8 @@ PlotCoord::PlotCoord(BlockPos const& pos) {
         x      = 0;
         z      = 0;
     } else {
-        min    = BlockPos{x * total, generator::WorldMinHeight, z * total};
-        max    = BlockPos{min.x + plotWidth - 1, generator::WorldMaxHeight, min.z + plotWidth - 1};
+        min    = BlockPos{x * total, world::helper::WorldMinHeight, z * total};
+        max    = BlockPos{min.x + plotWidth - 1, world::helper::WorldMaxHeight, min.z + plotWidth - 1};
         valid_ = true;
     }
 }

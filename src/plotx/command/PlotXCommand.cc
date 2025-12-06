@@ -106,7 +106,7 @@ void PlotXCommand::setup() {
                 return;
             }
             auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
-            PlotX::getInstance().getPlotController()->switchPlayerDimension(
+            PlotX::getInstance().getController()->switchPlayerDimension(
                 player,
                 param.target == SwitchDimParam::TargetDim::Overworld
             );
@@ -123,7 +123,7 @@ void PlotXCommand::setup() {
         if (!ensurePlayerInPlotDimension(player, output)) {
             return;
         }
-        PlotX::getInstance().getPlotController()->sendPlayerCurrentPlot(player);
+        PlotX::getInstance().getController()->sendPlayerCurrentPlot(player);
     });
 
     // plotx
@@ -156,7 +156,7 @@ void PlotXCommand::setup() {
             if (!ensurePlayerInPlotDimension(player, output)) {
                 return;
             }
-            PlotX::getInstance().getPlotController()->teleportUnownedPlot(player);
+            PlotX::getInstance().getController()->teleportUnownedPlot(player);
         });
 }
 bool PlotXCommand::ensureConsoleExecute(CommandOrigin const& origin, CommandOutput& output) {

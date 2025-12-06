@@ -29,7 +29,7 @@ public:
 
     PXAPI class PlotRegistry* getPlotRegistry() const;
 
-    PXAPI class PlotController* getPlotController() const;
+    PXAPI class PlotController* getController() const;
 
     PXNDAPI std::filesystem::path getConfigPath() const;
     PXNDAPI std::filesystem::path getDatabasePath() const;

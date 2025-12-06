@@ -78,7 +78,7 @@ ll::mod::NativeMod& PlotX::getSelf() const { return impl_->self_; }
 ll::io::Logger&     PlotX::getLogger() const { return impl_->self_.getLogger(); }
 
 PlotRegistry*   PlotX::getPlotRegistry() const { return impl_->registry_.get(); }
-PlotController* PlotX::getPlotController() const { return impl_->controller_.get(); }
+PlotController* PlotX::getController() const { return impl_->controller_.get(); }
 
 std::filesystem::path PlotX::getConfigPath() const { return getSelf().getConfigDir() / ConfigFileName; }
 

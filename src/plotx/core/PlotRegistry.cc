@@ -12,6 +12,7 @@
 
 #include "nlohmann/json.hpp"
 #include "nlohmann/json_fwd.hpp"
+#include "plotx/infra/NodeTree.hpp"
 
 #include <algorithm>
 #include <filesystem>
@@ -26,6 +27,8 @@ struct PlotRegistry::Impl {
     std::unordered_set<mce::UUID>                              admins_; // 管理员
     std::unordered_map<EncodedID, std::shared_ptr<PlotHandle>> plots_;  // 地皮
     mutable std::shared_mutex                                  mutex_;  // 读写锁
+
+    NodeTree tree_; // 地皮树
 };
 
 
@@ -159,18 +162,22 @@ bool PlotRegistry::addPlot(std::shared_ptr<PlotHandle> handle) {
     }
     std::unique_lock lock{impl_->mutex_};
 
-    handle->markDirty(); // 新地皮，存储前标记脏数据避免持久化失败
     auto coord = handle->getCoord();
-    impl_->plots_.emplace(IntEncoder::encode(coord.x, coord.z), std::move(handle));
+    if (impl_->plots_.emplace(IntEncoder::encode(coord.x, coord.z), handle).second) {
+        impl_->tree_.insert({coord.x, coord.z});
+        handle->markDirty(); // 新地皮，存储前标记脏数据避免持久化失败
+    }
     return true;
 }
 bool PlotRegistry::removePlot(int x, int z) {
     std::unique_lock lock{impl_->mutex_};
-    auto             iter = impl_->plots_.find(IntEncoder::encode(x, z));
+
+    auto iter = impl_->plots_.find(IntEncoder::encode(x, z));
     if (iter == impl_->plots_.end()) {
         return false;
     }
     impl_->plots_.erase(iter);
+    impl_->tree_.remove({x, z});
     return true;
 }
 bool PlotRegistry::removePlot(PlotCoord const& coord) {
@@ -181,19 +188,12 @@ bool PlotRegistry::removePlot(PlotCoord const& coord) {
 }
 bool PlotRegistry::removePlot(std::shared_ptr<PlotHandle> const& handle) { return removePlot(handle->getCoord()); }
 
-std::shared_ptr<PlotHandle> PlotRegistry::newPlot(PlotCoord const& coord, mce::UUID const& owner) {
-    return newPlot(coord.x, coord.z, owner);
-}
-
-std::shared_ptr<PlotHandle> PlotRegistry::newPlot(int x, int z, mce::UUID const& owner) {
-    if (hasPlot(x, z)) {
-        return nullptr;
+std::optional<PlotCoord> PlotRegistry::findUnownedPlot(int x, int z) const {
+    std::shared_lock lock{impl_->mutex_};
+    if (auto node = impl_->tree_.findNearestUnmarkedNodeFromRoot({x, z})) {
+        return PlotCoord{node->x, node->z};
     }
-    auto ptr = PlotHandle::make(x, z, owner);
-    if (!ptr) {
-        return nullptr;
-    }
-    return addPlot(ptr) ? ptr : nullptr;
+    return std::nullopt;
 }
 
 

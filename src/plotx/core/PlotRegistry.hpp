@@ -2,6 +2,7 @@
 #include "plotx/Global.hpp"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 
@@ -51,21 +52,12 @@ public:
     PXNDAPI bool removePlot(std::shared_ptr<PlotHandle> const& handle);
 
     /**
-     * 新建地皮并注册 (脚本辅助)
-     * @param coord 坐标
-     * @param owner 所有者
-     * @return 地皮句柄
-     */
-    PXNDAPI std::shared_ptr<PlotHandle> newPlot(PlotCoord const& coord, mce::UUID const& owner);
-
-    /**
-     * 新建地皮并注册 (脚本辅助)
+     * 查找相对于中心点最近的无主地皮
      * @param x X坐标
      * @param z Z坐标
-     * @param owner 所有者
-     * @return 地皮句柄
+     * @return 地皮坐标
      */
-    PXNDAPI std::shared_ptr<PlotHandle> newPlot(int x, int z, mce::UUID const& owner);
+    std::optional<PlotCoord> findUnownedPlot(int x = 0, int z = 0) const;
 
 public:
     static constexpr std::string_view VersionKey    = "_version_"; // 版本号

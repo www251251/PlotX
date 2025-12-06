@@ -1,6 +1,8 @@
 #include "PlotXCommand.hpp"
 #include "plotx/PlotX.hpp"
 #include "plotx/core/PlotRegistry.hpp"
+#include "plotx/gui/MainGUI.hpp"
+#include "plotx/math/PlotCoord.hpp"
 
 #include "ll/api/i18n/I18n.h"
 #include <ll/api/command/CommandHandle.h>
@@ -13,8 +15,6 @@
 #include "mc/server/commands/CommandOutput.h"
 #include "mc/server/commands/CommandPositionFloat.h"
 #include "mc/server/commands/CommandSelector.h"
-#include "plotx/math/PlotCoord.hpp"
-
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/ActorType.h>
 #include <mc/world/actor/player/Player.h>
@@ -144,7 +144,7 @@ void PlotXCommand::setup() {
             return;
         }
         auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
-        // TODO: open main gui
+        gui::Main::sendTo(player);
     });
 
     // plotx mgr

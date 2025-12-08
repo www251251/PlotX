@@ -1,12 +1,8 @@
 #pragma once
-#include "ll/api/coro/InterruptableSleep.h"
-#include "ll/api/event/ListenerBase.h"
-#include "mc/deps/core/math/Vec3.h"
-#include "mc/platform/UUID.h"
-#include "mc/world/actor/player/Player.h"
-#include <unordered_map>
-#include <vector>
+#include <memory>
 
+class Player;
+class Vec3;
 
 namespace plotx {
 

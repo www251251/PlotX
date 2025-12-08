@@ -7,10 +7,13 @@
 #include "plotx/utils/MessageUtils.hpp"
 
 #include "ll/api/i18n/I18n.h"
+#include "plotx/events/PlayerChangePlotNameEvent.hpp"
 #include "plotx/gui/BuyPlotGui.hpp"
 #include "plotx/gui/PlotManagerGui.hpp"
 #include "plotx/utils/StringUtils.hpp"
 
+#include <ll/api/event/Event.h>
+#include <ll/api/event/EventBus.h>
 #include <ll/api/service/Bedrock.h>
 #include <mc/world/level/Level.h>
 #include <mc/world/level/dimension/Dimension.h>
@@ -79,6 +82,13 @@ bool PlotController::changePlotName(Player& player, std::shared_ptr<PlotHandle> 
         message_utils::sendText<message_utils::LogLevel::Error>(player, "地皮名称过长"_trl(player.getLocaleCode()));
         return false;
     }
+
+    auto event = PlayerChangePlotNameEvent{player, handle, newName};
+    ll::event::EventBus::getInstance().publish(event);
+    if (event.isCancelled()) {
+        return false;
+    }
+
     handle->setName(newName);
     return true;
 }

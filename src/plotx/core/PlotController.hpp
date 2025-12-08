@@ -31,10 +31,7 @@ public:
 
     void sendPlayerCurrentPlot(Player& player) const;
 
-    /**
-     * @param toOverworld true: overworld false: plotx
-     */
-    void switchPlayerDimension(Player& player, bool toOverworld) const;
+    void switchPlayerDimension(Player& player) const;
 
     bool changePlotName(Player& player, std::shared_ptr<PlotHandle> handle, std::string newName);
 

@@ -106,6 +106,13 @@ int PlotX::getDimensionId() {
     return dimensionId;
 #endif
 }
+bool PlotX::isMoreDimensionsEnv() {
+#ifdef PLOTX_OVERWORLD
+    return false;
+#else
+    return true;
+#endif
+}
 
 
 } // namespace plotx

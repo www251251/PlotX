@@ -11,6 +11,9 @@
 #include "plotx/gui/PlotManagerGui.hpp"
 #include "plotx/utils/StringUtils.hpp"
 
+#include <mc/world/level/Level.h>
+#include <mc/world/level/dimension/Dimension.h>
+
 namespace plotx {
 
 struct PlotController::Impl {
@@ -53,11 +56,17 @@ void PlotController::sendPlayerCurrentPlot(Player& player) const {
     }
 }
 
-void PlotController::switchPlayerDimension(Player& player, bool toOverworld) const {
-    if (toOverworld) {
+void PlotController::switchPlayerDimension(Player& player) const {
+    if (player.getDimensionId() == PlotX::getDimensionId()) {
         player.teleport(player.getExpectedSpawnPosition(), player.getExpectedSpawnDimensionId(), player.getRotation());
     } else {
-        // TODO: teleport to plotx dimension
+        auto& level = player.getLevel();
+        if (auto dimension = level.getDimension(PlotX::getDimensionId()).lock()) {
+            player.teleport(dimension->getSpawnPos(), dimension->getDimensionId(), player.getRotation());
+        } else {
+            impl->mod.getLogger().error("switch dimension failed, dimension is null");
+            message_utils::sendText<message_utils::LogLevel::Error>(player, "切换维度失败"_trl(player.getLocaleCode()));
+        }
     }
 }
 bool PlotController::changePlotName(Player& player, std::shared_ptr<PlotHandle> handle, std::string newName) {

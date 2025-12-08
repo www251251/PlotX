@@ -58,10 +58,6 @@ struct AdminParam {
     }
 };
 
-struct SwitchDimParam {
-    enum class TargetDim { Overworld, Plotx } target;
-};
-
 
 void PlotXCommand::setup() {
 
@@ -98,21 +94,14 @@ void PlotXCommand::setup() {
         }
     );
 
-#ifndef PLOTX_OVERWORLD
-    // plotx switch <overworld|plotx>
-    handle.overload<SwitchDimParam>().text("switch").required("target").execute(
-        [](CommandOrigin const& origin, CommandOutput& output, SwitchDimParam const& param) {
-            if (!ensurePlayerExecute(origin, output)) {
-                return;
-            }
-            auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
-            PlotX::getInstance().getController()->switchPlayerDimension(
-                player,
-                param.target == SwitchDimParam::TargetDim::Overworld
-            );
+    // plotx switch_dimension
+    handle.overload().text("switch_dimension").execute([](CommandOrigin const& origin, CommandOutput& output) {
+        if (!ensurePlayerExecute(origin, output)) {
+            return;
         }
-    );
-#endif
+        auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
+        PlotX::getInstance().getController()->switchPlayerDimension(player);
+    });
 
     // plotx current
     handle.overload().text("current").execute([](CommandOrigin const& origin, CommandOutput& output) {

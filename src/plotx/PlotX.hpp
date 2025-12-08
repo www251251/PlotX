@@ -37,7 +37,8 @@ public:
     PXAPI void loadConfig() const;
     PXAPI void saveConfig() const;
 
-    PXNDAPI static int getDimensionId();
+    PXNDAPI static int  getDimensionId();
+    PXNDAPI static bool isMoreDimensionsEnv();
 
 private:
     static constexpr std::string_view ConfigFileName  = "config.json";

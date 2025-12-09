@@ -1,4 +1,4 @@
-#include "PlotController.hpp"
+#include "PlotService.hpp"
 
 #include "PlotHandle.hpp"
 #include "PlotRegistry.hpp"
@@ -20,7 +20,7 @@
 
 namespace plotx {
 
-struct PlotController::Impl {
+struct PlotService::Impl {
     PlotRegistry& registry;
     PlotX&        mod;
 };
@@ -28,11 +28,11 @@ struct PlotController::Impl {
 using ll::i18n_literals::operator""_tr;
 using ll::i18n_literals::operator""_trl;
 
-PlotController::PlotController(PlotRegistry& registry, PlotX& mod) : impl(std::make_unique<Impl>(registry, mod)) {}
-PlotController::~PlotController() {}
+PlotService::PlotService(PlotRegistry& registry, PlotX& mod) : impl(std::make_unique<Impl>(registry, mod)) {}
+PlotService::~PlotService() {}
 
 
-void PlotController::teleportUnownedPlot(Player& player) const {
+void PlotService::teleportUnownedPlot(Player& player) const {
     if (auto coord = impl->registry.findUnownedPlot()) {
         handleTeleportToPlot(player, coord->min.x, coord->min.z);
     } else {
@@ -43,12 +43,12 @@ void PlotController::teleportUnownedPlot(Player& player) const {
     }
 }
 
-void PlotController::teleportToPlot(Player& player, std::shared_ptr<PlotHandle> handle) const {
+void PlotService::teleportToPlot(Player& player, std::shared_ptr<PlotHandle> handle) const {
     auto& min = handle->getCoord().min;
     handleTeleportToPlot(player, min.x, min.z);
 }
 
-void PlotController::showPlotGUIFor(Player& player) const {
+void PlotService::showPlotGUIFor(Player& player) const {
     auto coord = PlotCoord{player.getPosition()};
     if (!coord.isValid()) {
         message_utils::sendText<message_utils::LogLevel::Error>(
@@ -64,7 +64,7 @@ void PlotController::showPlotGUIFor(Player& player) const {
     }
 }
 
-void PlotController::switchPlayerDimension(Player& player) const {
+void PlotService::switchPlayerDimension(Player& player) const {
     if (player.getDimensionId() == PlotX::getDimensionId()) {
         player.teleport(player.getExpectedSpawnPosition(), player.getExpectedSpawnDimensionId(), player.getRotation());
     } else {
@@ -77,7 +77,7 @@ void PlotController::switchPlayerDimension(Player& player) const {
     }
 }
 
-bool PlotController::changePlotName(Player& player, std::shared_ptr<PlotHandle> handle, std::string newName) {
+bool PlotService::changePlotName(Player& player, std::shared_ptr<PlotHandle> handle, std::string newName) {
     if (string_utils::length(newName) > 32) {
         message_utils::sendText<message_utils::LogLevel::Error>(player, "地皮名称过长"_trl(player.getLocaleCode()));
         return false;
@@ -93,15 +93,15 @@ bool PlotController::changePlotName(Player& player, std::shared_ptr<PlotHandle> 
     return true;
 }
 
-void PlotController::claimPlot(Player& player, PlotCoord coord) {
+void PlotService::claimPlot(Player& player, PlotCoord coord) {
     // TODO: impl
 }
 
-void PlotController::buyPlotFromPlayer(Player& player, std::shared_ptr<PlotHandle> handle) {
+void PlotService::buyPlotFromPlayer(Player& player, std::shared_ptr<PlotHandle> handle) {
     // TODO
 }
 
-void PlotController::handleTeleportToPlot(Player& player, int x, int z) const {
+void PlotService::handleTeleportToPlot(Player& player, int x, int z) const {
     if (auto dimension = PlotX::getPlotDimension()) {
         Vec3 position{x + 0.5f, dimension->getSpawnYPosition(), z + 0.5f};
         player.teleport(position, dimension->getDimensionId(), player.getRotation());

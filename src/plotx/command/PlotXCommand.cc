@@ -15,7 +15,7 @@
 #include "mc/server/commands/CommandOutput.h"
 #include "mc/server/commands/CommandPositionFloat.h"
 #include "mc/server/commands/CommandSelector.h"
-#include "plotx/core/PlotController.hpp"
+#include "plotx/core/PlotService.hpp"
 
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/ActorType.h>
@@ -100,7 +100,7 @@ void PlotXCommand::setup() {
             return;
         }
         auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
-        PlotX::getInstance().getController()->switchPlayerDimension(player);
+        PlotX::getInstance().getService()->switchPlayerDimension(player);
     });
 
     // plotx current
@@ -112,7 +112,7 @@ void PlotXCommand::setup() {
         if (!ensurePlayerInPlotDimension(player, output)) {
             return;
         }
-        PlotX::getInstance().getController()->showPlotGUIFor(player);
+        PlotX::getInstance().getService()->showPlotGUIFor(player);
     });
 
     // plotx
@@ -136,7 +136,7 @@ void PlotXCommand::setup() {
             if (!ensurePlayerInPlotDimension(player, output)) {
                 return;
             }
-            PlotX::getInstance().getController()->teleportUnownedPlot(player);
+            PlotX::getInstance().getService()->teleportUnownedPlot(player);
         });
 }
 bool PlotXCommand::ensureConsoleExecute(CommandOrigin const& origin, CommandOutput& output) {

@@ -1,7 +1,7 @@
 #include "BuyPlotGui.hpp"
 
 #include "plotx/PlotX.hpp"
-#include "plotx/core/PlotController.hpp"
+#include "plotx/core/PlotService.hpp"
 #include "plotx/infra/Config.hpp"
 #include "plotx/math/PlotCoord.hpp"
 
@@ -25,7 +25,7 @@ void BuyPlotGUI::sendTo(Player& player, PlotCoord coord) {
                 return;
             }
             if ((bool)result.value()) {
-                PlotX::getInstance().getController()->claimPlot(player, coord);
+                PlotX::getInstance().getService()->claimPlot(player, coord);
             }
         });
 }

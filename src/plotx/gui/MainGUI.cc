@@ -3,7 +3,7 @@
 #include "PlotPicker.hpp"
 #include "PlotShopGui.hpp"
 #include "plotx/PlotX.hpp"
-#include "plotx/core/PlotController.hpp"
+#include "plotx/core/PlotService.hpp"
 
 #include "ll/api/form/SimpleForm.h"
 #include "ll/api/i18n/I18n.h"
@@ -20,10 +20,10 @@ void MainGUI::sendTo(Player& player) {
     fm.setContent("请选择一个操作"_trl(localeCode));
 
     fm.appendButton("切换维度\n(往返地皮维度)"_trl(localeCode), "textures/ui/realmsIcon", "path", [](Player& pl) {
-        PlotX::getInstance().getController()->switchPlayerDimension(pl);
+        PlotX::getInstance().getService()->switchPlayerDimension(pl);
     });
     fm.appendButton("管理脚下地皮"_trl(localeCode), "textures/ui/icon_recipe_item", "path", [](Player& pl) {
-        PlotX::getInstance().getController()->showPlotGUIFor(pl);
+        PlotX::getInstance().getService()->showPlotGUIFor(pl);
     });
     fm.appendButton("管理地皮"_trl(localeCode), "textures/ui/icon_recipe_nature", "path", [](Player& pl) {
         PlotPicker::sendTo(pl, [](Player& player, std::shared_ptr<PlotHandle> handle) {

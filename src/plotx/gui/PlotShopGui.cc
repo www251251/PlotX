@@ -2,9 +2,9 @@
 
 #include "PlotCommentGui.hpp"
 #include "plotx/PlotX.hpp"
-#include "plotx/core/PlotController.hpp"
 #include "plotx/core/PlotHandle.hpp"
 #include "plotx/core/PlotRegistry.hpp"
+#include "plotx/core/PlotService.hpp"
 
 #include <ll/api/form/CustomForm.h>
 #include <ll/api/form/ModalForm.h>
@@ -50,7 +50,7 @@ void PlotShopGUI::showPlot(Player& player, std::shared_ptr<PlotHandle> handle) {
         )
     );
     f.appendButton("传送到此地皮"_trl(localeCode), "textures/ui/move", "path", [handle](Player& player) {
-        PlotX::getInstance().getController()->teleportToPlot(player, handle);
+        PlotX::getInstance().getService()->teleportToPlot(player, handle);
     });
     f.appendButton("地皮评论"_trl(localeCode), "textures/ui/icon_sign", "path", [handle](Player& player) {
         PlotCommentGUI::sendTo(player, handle);
@@ -73,7 +73,7 @@ void PlotShopGUI::confirmBuyPlot(Player& player, std::shared_ptr<PlotHandle> han
                 return;
             }
             if ((bool)result.value()) {
-                PlotX::getInstance().getController()->buyPlotFromPlayer(player, handle);
+                PlotX::getInstance().getService()->buyPlotFromPlayer(player, handle);
             } else {
                 showPlot(player, handle);
             }

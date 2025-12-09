@@ -3,9 +3,9 @@
 #include "PlayerPicker.hpp"
 #include "PlotCommentGui.hpp"
 #include "plotx/PlotX.hpp"
-#include "plotx/core/PlotController.hpp"
 #include "plotx/core/PlotHandle.hpp"
 #include "plotx/core/PlotRegistry.hpp"
+#include "plotx/core/PlotService.hpp"
 #include "plotx/utils/MessageUtils.hpp"
 
 
@@ -48,7 +48,7 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
     );
     if (!isGuest) {
         f.appendButton("传送到此地皮"_trl(localeCode), "textures/ui/move", "path", [handle](Player& player) {
-            PlotX::getInstance().getController()->teleportToPlot(player, handle);
+            PlotX::getInstance().getService()->teleportToPlot(player, handle);
         });
     }
     if (isOwner || isAdmin) {
@@ -85,7 +85,7 @@ void PlotManagerGUI::handleEditName(Player& player, std::shared_ptr<PlotHandle> 
                 return;
             }
             auto name = std::get<std::string>(data->at("name"));
-            if (PlotX::getInstance().getController()->changePlotName(player, handle, std::move(name))) {
+            if (PlotX::getInstance().getService()->changePlotName(player, handle, std::move(name))) {
                 sendTo(player, handle);
             }
         }

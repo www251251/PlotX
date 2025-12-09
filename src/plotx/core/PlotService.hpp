@@ -14,13 +14,13 @@ class PlotRegistry;
 
 namespace plotx {
 
-class PlotController {
+class PlotService {
     struct Impl;
     std::unique_ptr<Impl> impl;
 
 public:
-    explicit PlotController(PlotRegistry& registry, PlotX& mod);
-    ~PlotController();
+    explicit PlotService(PlotRegistry& registry, PlotX& mod);
+    ~PlotService();
 
     void teleportUnownedPlot(Player& player) const;
 

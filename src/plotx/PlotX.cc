@@ -1,8 +1,8 @@
 #include "PlotX.hpp"
 #include "command/PlotXCommand.hpp"
-#include "plotx/core/PlotController.hpp"
 #include "plotx/core/PlotEventDriven.hpp"
 #include "plotx/core/PlotRegistry.hpp"
+#include "plotx/core/PlotService.hpp"
 #include "plotx/infra/Config.hpp"
 
 #include "ll/api/Config.h"
@@ -22,13 +22,13 @@ namespace plotx {
 
 
 struct PlotX::Impl {
-    ll::mod::NativeMod&              self_;
-    std::unique_ptr<PlotEventDriven> plotEventDriven_{nullptr};
-    std::unique_ptr<PlotRegistry>    registry_{nullptr};
+    ll::mod::NativeMod&              self;
+    std::unique_ptr<PlotEventDriven> plotEventDriven{nullptr};
+    std::unique_ptr<PlotRegistry>    registry{nullptr};
 
-    std::unique_ptr<PlotController> controller_{nullptr};
+    std::unique_ptr<PlotService> service{nullptr};
 
-    explicit Impl() : self_(*ll::mod::NativeMod::current()) {}
+    explicit Impl() : self(*ll::mod::NativeMod::current()) {}
 };
 
 PlotX::PlotX() : impl_(std::make_unique<Impl>()) {}
@@ -54,14 +54,14 @@ bool PlotX::load() {
     loadConfig();
 
     logger.debug("Initialize PlotRegistry");
-    impl_->registry_   = std::make_unique<PlotRegistry>(*this);
-    impl_->controller_ = std::make_unique<PlotController>(*impl_->registry_, *this);
+    impl_->registry = std::make_unique<PlotRegistry>(*this);
+    impl_->service  = std::make_unique<PlotService>(*impl_->registry, *this);
 
     return true;
 }
 
 bool PlotX::enable() {
-    impl_->plotEventDriven_ = std::make_unique<PlotEventDriven>();
+    impl_->plotEventDriven = std::make_unique<PlotEventDriven>();
 
     PlotXCommand::setup();
 
@@ -69,18 +69,18 @@ bool PlotX::enable() {
 }
 
 bool PlotX::disable() {
-    impl_->plotEventDriven_.reset();
-    impl_->registry_.reset();
+    impl_->plotEventDriven.reset();
+    impl_->registry.reset();
 
     return true;
 }
 
 
-ll::mod::NativeMod& PlotX::getSelf() const { return impl_->self_; }
-ll::io::Logger&     PlotX::getLogger() const { return impl_->self_.getLogger(); }
+ll::mod::NativeMod& PlotX::getSelf() const { return impl_->self; }
+ll::io::Logger&     PlotX::getLogger() const { return impl_->self.getLogger(); }
 
-PlotRegistry*   PlotX::getPlotRegistry() const { return impl_->registry_.get(); }
-PlotController* PlotX::getController() const { return impl_->controller_.get(); }
+PlotRegistry* PlotX::getPlotRegistry() const { return impl_->registry.get(); }
+PlotService*  PlotX::getService() const { return impl_->service.get(); }
 
 std::filesystem::path PlotX::getConfigPath() const { return getSelf().getConfigDir() / ConfigFileName; }
 

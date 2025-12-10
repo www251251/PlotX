@@ -27,7 +27,7 @@ namespace plotx {
 using ll::i18n_literals::operator""_tr;
 using ll::i18n_literals::operator""_trl;
 
-#define GET_ENTITY_AND_CAST_PLAYER(_ORI) static_cast<Player&>(*_ORI.getEntity())
+#define GET_ENTITY_AS_PLAYER(_ORI) static_cast<Player&>(*_ORI.getEntity())
 
 enum class AdminAction { Add, Remove };
 struct AdminParam {
@@ -99,7 +99,7 @@ void PlotXCommand::setup() {
         if (!ensurePlayerExecute(origin, output)) {
             return;
         }
-        auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
+        auto& player = GET_ENTITY_AS_PLAYER(origin);
         PlotX::getInstance().getService()->switchPlayerDimension(player);
     });
 
@@ -108,7 +108,7 @@ void PlotXCommand::setup() {
         if (!ensurePlayerExecute(origin, output)) {
             return;
         }
-        auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
+        auto& player = GET_ENTITY_AS_PLAYER(origin);
         if (!ensurePlayerInPlotDimension(player, output)) {
             return;
         }
@@ -120,7 +120,7 @@ void PlotXCommand::setup() {
         if (!ensurePlayerExecute(origin, output)) {
             return;
         }
-        auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
+        auto& player = GET_ENTITY_AS_PLAYER(origin);
         MainGUI::sendTo(player);
     });
 
@@ -132,7 +132,7 @@ void PlotXCommand::setup() {
             if (!ensurePlayerExecute(origin, output)) {
                 return;
             }
-            auto& player = GET_ENTITY_AND_CAST_PLAYER(origin);
+            auto& player = GET_ENTITY_AS_PLAYER(origin);
             if (!ensurePlayerInPlotDimension(player, output)) {
                 return;
             }

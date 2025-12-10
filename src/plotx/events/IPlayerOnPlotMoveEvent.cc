@@ -5,9 +5,9 @@ namespace plotx::event {
 IPlayerOnPlotMoveEvent::IPlayerOnPlotMoveEvent(
     Player*          player,
     Vec3 const&      currentPos,
-    int const&       currentDimId,
+    int              currentDimId,
     PlotCoord const& currentPlotCoord,
-    int const&       lastDimId,
+    int              lastDimId,
     PlotCoord const& lastPlotCoord
 )
 : player_(player),
@@ -21,11 +21,11 @@ Player* IPlayerOnPlotMoveEvent::getPlayer() const { return player_; }
 
 Vec3 const& IPlayerOnPlotMoveEvent::getCurrentPos() const { return currentPos_; }
 
-int const& IPlayerOnPlotMoveEvent::getCurrentDimId() const { return currentDimId_; }
+int IPlayerOnPlotMoveEvent::getCurrentDimId() const { return currentDimId_; }
 
 PlotCoord const& IPlayerOnPlotMoveEvent::getCurrentPlotCoord() const { return currentPlotCoord_; }
 
-int const& IPlayerOnPlotMoveEvent::getLastDimId() const { return lastDimId_; }
+int IPlayerOnPlotMoveEvent::getLastDimId() const { return lastDimId_; }
 
 PlotCoord const& IPlayerOnPlotMoveEvent::getLastPlotCoord() const { return lastPlotCoord_; }
 

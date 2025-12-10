@@ -15,18 +15,18 @@ namespace plotx::event {
 class IPlayerOnPlotMoveEvent : public ll::event::Event {
     Player*          player_;           // 玩家
     Vec3 const&      currentPos_;       // 当前位置
-    int const&       currentDimId_;     // 当前维度
+    int              currentDimId_;     // 当前维度
     PlotCoord const& currentPlotCoord_; // 当前地皮坐标
-    int const&       lastDimId_;        // 上一个维度
+    int              lastDimId_;        // 上一个维度
     PlotCoord const& lastPlotCoord_;    // 上一个地皮坐标
 
 public:
     PXAPI explicit IPlayerOnPlotMoveEvent(
         Player*          player,
         Vec3 const&      currentPos,
-        int const&       currentDimId,
+        int              currentDimId,
         PlotCoord const& currentPlotCoord,
-        int const&       lastDimId,
+        int              lastDimId,
         PlotCoord const& lastPlotCoord
     );
 
@@ -34,11 +34,11 @@ public:
 
     PXNDAPI Vec3 const& getCurrentPos() const;
 
-    PXNDAPI int const& getCurrentDimId() const;
+    PXNDAPI int getCurrentDimId() const;
 
     PXNDAPI PlotCoord const& getCurrentPlotCoord() const;
 
-    PXNDAPI int const& getLastDimId() const;
+    PXNDAPI int getLastDimId() const;
 
     PXNDAPI PlotCoord const& getLastPlotCoord() const;
 };

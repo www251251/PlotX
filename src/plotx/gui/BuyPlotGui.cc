@@ -1,8 +1,8 @@
 #include "BuyPlotGui.hpp"
 
+#include "plotx/core/Config.hpp"
 #include "plotx/PlotX.hpp"
 #include "plotx/core/PlotService.hpp"
-#include "plotx/infra/Config.hpp"
 #include "plotx/math/PlotCoord.hpp"
 
 #include "ll/api/form/ModalForm.h"

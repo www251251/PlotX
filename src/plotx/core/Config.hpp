@@ -3,11 +3,10 @@
 
 namespace plotx {
 
-
 struct Config {
     int version{2};
 
-    struct {
+    struct GeneratorConfig {
         int plotWidth{128};     // 地皮大小(长宽)
         int roadWidth{5};       // 道路宽度
         int generatorHeight{0}; // 地皮生成高度 -64 ~ 320
@@ -24,8 +23,6 @@ struct Config {
     } plot;
 };
 
-
 inline Config gConfig_;
-
 
 } // namespace plotx

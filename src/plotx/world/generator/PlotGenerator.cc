@@ -1,5 +1,5 @@
 #include "PlotGenerator.hpp"
-#include "plotx/infra/Config.hpp"
+#include "plotx/core/Config.hpp"
 
 #include "mc/world/level/BlockPos.h"
 #include "mc/world/level/Level.h"

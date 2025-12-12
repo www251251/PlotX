@@ -1,6 +1,6 @@
 #include "PlotCoord.hpp"
+#include "plotx/core/Config.hpp"
 #include "plotx/PlotX.hpp"
-#include "plotx/infra/Config.hpp"
 #include "plotx/math/PlotAABB.hpp"
 #include "plotx/world/Helper.hpp"
 

@@ -8,7 +8,9 @@
 
 #include "ll/api/i18n/I18n.h"
 #include "plotx/events/PlayerChangePlotNameEvent.hpp"
+#include "plotx/events/PlayerClaimPlotEvent.hpp"
 #include "plotx/events/PlayerModifyPlotMemberEvent.hpp"
+#include "plotx/events/PlotOwnershipTransferEvent.hpp"
 #include "plotx/gui/BuyPlotGui.hpp"
 #include "plotx/gui/PlotManagerGui.hpp"
 #include "plotx/utils/StringUtils.hpp"
@@ -120,12 +122,51 @@ bool PlotService::modifyPlotMember(
     return true;
 }
 
-void PlotService::claimPlot(Player& player, PlotCoord coord) {
-    // TODO: impl
+bool PlotService::claimPlot(Player& player, PlotCoord coord) {
+    auto localeCode = player.getLocaleCode();
+    if (!coord.isValid()) {
+        message_utils::sendText<message_utils::LogLevel::Error>(player, "您当前所在的位置不是地皮"_trl(localeCode));
+        return false;
+    }
+    if (impl->registry.hasPlot(coord)) {
+        message_utils::sendText<message_utils::LogLevel::Error>(player, "该地皮已被认领，您不能重复认领");
+        return false;
+    }
+
+    auto event = PlayerClaimPlotEvent{player, coord};
+    ll::event::EventBus::getInstance().publish(event);
+    if (event.isCancelled()) {
+        return false;
+    }
+
+    auto handle = PlotHandle::make(coord, player.getUuid());
+    if (impl->registry.addPlot(handle)) {
+        message_utils::sendText(player, "您已认领地皮 {},{}"_trl(localeCode, coord.x, coord.z));
+        return true;
+    }
+    message_utils::sendText<message_utils::LogLevel::Error>(player, "认领地皮失败！"_trl(localeCode));
+    return false;
 }
 
-void PlotService::buyPlotFromPlayer(Player& player, std::shared_ptr<PlotHandle> handle) {
-    // TODO
+bool PlotService::transferPlotTo(Player& player, std::shared_ptr<PlotHandle> handle) {
+    auto localeCode = player.getLocaleCode();
+    if (handle->isOwner(player.getUuid())) {
+        message_utils::sendText<message_utils::LogLevel::Error>(player, "您已经是地皮主人了"_trl(localeCode));
+        return false;
+    }
+
+    auto event = PlotOwnershipTransferEvent{player, handle};
+    ll::event::EventBus::getInstance().publish(event);
+    if (event.isCancelled()) {
+        return false;
+    }
+
+    handle->setOwner(player.getUuid());
+    message_utils::sendText<message_utils::LogLevel::Info>(
+        player,
+        "您已获得地皮 {} 的所有权"_trl(localeCode, handle->getName())
+    );
+    return true;
 }
 
 void PlotService::handleTeleportToPlot(Player& player, int x, int z) const {

@@ -73,7 +73,7 @@ void PlotShopGUI::confirmBuyPlot(Player& player, std::shared_ptr<PlotHandle> han
                 return;
             }
             if ((bool)result.value()) {
-                PlotX::getInstance().getService()->buyPlotFromPlayer(player, handle);
+                PlotX::getInstance().getService()->transferPlotTo(player, handle);
             } else {
                 showPlot(player, handle);
             }

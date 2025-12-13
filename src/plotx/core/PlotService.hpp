@@ -37,9 +37,9 @@ public:
 
     bool modifyPlotMember(Player& player, std::shared_ptr<PlotHandle> handle, mce::UUID const& target, bool isAdd);
 
-    void claimPlot(Player& player, PlotCoord coord);
+    bool claimPlot(Player& player, PlotCoord coord);
 
-    void buyPlotFromPlayer(Player& player, std::shared_ptr<PlotHandle> handle);
+    bool transferPlotTo(Player& player, std::shared_ptr<PlotHandle> handle);
 
 private:
     void handleTeleportToPlot(Player& player, int x, int z) const;

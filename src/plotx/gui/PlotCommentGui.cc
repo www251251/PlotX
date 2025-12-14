@@ -3,7 +3,7 @@
 #include "plotx/PlotX.hpp"
 #include "plotx/core/PlotHandle.hpp"
 #include "plotx/core/PlotRegistry.hpp"
-#include "plotx/utils/MessageUtils.hpp"
+#include "plotx/utils/FeedbackUtils.hpp"
 #include "plotx/utils/TimeUtils.hpp"
 
 #include <ll/api/form/CustomForm.h>
@@ -121,10 +121,7 @@ void PlotCommentGUI::editComment(Player& player, std::shared_ptr<PlotHandle> han
         if (handle->updateCommentContent(id, std::move(content))) {
             showComment(player, handle, id);
         } else {
-            message_utils::sendText<message_utils::LogLevel::Error>(
-                player,
-                "更新评论内容失败"_trl(player.getLocaleCode())
-            );
+            feedback_utils::sendErrorText(player, "更新评论内容失败"_trl(player.getLocaleCode()));
         }
     });
 }
@@ -150,7 +147,7 @@ void PlotCommentGUI::deleteComment(Player& player, std::shared_ptr<PlotHandle> h
 }
 bool PlotCommentGUI::ensureCommentExists(Player& player, std::optional<CommentModel> const& model) {
     if (!model) {
-        message_utils::sendText<message_utils::LogLevel::Error>(player, "评论不存在"_trl(player.getLocaleCode()));
+        feedback_utils::sendErrorText(player, "评论不存在"_trl(player.getLocaleCode()));
         return false;
     }
     return true;

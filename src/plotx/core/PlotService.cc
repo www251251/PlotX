@@ -4,7 +4,7 @@
 #include "PlotRegistry.hpp"
 #include "plotx/PlotX.hpp"
 #include "plotx/math/PlotCoord.hpp"
-#include "plotx/utils/MessageUtils.hpp"
+#include "plotx/utils/FeedbackUtils.hpp"
 
 #include "ll/api/i18n/I18n.h"
 #include "plotx/events/PlayerChangePlotNameEvent.hpp"
@@ -39,10 +39,7 @@ void PlotService::teleportUnownedPlot(Player& player) const {
     if (auto coord = impl->registry.findUnownedPlot()) {
         handleTeleportToPlot(player, coord->min.x, coord->min.z);
     } else {
-        message_utils::sendText<message_utils::LogLevel::Error>(
-            player,
-            "未找到最近的无主地皮"_trl(player.getLocaleCode())
-        );
+        feedback_utils::sendErrorText(player, "未找到最近的无主地皮"_trl(player.getLocaleCode()));
     }
 }
 
@@ -54,10 +51,7 @@ void PlotService::teleportToPlot(Player& player, std::shared_ptr<PlotHandle> han
 void PlotService::showPlotGUIFor(Player& player) const {
     auto coord = PlotCoord{player.getPosition()};
     if (!coord.isValid()) {
-        message_utils::sendText<message_utils::LogLevel::Error>(
-            player,
-            "您当前所在的位置不是地皮"_trl(player.getLocaleCode())
-        );
+        feedback_utils::sendErrorText(player, "您当前所在的位置不是地皮"_trl(player.getLocaleCode()));
         return;
     }
     if (impl->registry.hasPlot(coord)) {
@@ -75,14 +69,14 @@ void PlotService::switchPlayerDimension(Player& player) const {
             player.teleport(dimension->getSpawnPos(), dimension->getDimensionId(), player.getRotation());
         } else {
             impl->mod.getLogger().error("switch dimension failed, dimension is null");
-            message_utils::sendText<message_utils::LogLevel::Error>(player, "切换维度失败"_trl(player.getLocaleCode()));
+            feedback_utils::sendErrorText(player, "切换维度失败"_trl(player.getLocaleCode()));
         }
     }
 }
 
 bool PlotService::changePlotName(Player& player, std::shared_ptr<PlotHandle> handle, std::string newName) {
     if (string_utils::length(newName) > 32) {
-        message_utils::sendText<message_utils::LogLevel::Error>(player, "地皮名称过长"_trl(player.getLocaleCode()));
+        feedback_utils::sendErrorText(player, "地皮名称过长"_trl(player.getLocaleCode()));
         return false;
     }
 
@@ -125,11 +119,11 @@ bool PlotService::modifyPlotMember(
 bool PlotService::claimPlot(Player& player, PlotCoord coord) {
     auto localeCode = player.getLocaleCode();
     if (!coord.isValid()) {
-        message_utils::sendText<message_utils::LogLevel::Error>(player, "您当前所在的位置不是地皮"_trl(localeCode));
+        feedback_utils::sendErrorText(player, "您当前所在的位置不是地皮"_trl(localeCode));
         return false;
     }
     if (impl->registry.hasPlot(coord)) {
-        message_utils::sendText<message_utils::LogLevel::Error>(player, "该地皮已被认领，您不能重复认领");
+        feedback_utils::sendErrorText(player, "该地皮已被认领，您不能重复认领");
         return false;
     }
 
@@ -141,17 +135,21 @@ bool PlotService::claimPlot(Player& player, PlotCoord coord) {
 
     auto handle = PlotHandle::make(coord, player.getUuid());
     if (impl->registry.addPlot(handle)) {
-        message_utils::sendText(player, "您已认领地皮 {},{}"_trl(localeCode, coord.x, coord.z));
+        feedback_utils::notifySuccess(
+            player,
+            "认领地皮"_trl(localeCode),
+            "您已认领地皮 {},{}"_trl(localeCode, coord.x, coord.z)
+        );
         return true;
     }
-    message_utils::sendText<message_utils::LogLevel::Error>(player, "认领地皮失败！"_trl(localeCode));
+    feedback_utils::sendErrorText(player, "认领地皮失败！"_trl(localeCode));
     return false;
 }
 
 bool PlotService::transferPlotTo(Player& player, std::shared_ptr<PlotHandle> handle) {
     auto localeCode = player.getLocaleCode();
     if (handle->isOwner(player.getUuid())) {
-        message_utils::sendText<message_utils::LogLevel::Error>(player, "您已经是地皮主人了"_trl(localeCode));
+        feedback_utils::sendErrorText(player, "您已经是地皮主人了"_trl(localeCode));
         return false;
     }
 
@@ -162,8 +160,9 @@ bool PlotService::transferPlotTo(Player& player, std::shared_ptr<PlotHandle> han
     }
 
     handle->setOwner(player.getUuid());
-    message_utils::sendText<message_utils::LogLevel::Info>(
+    feedback_utils::notifySuccess(
         player,
+        "购买地皮"_trl(localeCode),
         "您已获得地皮 {} 的所有权"_trl(localeCode, handle->getName())
     );
     return true;
@@ -175,10 +174,7 @@ void PlotService::handleTeleportToPlot(Player& player, int x, int z) const {
         player.teleport(position, dimension->getDimensionId(), player.getRotation());
     } else {
         impl->mod.getLogger().error("handleTeleportToPlot failed, dimension is null");
-        message_utils::sendText<message_utils::LogLevel::Error>(
-            player,
-            "传送失败，找不到地皮维度"_trl(player.getLocaleCode())
-        );
+        feedback_utils::sendErrorText(player, "传送失败，找不到地皮维度"_trl(player.getLocaleCode()));
     }
 }
 

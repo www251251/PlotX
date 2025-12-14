@@ -1,0 +1,105 @@
+#pragma once
+#include <string>
+
+#include "fmt/format.h"
+
+#include <ll/api/form/ModalForm.h>
+#include <ll/api/i18n/I18n.h>
+
+#include "mc/network/packet/ToastRequestPacket.h"
+#include <mc/network/packet/SetTitlePacket.h>
+#include <mc/network/packet/TextPacket.h>
+#include <mc/world/actor/player/Player.h>
+
+inline ToastRequestPacket::ToastRequestPacket()               = default;
+inline ToastRequestPacketPayload::ToastRequestPacketPayload() = default;
+
+namespace plotx::feedback_utils {
+
+template <typename... Args>
+inline std::string fmt_str(std::string const& fmt, Args&&... args) noexcept {
+    try {
+        return fmt::vformat(fmt, fmt::make_format_args(args...));
+    } catch (...) {
+        return fmt;
+    }
+}
+
+// 普通聊天栏消息 (聊天栏)
+template <typename... Args>
+void sendText(Player& p, std::string const& fmt, Args&&... args) {
+    p.sendMessage("§b[PlotX] §r" + fmt_str(fmt, std::forward<Args>(args)...));
+}
+
+// 红色报错消息 (聊天栏)
+template <typename... Args>
+void sendErrorText(Player& p, std::string const& fmt, Args&&... args) {
+    p.sendMessage("§b[PlotX] §c" + fmt_str(fmt, std::forward<Args>(args)...));
+}
+
+// 文本提示 (物品栏上方)
+template <typename... Args>
+void sendTextTip(Player& p, std::string const& fmt, Args&&... args) {
+    TextPacket pkt{};
+    pkt.mType    = TextPacketType::Tip;
+    pkt.mMessage = fmt_str(fmt, std::forward<Args>(args)...);
+    pkt.sendTo(p);
+}
+
+// ActionBar 提示 (物品栏上方)
+template <typename... Args>
+void sendActionBar(Player& p, std::string const& fmt, Args&&... args) {
+    SetTitlePacket pkt{};
+    pkt.mType      = SetTitlePacket::TitleType::Actionbar;
+    pkt.mTitleText = fmt_str(fmt, std::forward<Args>(args)...);
+    pkt.sendTo(p);
+}
+
+// Toast 弹窗 (成就消息)
+inline void sendToast(Player& p, std::string const& title, std::string const& content) {
+    ToastRequestPacket pkt{};
+    pkt.mTitle   = title;
+    pkt.mContent = content;
+    pkt.sendTo(p);
+}
+
+// Title 大字 (大标题、小标题)
+inline void sendTitle(Player& p, std::string const& mainTitle, std::string const& subTitle = "") {
+    SetTitlePacket pkt{};
+    pkt.mType      = SetTitlePacket::TitleType::Title;
+    pkt.mTitleText = mainTitle;
+    pkt.sendTo(p);
+    if (!subTitle.empty()) {
+        pkt.mType      = SetTitlePacket::TitleType::Subtitle;
+        pkt.mTitleText = subTitle;
+        pkt.sendTo(p);
+    }
+}
+
+using RetryCallback = std::function<void(Player&)>;
+inline void askRetry(Player& p, std::string const& content, RetryCallback retry, RetryCallback cancel) {
+    using ll::i18n_literals::operator""_trl;
+    auto localeCode = p.getLocaleCode();
+    ll::form::ModalForm{
+        "§bPlotX§r - §c操作失败"_trl(localeCode),
+        content,
+        "§a重试"_trl(localeCode),
+        "§c放弃/取消"_trl(localeCode),
+    }
+        .sendTo(p, [retry, cancel](Player& player, ll::form::ModalFormResult const& result, auto) {
+            if (result && (bool)result.value()) {
+                retry(player);
+            } else {
+                cancel(player);
+            }
+        });
+}
+
+template <typename... Args>
+void notifySuccess(Player& p, std::string const& title, std::string const& detail_fmt, Args&&... args) {
+    std::string detail = fmt_str(detail_fmt, std::forward<Args>(args)...);
+    sendToast(p, "§a" + title, detail);
+    p.sendMessage(fmt::format("§7[PlotX] {}: {}", title, detail));
+}
+
+} // namespace plotx::feedback_utils

@@ -6,7 +6,7 @@
 #include "plotx/core/PlotHandle.hpp"
 #include "plotx/core/PlotRegistry.hpp"
 #include "plotx/core/PlotService.hpp"
-#include "plotx/utils/MessageUtils.hpp"
+#include "plotx/utils/FeedbackUtils.hpp"
 
 
 #include <ll/api/form/CustomForm.h>
@@ -131,15 +131,12 @@ void PlotManagerGUI::sellPlotOrEditSellPrice(Player& player, std::shared_ptr<Plo
         try {
             int price = std::stoll(priceStr);
             if (price < 0) {
-                message_utils::sendText<message_utils::LogLevel::Error>(
-                    player,
-                    "价格不能为负数"_trl(player.getLocaleCode())
-                );
+                feedback_utils::sendErrorText(player, "价格不能为负数"_trl(player.getLocaleCode()));
                 return;
             }
             handle->setSellingPrice(price);
         } catch (...) {
-            message_utils::sendText<message_utils::LogLevel::Error>(player, "无效的价格"_trl(player.getLocaleCode()));
+            feedback_utils::sendErrorText(player, "无效的价格"_trl(player.getLocaleCode()));
         }
     });
 }
@@ -208,18 +205,12 @@ void PlotManagerGUI::addMemberFromOffline(Player& player, std::shared_ptr<PlotHa
         }
         auto name = std::get<std::string>(data->at("name"));
         if (name.empty()) {
-            message_utils::sendText<message_utils::LogLevel::Error>(
-                player,
-                "玩家名不能为空"_trl(player.getLocaleCode())
-            );
+            feedback_utils::sendErrorText(player, "玩家名不能为空"_trl(player.getLocaleCode()));
             return;
         }
         auto entry = ll::service::PlayerInfo::getInstance().fromName(name);
         if (!entry) {
-            message_utils::sendText<message_utils::LogLevel::Error>(
-                player,
-                "未找到玩家 {} 的信息"_trl(player.getLocaleCode(), name)
-            );
+            feedback_utils::sendErrorText(player, "未找到玩家 {} 的信息"_trl(player.getLocaleCode(), name));
             return;
         }
         if (PlotX::getInstance().getService()->modifyPlotMember(player, handle, entry->uuid, true)) {

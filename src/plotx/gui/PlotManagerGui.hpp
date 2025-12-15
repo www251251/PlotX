@@ -1,5 +1,7 @@
 #pragma once
+#include <complex.h>
 #include <memory>
+#include <optional>
 
 
 class Player;
@@ -13,7 +15,11 @@ struct PlotManagerGUI {
     static void sendTo(Player& player, std::shared_ptr<PlotHandle> handle);
 
 private:
-    static void handleEditName(Player& player, std::shared_ptr<PlotHandle> handle);
+    static void handleEditName(
+        Player&                     player,
+        std::shared_ptr<PlotHandle> handle,
+        std::optional<std::string>  lastInput = std::nullopt
+    );
 
     static void handleEditSellStatus(Player& player, std::shared_ptr<PlotHandle> handle);
     static void sellPlotOrEditSellPrice(Player& player, std::shared_ptr<PlotHandle> handle, bool edit);

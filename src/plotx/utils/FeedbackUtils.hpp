@@ -81,7 +81,7 @@ inline void sendTitle(Player& p, std::string const& mainTitle, std::string const
 }
 
 using RetryCallback = std::function<void(Player&)>;
-inline void askRetry(Player& p, std::string const& content, RetryCallback retry, RetryCallback cancel) {
+inline void askRetry(Player& p, std::string const& content, RetryCallback retry, RetryCallback cancel = nullptr) {
     using ll::i18n_literals::operator""_trl;
     auto localeCode = p.getLocaleCode();
     ll::form::ModalForm{
@@ -90,13 +90,21 @@ inline void askRetry(Player& p, std::string const& content, RetryCallback retry,
         "§a重试"_trl(localeCode),
         "§c放弃/取消"_trl(localeCode),
     }
-        .sendTo(p, [retry, cancel](Player& player, ll::form::ModalFormResult const& result, auto) {
-            if (result && (bool)result.value()) {
-                retry(player);
-            } else {
-                cancel(player);
+        .sendTo(
+            p,
+            [retry  = std::move(retry),
+             cancel = std::move(cancel)](Player& player, ll::form::ModalFormResult const& result, auto) {
+                if (result && (bool)result.value()) {
+                    retry(player);
+                } else {
+                    if (cancel) cancel(player);
+                }
             }
-        });
+        );
+}
+
+inline void askRetry(Player& player, ll::Error const& error, RetryCallback retry, RetryCallback cancel = nullptr) {
+    askRetry(player, error.message(), std::move(retry), std::move(cancel));
 }
 
 template <typename... Args>

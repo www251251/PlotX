@@ -48,7 +48,16 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
     );
     if (!isGuest) {
         f.appendButton("传送到此地皮"_trl(localeCode), "textures/ui/move", "path", [handle](Player& player) {
-            PlotX::getInstance().getService()->teleportToPlot(player, handle);
+            if (auto exp = PlotX::getInstance().getService()->teleportToPlot(player, handle)) {
+                auto localeCode = player.getLocaleCode();
+                feedback_utils::notifySuccess(
+                    player,
+                    "传送"_trl(localeCode),
+                    "传送到地皮 {} 位置: {}"_trl(localeCode, handle->getName(), handle->getCoord().min.toString())
+                );
+            } else {
+                feedback_utils::sendError(player, exp.error());
+            }
         });
     }
     if (isOwner || isAdmin) {
@@ -56,7 +65,7 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
             // TODO: impl
         });
         f.appendButton("编辑名称"_trl(localeCode), "textures/ui/book_edit_default", "path", [handle](Player& player) {
-            handleEditName(player, handle);
+            handleEditName(player, handle, std::nullopt);
         });
         f.appendButton("地皮出售"_trl(localeCode), "textures/ui/MCoin", "path", [handle](Player& player) {
             handleEditSellStatus(player, handle);
@@ -71,12 +80,16 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
     f.sendTo(player);
 }
 
-void PlotManagerGUI::handleEditName(Player& player, std::shared_ptr<PlotHandle> handle) {
+void PlotManagerGUI::handleEditName(
+    Player&                     player,
+    std::shared_ptr<PlotHandle> handle,
+    std::optional<std::string>  lastInput
+) {
     auto localeCode = player.getLocaleCode();
 
     auto f = ll::form::CustomForm{};
     f.setTitle("PlotX - 编辑地皮名称"_trl(localeCode));
-    f.appendInput("name", "地皮名称"_trl(localeCode), "string", handle->getName());
+    f.appendInput("name", "地皮名称"_trl(localeCode), "string", lastInput ? lastInput.value() : handle->getName());
     f.sendTo(
         player,
         [handle     = std::move(handle),
@@ -85,8 +98,12 @@ void PlotManagerGUI::handleEditName(Player& player, std::shared_ptr<PlotHandle> 
                 return;
             }
             auto name = std::get<std::string>(data->at("name"));
-            if (PlotX::getInstance().getService()->changePlotName(player, handle, std::move(name))) {
+            if (auto exp = PlotX::getInstance().getService()->changePlotName(player, handle, std::move(name))) {
                 sendTo(player, handle);
+            } else {
+                feedback_utils::askRetry(player, exp.error(), [handle, name](Player& player) {
+                    handleEditName(player, handle, name);
+                });
             }
         }
     );
@@ -159,8 +176,10 @@ void PlotManagerGUI::showMembers(Player& player, std::shared_ptr<PlotHandle> han
         auto uuid = mce::UUID::fromString(member);
         auto info = infoDb.fromUuid(uuid);
         f.appendButton(info ? info->name : member, [handle, uuid](Player& player) {
-            if (PlotX::getInstance().getService()->modifyPlotMember(player, handle, uuid, false)) {
+            if (auto exp = PlotX::getInstance().getService()->modifyPlotMember(player, handle, uuid, false)) {
                 showMembers(player, handle);
+            } else {
+                feedback_utils::sendError(player, exp.error());
             }
         });
     }
@@ -188,8 +207,10 @@ void PlotManagerGUI::chooseAddType(Player& player, std::shared_ptr<PlotHandle> h
 }
 void PlotManagerGUI::addMemberFromOnline(Player& player, std::shared_ptr<PlotHandle> handle) {
     PlayerPicker::sendTo(player, [handle](Player& player, mce::UUID picked) {
-        if (PlotX::getInstance().getService()->modifyPlotMember(player, handle, picked, true)) {
+        if (auto exp = PlotX::getInstance().getService()->modifyPlotMember(player, handle, picked, true)) {
             showMembers(player, handle);
+        } else {
+            feedback_utils::sendError(player, exp.error());
         }
     });
 }
@@ -213,8 +234,10 @@ void PlotManagerGUI::addMemberFromOffline(Player& player, std::shared_ptr<PlotHa
             feedback_utils::sendErrorText(player, "未找到玩家 {} 的信息"_trl(player.getLocaleCode(), name));
             return;
         }
-        if (PlotX::getInstance().getService()->modifyPlotMember(player, handle, entry->uuid, true)) {
+        if (auto exp = PlotX::getInstance().getService()->modifyPlotMember(player, handle, entry->uuid, true)) {
             showMembers(player, handle);
+        } else {
+            feedback_utils::sendError(player, exp.error());
         }
     });
 }

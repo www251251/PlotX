@@ -16,6 +16,7 @@
 #include "mc/server/commands/CommandPositionFloat.h"
 #include "mc/server/commands/CommandSelector.h"
 #include "plotx/core/PlotService.hpp"
+#include "plotx/utils/FeedbackUtils.hpp"
 
 #include <mc/world/actor/Actor.h>
 #include <mc/world/actor/ActorType.h>
@@ -99,8 +100,13 @@ void PlotXCommand::setup() {
         if (!ensurePlayerExecute(origin, output)) {
             return;
         }
-        auto& player = GET_ENTITY_AS_PLAYER(origin);
-        PlotX::getInstance().getService()->switchPlayerDimension(player);
+        auto& player     = GET_ENTITY_AS_PLAYER(origin);
+        auto  localeCode = player.getLocaleCode();
+        if (auto exp = PlotX::getInstance().getService()->switchPlayerDimension(player)) {
+            feedback_utils::notifySuccess(player, "切换维度"_trl(localeCode), "切换维度成功"_trl(localeCode));
+        } else {
+            feedback_utils::sendError(player, exp.error());
+        }
     });
 
     // plotx current
@@ -112,7 +118,9 @@ void PlotXCommand::setup() {
         if (!ensurePlayerInPlotDimension(player, output)) {
             return;
         }
-        PlotX::getInstance().getService()->showPlotGUIFor(player);
+        if (auto exp = PlotX::getInstance().getService()->showPlotGUIFor(player); !exp) {
+            feedback_utils::sendError(player, exp.error());
+        }
     });
 
     // plotx
@@ -136,7 +144,12 @@ void PlotXCommand::setup() {
             if (!ensurePlayerInPlotDimension(player, output)) {
                 return;
             }
-            PlotX::getInstance().getService()->teleportUnownedPlot(player);
+            auto localeCode = player.getLocaleCode();
+            if (auto exp = PlotX::getInstance().getService()->teleportUnownedPlot(player)) {
+                feedback_utils::notifySuccess(player, "传送"_trl(localeCode), "已传送到无主地皮"_trl(localeCode));
+            } else {
+                feedback_utils::sendError(player, exp.error());
+            }
         });
 }
 bool PlotXCommand::ensureConsoleExecute(CommandOrigin const& origin, CommandOutput& output) {

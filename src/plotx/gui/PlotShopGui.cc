@@ -5,6 +5,7 @@
 #include "plotx/core/PlotHandle.hpp"
 #include "plotx/core/PlotRegistry.hpp"
 #include "plotx/core/PlotService.hpp"
+#include "plotx/utils/FeedbackUtils.hpp"
 
 #include <ll/api/form/CustomForm.h>
 #include <ll/api/form/ModalForm.h>
@@ -49,8 +50,22 @@ void PlotShopGUI::showPlot(Player& player, std::shared_ptr<PlotHandle> handle) {
                                 : "未出售"_trl(localeCode)
         )
     );
-    f.appendButton("传送到此地皮"_trl(localeCode), "textures/ui/move", "path", [handle](Player& player) {
-        PlotX::getInstance().getService()->teleportToPlot(player, handle);
+    f.appendButton("传送到此地皮"_trl(localeCode), "textures/ui/move", "path", [handle, ownerInfo](Player& player) {
+        if (auto exp = PlotX::getInstance().getService()->teleportToPlot(player, handle)) {
+            auto localeCode = player.getLocaleCode();
+            feedback_utils::notifySuccess(
+                player,
+                "传送"_trl(localeCode),
+                "传送到地皮 {} 位置: {}, 所有者: {}"_trl(
+                    localeCode,
+                    handle->getName(),
+                    handle->getCoord().min.toString(),
+                    ownerInfo ? ownerInfo->name : handle->getOwner().asString()
+                )
+            );
+        } else {
+            feedback_utils::sendError(player, exp.error());
+        }
     });
     f.appendButton("地皮评论"_trl(localeCode), "textures/ui/icon_sign", "path", [handle](Player& player) {
         PlotCommentGUI::sendTo(player, handle);
@@ -62,18 +77,36 @@ void PlotShopGUI::showPlot(Player& player, std::shared_ptr<PlotHandle> handle) {
 }
 void PlotShopGUI::confirmBuyPlot(Player& player, std::shared_ptr<PlotHandle> handle) {
     auto localeCode = player.getLocaleCode();
+    auto ownerInfo  = ll::service::PlayerInfo::getInstance().fromUuid(handle->getOwner());
     ll::form::ModalForm{
         "PlotX - 地皮商店"_trl(localeCode),
-        "确认购买地皮 {} ?"_trl(localeCode, handle->getName()),
+        "确认购买玩家 {} 的地皮 {}？\n购买后您将获得此地皮的所有权"_trl(
+            localeCode,
+            ownerInfo ? ownerInfo->name : handle->getOwner().asString(),
+            handle->getName()
+        ),
         "确认"_trl(localeCode),
         "返回"_trl(localeCode)
     }
-        .sendTo(player, [handle](Player& player, ll::form::ModalFormResult const& result, auto) {
+        .sendTo(player, [handle, localeCode](Player& player, ll::form::ModalFormResult const& result, auto) {
             if (!result) {
                 return;
             }
             if ((bool)result.value()) {
-                PlotX::getInstance().getService()->transferPlotTo(player, handle);
+                if (auto exp = PlotX::getInstance().getService()->transferPlotTo(player, handle)) {
+                    feedback_utils::notifySuccess(
+                        player,
+                        "购买地皮"_trl(localeCode),
+                        "您已获得地皮 {}(位置 {},{}) 的所有权"_trl(
+                            localeCode,
+                            handle->getName(),
+                            handle->getCoord().x,
+                            handle->getCoord().z
+                        )
+                    );
+                } else {
+                    feedback_utils::sendError(player, exp.error());
+                }
             } else {
                 showPlot(player, handle);
             }

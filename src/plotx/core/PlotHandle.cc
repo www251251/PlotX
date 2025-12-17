@@ -177,7 +177,7 @@ void PlotHandle::removeComment(CommentID id) {
 
 
 // helper
-nlohmann::json PlotHandle::dump() const { return reflection::struct2json(impl->data_); }
+nlohmann::json PlotHandle::dump() const { return reflection::struct2json(impl->data_).value(); }
 
 std::shared_ptr<PlotHandle> PlotHandle::load(nlohmann::json& json) {
     auto record = PlotModel{};

@@ -12,7 +12,7 @@ namespace plotx::reflection {
 
 template <class T>
 [[nodiscard]] inline decltype(auto) struct2json(T& t) {
-    return ll::reflection::serialize<nlohmann::ordered_json>(t).value();
+    return ll::reflection::serialize<nlohmann::ordered_json>(t);
 }
 
 template <class T, class J = nlohmann::ordered_json>
@@ -22,7 +22,7 @@ inline void json2struct(T& t, J& j) {
 
 template <class T, class J = nlohmann::ordered_json>
 inline void json2structDiffPatch(T& t, J& j) {
-    auto diff = struct2json(t);
+    auto diff = struct2json(t).value();
     diff.merge_patch(j);
     json2struct(t, j);
 }

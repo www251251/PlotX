@@ -4,8 +4,6 @@
 #include "plotx/core/PlotEventDriven.hpp"
 #include "plotx/core/PlotRegistry.hpp"
 #include "plotx/core/PlotService.hpp"
-#include "perm/PermMapping.hpp"
-#include "perm/PermRegistry.hpp"
 
 #include "ll/api/Config.h"
 #include "ll/api/i18n/I18n.h"
@@ -77,18 +75,6 @@ bool PlotX::load() {
 
     logger.debug("Try to load config");
     loadConfig();
-
-    logger.debug("Initialize PermRegistry & PermMapping");
-    PermRegistry::buildDefault();
-    if (auto exp = PermRegistry::loadOverrides(*this); !exp) {
-        exp.error().log(logger);
-        return false;
-    }
-    PermMapping::buildDefault();
-    if (auto exp = PermMapping::loadUserExtension(*this); !exp) {
-        exp.error().log(logger);
-        return false;
-    }
 
     logger.debug("Initialize PlotRegistry");
     impl_->registry = std::make_unique<PlotRegistry>(*this);

@@ -8,6 +8,7 @@ add_requires("levibuildscript")
 
 -- engsr6982
 add_requires("economy_bridge main")
+add_requires("perm_core main")
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")
@@ -55,7 +56,7 @@ target("PlotX") -- Change this to your mod name.
         "src/**.cc"
     )
 
-    add_packages("levilamina", "economy_bridge")
+    add_packages("levilamina", "economy_bridge", "perm_core")
 
     if has_config("overworld") then
         add_defines("PLOTX_OVERWORLD")

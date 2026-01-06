@@ -84,6 +84,10 @@ permc::PermRole PlotHandle::getPlayerRole(mce::UUID const& player) const {
 }
 permc::PermTable&       PlotHandle::getPermTable() { return impl->data_.ptable_; }
 permc::PermTable const& PlotHandle::getPermTable() const { return impl->data_.ptable_; }
+void                    PlotHandle::setPermTable(permc::PermTable table) {
+    impl->data_.ptable_ = std::move(table);
+    markDirty();
+}
 
 PlotCoord const& PlotHandle::getCoord() const { return impl->coordCache_; }
 bool             PlotHandle::isOwner(mce::UUID const& uuid) const { return uuid == getOwner(); }

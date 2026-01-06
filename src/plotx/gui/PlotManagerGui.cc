@@ -8,6 +8,7 @@
 #include "plotx/core/PlotService.hpp"
 #include "plotx/utils/FeedbackUtils.hpp"
 
+#include "perm_core/gui/PermGUI.hpp"
 
 #include <ll/api/form/CustomForm.h>
 #include <ll/api/form/ModalForm.h>
@@ -62,7 +63,18 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
     }
     if (isOwner || isAdmin) {
         f.appendButton("权限管理"_trl(localeCode), "textures/ui/gear", "path", [handle](Player& player) {
-            // TODO: impl
+            permc::PermGUI::sendTo(
+                player,
+                player.getLocaleCode(),
+                handle->getPermTable(),
+                [whandle = std::weak_ptr{handle}](Player& player, permc::PermTable newTable) {
+                    auto localeCode = player.getLocaleCode();
+                    if (auto h = whandle.lock()) {
+                        h->setPermTable(std::move(newTable));
+                        feedback_utils::notifySuccess(player, "权限管理"_trl(localeCode), "权限已更新"_trl(localeCode));
+                    }
+                }
+            );
         });
         f.appendButton("编辑名称"_trl(localeCode), "textures/ui/book_edit_default", "path", [handle](Player& player) {
             handleEditName(player, handle, std::nullopt);

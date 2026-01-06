@@ -55,6 +55,8 @@ public:
     permc::PermTable&       getPermTable();
     permc::PermTable const& getPermTable() const;
 
+    PXAPI void setPermTable(permc::PermTable table);
+
     PXAPI PlotCoord const& getCoord() const;
 
     PXNDAPI bool isOwner(mce::UUID const& uuid) const;

@@ -11,6 +11,9 @@
 #include <string>
 #include <vector>
 
+namespace permc {
+enum class PermRole;
+}
 namespace mce {
 class UUID;
 }
@@ -47,6 +50,10 @@ public:
      * @note 一般情况下，setXXX 的API内部都会自动标记数据修改，无需手动标记
      */
     PXAPI void markDirty();
+
+    permc::PermRole         getPlayerRole(mce::UUID const& player) const;
+    permc::PermTable&       getPermTable();
+    permc::PermTable const& getPermTable() const;
 
     PXAPI PlotCoord const& getCoord() const;
 

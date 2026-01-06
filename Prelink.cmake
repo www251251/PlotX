@@ -137,22 +137,43 @@ function(add_prelink_rule TARGET_NAME)
     # DelayLoad 设置
     target_link_options(${TARGET_NAME} PRIVATE "/DELAYLOAD:bedrock_runtime.dll")
 
-    # 构建后处理：清理和复制
-    add_custom_command(
-            TARGET ${TARGET_NAME}
-            POST_BUILD
-            # 清理
-            COMMAND ${CMAKE_COMMAND} -E remove_directory "${LIB_DIR}"
-            # 复制 DLL
-            COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:${TARGET_NAME}>"
-            "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
-            # 复制 PDB
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_PDB_FILE:${TARGET_NAME}>"
-            "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}/$<TARGET_FILE_BASE_NAME:${TARGET_NAME}>.pdb"
-            VERBATIM
-            COMMENT "[Prelink] Deploying to bin/..."
-    )
+    get_target_property(_target_type ${TARGET_NAME} TYPE)
+
+    if (_target_type STREQUAL "STATIC_LIBRARY")
+
+        # ===== 静态库：仅清理 LIB_DIR =====
+        add_custom_command(
+                TARGET ${TARGET_NAME}
+                POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E remove_directory "${LIB_DIR}"
+                VERBATIM
+                COMMENT "[PostBuild] Static lib: clean LIB_DIR only"
+        )
+
+    else()
+        # ===== 动态库 =====
+        add_custom_command(
+                TARGET ${TARGET_NAME}
+                POST_BUILD
+                # 清理
+                COMMAND ${CMAKE_COMMAND} -E remove_directory "${LIB_DIR}"
+
+                # 复制二进制
+                COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}"
+
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "$<TARGET_FILE:${TARGET_NAME}>"
+                "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+
+                # 复制 PDB（Windows）
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "$<TARGET_PDB_FILE:${TARGET_NAME}>"
+                "${CMAKE_SOURCE_DIR}/bin/${TARGET_NAME}/$<TARGET_FILE_BASE_NAME:${TARGET_NAME}>.pdb"
+
+                VERBATIM
+                COMMENT "[PostBuild] Deploying to bin/..."
+        )
+
+    endif()
 endfunction()

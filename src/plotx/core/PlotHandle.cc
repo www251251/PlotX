@@ -13,6 +13,7 @@
 #include "plotx/utils/TimeUtils.hpp"
 
 #include <algorithm>
+#include <perm_core/model/PermRole.hpp>
 #include <string>
 #include <utility>
 #include <vector>
@@ -70,7 +71,20 @@ PlotHandle::PlotHandle(PlotCoord const& coord, mce::UUID const& owner) : PlotHan
 
 PlotHandle::~PlotHandle() = default;
 
-void             PlotHandle::markDirty() { impl->dirty_.inc(); }
+void PlotHandle::markDirty() { impl->dirty_.inc(); }
+
+permc::PermRole PlotHandle::getPlayerRole(mce::UUID const& player) const {
+    if (isOwner(player)) {
+        return permc::PermRole::Owner;
+    }
+    if (isMember(player)) {
+        return permc::PermRole::Member;
+    }
+    return permc::PermRole::Guest;
+}
+permc::PermTable&       PlotHandle::getPermTable() { return impl->data_.ptable_; }
+permc::PermTable const& PlotHandle::getPermTable() const { return impl->data_.ptable_; }
+
 PlotCoord const& PlotHandle::getCoord() const { return impl->coordCache_; }
 bool             PlotHandle::isOwner(mce::UUID const& uuid) const { return uuid == getOwner(); }
 
@@ -181,9 +195,6 @@ ll::Expected<nlohmann::json>              PlotHandle::toJson() const { return re
 ll::Expected<std::shared_ptr<PlotHandle>> PlotHandle::load(nlohmann::json& json) {
     auto record = PlotModel{};
     reflection::json2structVersionPatch(json, record);
-    if (auto res = record.permStorage.ensureData(); !res) {
-        return ll::makeStringError(res.error().message());
-    }
     return make(std::move(record));
 }
 

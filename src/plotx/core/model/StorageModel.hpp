@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "perm_core/model/PermTable.hpp"
 
 namespace plotx {
 
@@ -29,6 +30,7 @@ struct PlotModel {
     int                       sellingPrice_{NotForSale}; // 出售价格 (-1 代表不出售)
     std::vector<std::string>  members_{};                // 地皮成员
     std::vector<CommentModel> comments_{};               // 评论
+    permc::PermTable          ptable_{};                 // 权限表
 };
 
 STATIC_ASSERT_AGGREGATE(CommentModel);

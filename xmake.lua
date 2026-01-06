@@ -8,7 +8,7 @@ add_requires("levibuildscript")
 
 -- iceblcokmc
 add_requires("economy_bridge main")
-add_requires("perm_core develop")
+add_requires("perm_core 8ae921b0b10ec56ff1a1cb840cf92f22fad407d8")
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")

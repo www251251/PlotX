@@ -1,14 +1,14 @@
 add_rules("mode.debug", "mode.release")
 
 add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
-add_repositories("engsr6982-repo https://github.com/engsr6982/xmake-repo.git")
+add_repositories("iceblcokmc https://github.com/IceBlcokMC/xmake-repo.git")
 
 add_requires("levilamina 1.7.0", {configs = {target_type = "server"}})
 add_requires("levibuildscript")
 
--- engsr6982
+-- iceblcokmc
 add_requires("economy_bridge main")
-add_requires("perm_core main")
+add_requires("perm_core develop")
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")

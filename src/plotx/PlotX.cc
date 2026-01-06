@@ -117,7 +117,10 @@ bool PlotX::enable() {
 }
 
 bool PlotX::disable() {
+    impl_->interceptor.reset();
     impl_->plotEventDriven.reset();
+    impl_->service.reset();
+    impl_->economy.reset();
     impl_->registry.reset();
 
     return true;

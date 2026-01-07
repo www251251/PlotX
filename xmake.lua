@@ -66,13 +66,14 @@ target("PlotX") -- Change this to your mod name.
         add_defines("PLOTX_OVERWORLD")
     end
 
-    after_build(function (target) 
+    after_build(function(target)
         local project_dir =  os.projectdir()
+        local assets_dir = path.join(project_dir, "assets")
+        local lang_assets_dir = path.join(assets_dir, "lang")
+
         local bin_dir = path.join(project_dir, "bin")
+        local lang_bin_dir = path.join(bin_dir, target:name(), "lang")
 
-        local script_src = path.join(project_dir, "scripting", "src")
-        local script_bin = path.join(bin_dir, target:name(), "scripting")
-
-        os.mkdir(script_bin)
-        os.cp(script_src.."/*", script_bin)
+        os.mkdir(lang_bin_dir)
+        os.cp(path.join(lang_assets_dir, "**"), lang_bin_dir)
     end)

@@ -1,6 +1,6 @@
 #include "PlotCoord.hpp"
-#include "plotx/core/Config.hpp"
 #include "plotx/PlotX.hpp"
+#include "plotx/core/Config.hpp"
 #include "plotx/math/PlotAABB.hpp"
 #include "plotx/world/Helper.hpp"
 
@@ -18,43 +18,63 @@
 
 namespace plotx {
 
-PlotCoord::PlotCoord(int x, int z) : x(x), z(z) {
-    auto const& cfg = gConfig_.generator;
+PlotCoord::PlotCoord(int x_, int z_) : x(x_), z(z_) {
+    auto const& cfg        = gConfig_.generator;
+    int         plotW      = cfg.plotWidth;
+    int         borderW    = cfg.borderWidth;
+    int         roadTotalW = cfg.roadWidth;
 
-    int total = cfg.plotWidth + cfg.roadWidth;
-    min       = BlockPos{x * total, world::helper::WorldMinHeight, z * total};
-    max       = BlockPos{min.x + cfg.plotWidth - 1, world::helper::WorldMaxHeight, min.z + cfg.plotWidth - 1};
-    valid_    = true;
+    int roadL = roadTotalW / 2;
+    int roadR = roadTotalW - roadL;
+
+    int cellW = roadL + borderW + plotW + borderW + roadR;
+
+    min    = BlockPos{x * cellW + roadL + borderW, world::helper::WorldMinHeight, z * cellW + roadL + borderW};
+    max    = BlockPos{min.x + plotW - 1, world::helper::WorldMaxHeight, min.z + plotW - 1};
+    valid_ = true;
 }
 
 PlotCoord::PlotCoord(BlockPos const& pos) {
-    auto const& cfg       = gConfig_.generator;
-    auto const& plotWidth = cfg.plotWidth;
-    auto const& roadWidth = cfg.roadWidth;
+    auto const& cfg        = gConfig_.generator;
+    int         plotW      = cfg.plotWidth;
+    int         borderW    = cfg.borderWidth;
+    int         roadTotalW = cfg.roadWidth;
 
-    auto const total = cfg.plotWidth + roadWidth;
+    // 左右路宽分配
+    int roadL = roadTotalW / 2;
+    int roadR = roadTotalW - roadL;
+
+    // 计算单元总宽
+    int cellW = roadL + borderW + plotW + borderW + roadR;
 
     // 转 double 处理负数
     double dx = static_cast<double>(pos.x);
     double dz = static_cast<double>(pos.z);
 
     // 计算地皮坐标
-    x = static_cast<int>(std::floor(dx / total));
-    z = static_cast<int>(std::floor(dz / total));
+    int cellX = static_cast<int>(std::floor(dx / cellW));
+    int cellZ = static_cast<int>(std::floor(dz / cellW));
 
     // 计算局部坐标
-    int localX = static_cast<int>(std::floor(dx)) % total;
-    int localZ = static_cast<int>(std::floor(dz)) % total;
-    if (localX < 0) localX += total;
-    if (localZ < 0) localZ += total;
+    int localX = static_cast<int>(std::floor(dx)) - cellX * cellW;
+    int localZ = static_cast<int>(std::floor(dz)) - cellZ * cellW;
 
-    if (localX >= plotWidth || localZ >= plotWidth) {
+    if (localX < 0) localX += cellW;
+    if (localZ < 0) localZ += cellW;
+
+    // plot 区间是 roadL + borderW ... roadL + borderW + plotW -1
+    int plotStart = roadL + borderW;
+    int plotEnd   = plotStart + plotW - 1;
+
+    if (localX < plotStart || localX > plotEnd || localZ < plotStart || localZ > plotEnd) {
         valid_ = false;
         x      = 0;
         z      = 0;
     } else {
-        min    = BlockPos{x * total, world::helper::WorldMinHeight, z * total};
-        max    = BlockPos{min.x + plotWidth - 1, world::helper::WorldMaxHeight, min.z + plotWidth - 1};
+        x      = cellX;
+        z      = cellZ;
+        min    = BlockPos{cellX * cellW + plotStart, world::helper::WorldMinHeight, cellZ * cellW + plotStart};
+        max    = BlockPos{min.x + plotW - 1, world::helper::WorldMaxHeight, min.z + plotW - 1};
         valid_ = true;
     }
 }

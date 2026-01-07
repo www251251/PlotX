@@ -81,39 +81,78 @@ PlotGenerator::PlotGenerator(Dimension& dimension, uint seed, Json::Value const&
     return result;
 }
 
-void PlotGenerator::loadChunk(LevelChunk& lc, bool /* forceImmediateReplacementDataLoad */) {
+enum class AreaType { Plot, Border, Road };
+[[nodiscard]] inline AreaType classify1D(int offset, int roadL, int roadR, int borderW, int plotW) {
+    int borderL = roadL;
+    int plotL   = borderL + borderW;
+    int plotR   = plotL + plotW;
+    int borderR = plotR + borderW;
+    int cellW   = borderR + roadR;
+
+    if (offset < borderL) return AreaType::Road;
+    if (offset < plotL) return AreaType::Border;
+    if (offset < plotR) return AreaType::Plot;
+    if (offset < borderR) return AreaType::Border;
+    return AreaType::Road;
+}
+[[nodiscard]] inline AreaType combine2D(AreaType x, AreaType z) {
+    if (x == AreaType::Road || z == AreaType::Road) {
+        return AreaType::Road;
+    }
+    if (x == AreaType::Plot && z == AreaType::Plot) {
+        return AreaType::Plot;
+    }
+    return AreaType::Border;
+}
+
+
+void PlotGenerator::loadChunk(LevelChunk& lc, bool) {
     static thread_local std::unique_ptr<ThreadData> data(new ThreadData(*this));
 
-    // 重置上个区块的更改
-    helper::fillLayer(data->buffer_, surfaceBlock_, generatorHeight_); // 重置生成层
-    helper::fillLayer(data->buffer_, airBlock_, borderHeight_);        // 重置边框层
+    helper::fillLayer(data->buffer_, surfaceBlock_, generatorHeight_);
+    helper::fillLayer(data->buffer_, airBlock_, borderHeight_);
 
-    auto const& config   = gConfig_.generator;
+    auto const& cfg      = gConfig_.generator;
     auto const& chunkPos = lc.mPosition.get();
 
-    // 计算当前区块的全局坐标
     int startX = chunkPos.x * 16;
     int startZ = chunkPos.z * 16;
 
-    // 遍历区块内的每个方块位置
+    int roadTotalW = cfg.roadWidth;
+    int roadL      = roadTotalW / 2;
+    int roadR      = roadTotalW - roadL;
+
+    int borderW = cfg.borderWidth;
+    int plotW   = cfg.plotWidth;
+
+    int cellW = roadTotalW + borderW * 2 + plotW;
+
     for (int x = 0; x < 16; x++) {
         for (int z = 0; z < 16; z++) {
-            // 计算全局坐标
             int globalX = startX + x;
             int globalZ = startZ + z;
 
-            // 计算在地盘网格中的位置
-            int gridX = positiveMod(globalX, config.plotWidth + config.roadWidth); // 地皮 + 道路宽度
-            int gridZ = positiveMod(globalZ, config.plotWidth + config.roadWidth);
+            int cx = positiveMod(globalX, cellW);
+            int cz = positiveMod(globalZ, cellW);
 
-            // 判断是否为道路或边框
-            if (gridX >= config.plotWidth || gridZ >= config.plotWidth) {
-                // 道路
-                helper::updateBuffer(data->buffer_, helper::getIndex(x, generatorHeight_, z), roadBlock_);
+            AreaType ax   = classify1D(cx, roadL, roadR, borderW, plotW);
+            AreaType az   = classify1D(cz, roadL, roadR, borderW, plotW);
+            AreaType area = combine2D(ax, az);
 
-            } else if (gridX == 0 || gridZ == 0 || gridX == config.plotWidth - 1 || gridZ == config.plotWidth - 1) {
-                // 边框 北和西（靠近0,0,0）         南和东（地皮对角）
-                helper::updateBuffer(data->buffer_, helper::getIndex(x, borderHeight_, z), borderBlock_);
+            int indexSurface = helper::getIndex(x, generatorHeight_, z);
+            int indexBorder  = helper::getIndex(x, borderHeight_, z);
+
+            switch (area) {
+            case AreaType::Road:
+                helper::updateBuffer(data->buffer_, indexSurface, roadBlock_);
+                break;
+
+            case AreaType::Border:
+                helper::updateBuffer(data->buffer_, indexBorder, borderBlock_);
+                break;
+
+            case AreaType::Plot:
+                break;
             }
         }
     }

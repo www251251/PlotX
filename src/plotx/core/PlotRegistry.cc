@@ -221,6 +221,7 @@ PlotRegistry::PlotRegistry(PlotX& plotx) : impl_(std::make_unique<Impl>()) {
 
     impl_->loadAdmins(logger);
     impl_->loadPlots(logger);
+    impl_->launchSaveTask(plotx.getThreadPool());
 }
 
 PlotRegistry::~PlotRegistry() {

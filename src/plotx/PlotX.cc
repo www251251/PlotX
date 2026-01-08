@@ -1,7 +1,7 @@
 #include "PlotX.hpp"
 #include "command/PlotXCommand.hpp"
 #include "core/Config.hpp"
-#include "core/permc/PlotInterceptorDelegate.hpp"
+#include "adapters/permc/PlotInterceptorDelegate.hpp"
 #include "plotx/core/PlotEventDriven.hpp"
 #include "plotx/core/PlotRegistry.hpp"
 #include "plotx/core/PlotService.hpp"

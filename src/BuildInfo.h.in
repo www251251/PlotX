@@ -2,11 +2,13 @@
 
 namespace plotx {
 
+// clang-format off
 #define GEN_GIT_COMMIT   "${GIT_COMMIT}"
 #define GEN_GIT_BRANCH   "${GIT_BRANCH}"
 #define GEN_GIT_TAG      "${GIT_TAG}"
-#define GEN_BUILD_TARGET "${BUILD_TARGET}"
+#define GEN_FLAVOR       "${FLAVOR}"
 #define GEN_IS_MORE_DIM  ${IS_MORE_DIM}
+// clang-format on
 
 struct BuildInfo {
     // commit hash (e.g. "a1b2c3d4")
@@ -21,12 +23,11 @@ struct BuildInfo {
     // g61162a0 is the tag commit hash
     static constexpr auto Tag = GEN_GIT_TAG;
 
-    // build target
-    // MoreDimensions or Vanilla
-    static constexpr auto BuildTarget = GEN_BUILD_TARGET;
+    // flavor (e.g. "vanilla", "mdim")
+    static constexpr auto Flavor = GEN_FLAVOR;
 
     static constexpr bool IsMoreDimensions = GEN_IS_MORE_DIM;
-    static constexpr bool IsVanilla = !IsMoreDimensions;
+    static constexpr bool IsVanilla        = !IsMoreDimensions;
 };
 
 

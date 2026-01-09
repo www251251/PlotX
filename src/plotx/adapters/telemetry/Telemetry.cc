@@ -10,7 +10,7 @@ namespace plotx::adapters {
 
 void Telemetry::initConstant() {
     ll_bstats::Telemetry::initConstant();
-    payload.service.customCharts.emplace_back(bstats::bukkit::SimplePie{"build_target", BuildInfo::BuildTarget});
+    payload.service.customCharts.emplace_back(bstats::bukkit::SimplePie{"flavor", BuildInfo::Flavor});
 }
 
 

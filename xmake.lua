@@ -13,7 +13,7 @@ add_requires("ll-bstats 0.1.1")
 
 includes("PermCore/static_lib.lua")
 
-if has_config("more_dim") then
+if is_config("flavor", "mdim") then
     add_requires("more-dimensions 0.12.0")
     add_requireconfs("**.levilamina", { override=true, version=LeviLaminaVersion, configs = {target_type = "server"}})
 end
@@ -22,9 +22,9 @@ if not has_config("vs_runtime") then
     set_runtimes("MD")
 end
 
--- true: 使用多维度 false: 使用原版
-option("more_dim")
-    set_default(false)
+option("flavor")
+    set_values("vanilla", "mdim") -- vanilla: 原版 mdim: 多维度
+    set_default("vanilla")
     set_showmenu(true)
 option_end()
 
@@ -75,16 +75,18 @@ target("PlotX") -- Change this to your mod name.
     add_configfiles("src/BuildInfo.h.in")
     set_configdir("src/plotx")
 
-    if has_config("more_dim") then
+    if is_config("flavor", "vanilla") then
+        add_files("src-vanilla/**.cc")
+        set_configvar("IS_MORE_DIM", "false")
+        set_configvar("FLAVOR", "Vanilla")
+    end
+
+    if is_config("flavor", "mdim") then
         add_files("src-mdim/**.cc")
 
         add_packages("more-dimensions")
         set_configvar("IS_MORE_DIM", "true")
-        set_configvar("BUILD_TARGET", "MoreDimensions")
-    else 
-        add_files("src-vanilla/**.cc")
-        set_configvar("IS_MORE_DIM", "false")
-        set_configvar("BUILD_TARGET", "Vanilla")
+        set_configvar("FLAVOR", "MoreDimensions")
     end
 
     after_build(function(target)

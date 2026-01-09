@@ -1,4 +1,5 @@
 #pragma once
+#include <string_view>
 
 namespace plotx {
 
@@ -12,19 +13,19 @@ namespace plotx {
 
 struct BuildInfo {
     // commit hash (e.g. "a1b2c3d4")
-    static constexpr auto Commit = GEN_GIT_COMMIT;
+    static constexpr std::string_view Commit = GEN_GIT_COMMIT;
 
     // build branch (e.g. "main")
-    static constexpr auto Branch = GEN_GIT_BRANCH;
+    static constexpr std::string_view Branch = GEN_GIT_BRANCH;
 
     // build tag (e.g. "v1.2.3")
     // v0.1.0-alpha.1-14-g61162a0 -> v0.1.0-alpha.1 is the tag
     // 14 is the tag distance
     // g61162a0 is the tag commit hash
-    static constexpr auto Tag = GEN_GIT_TAG;
+    static constexpr std::string_view Tag = GEN_GIT_TAG;
 
     // flavor (e.g. "vanilla", "mdim")
-    static constexpr auto Flavor = GEN_FLAVOR;
+    static constexpr std::string_view Flavor = GEN_FLAVOR;
 
     static constexpr bool IsMoreDimensions = GEN_IS_MORE_DIM;
     static constexpr bool IsVanilla        = !IsMoreDimensions;

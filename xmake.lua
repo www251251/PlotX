@@ -9,7 +9,7 @@ add_requires("levibuildscript")
 
 -- iceblcokmc
 add_requires("economy_bridge main")
-add_requires("ll-bstats 0.1.1")
+add_requires("ll-bstats 0.1.2")
 
 includes("PermCore/static_lib.lua")
 

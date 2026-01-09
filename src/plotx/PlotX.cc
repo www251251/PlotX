@@ -83,6 +83,10 @@ bool PlotX::load() {
     logger.setLevel(ll::io::LogLevel::Trace);
 #endif
 
+    if (BuildInfo::Branch != "main") {
+        logger.warn("This is not the main branch. You are using a development version of PlotX.");
+    }
+
     logger.debug("Try to load i18n");
     if (auto i18n = ll::i18n::getInstance().load(getSelf().getLangDir()); !i18n) {
         i18n.error().log(logger);
@@ -122,7 +126,7 @@ bool PlotX::enable() {
         return false;
     }
 
-    impl_->telemetry = std::make_unique<adapters::Telemetry>(28768, BuildInfo::Tag);
+    impl_->telemetry = std::make_unique<adapters::Telemetry>(28768, BuildInfo::Tag.data());
     if (gConfig_.plot.telemetry) {
         getLogger().info("Telemetry enabled (anonymous usage statistics).");
         getLogger().info("Opt-out via config.json.");

@@ -26,7 +26,7 @@ void MainGUI::sendTo(Player& player) {
         "path",
         [localeCode](Player& player) {
             if (auto exp = PlotX::getInstance().getService()->switchPlayerDimension(player)) {
-                feedback_utils::notifySuccess(player, "切换维度"_trl(localeCode), "切换维度成功"_trl(localeCode));
+                feedback_utils::notifySuccess(player, "切换维度成功"_trl(localeCode));
             } else {
                 feedback_utils::sendError(player, exp.error());
             }

@@ -9,41 +9,50 @@
 #include "mc/network/packet/ToastRequestPacket.h"
 #include <mc/network/packet/SetTitlePacket.h>
 #include <mc/network/packet/TextPacket.h>
+#include <mc/server/commands/CommandOutput.h>
 #include <mc/world/actor/player/Player.h>
-
-#include "plotx/infra/PlotResult.hpp"
 
 inline ToastRequestPacket::ToastRequestPacket()               = default;
 inline ToastRequestPacketPayload::ToastRequestPacketPayload() = default;
 
-namespace plotx::feedback_utils {
+namespace plotx ::feedback_utils {
 
 template <typename... Args>
-inline std::string fmt_str(std::string const& fmt, Args&&... args) noexcept {
+inline std::string fmt_str(std::string_view fmt, Args&&... args) noexcept {
     try {
         return fmt::vformat(fmt, fmt::make_format_args(args...));
     } catch (...) {
-        return fmt;
+        return fmt.data();
     }
 }
 
 // 普通聊天栏消息 (聊天栏)
 template <typename... Args>
-void sendText(Player& p, std::string const& fmt, Args&&... args) {
+void sendText(Player& p, std::string_view fmt, Args&&... args) {
     p.sendMessage("§b[PlotX] §r" + fmt_str(fmt, std::forward<Args>(args)...));
+}
+template <typename... Args>
+void sendText(CommandOutput& output, std::string_view fmt, Args&&... args) {
+    output.success("§b[PlotX] §r" + fmt_str(fmt, std::forward<Args>(args)...));
 }
 
 // 红色报错消息 (聊天栏)
 template <typename... Args>
-void sendErrorText(Player& p, std::string const& fmt, Args&&... args) {
+void sendErrorText(Player& p, std::string_view fmt, Args&&... args) {
     p.sendMessage("§b[PlotX] §c" + fmt_str(fmt, std::forward<Args>(args)...));
+}
+template <typename... Args>
+void sendErrorText(CommandOutput& output, std::string_view fmt, Args&&... args) {
+    output.error("§b[PlotX] §c" + fmt_str(fmt, std::forward<Args>(args)...));
 }
 
 inline void sendError(Player& p, ll::Error const& err) { sendErrorText(p, err.message()); }
+inline void sendError(CommandOutput& output, ll::Error const& error) { sendErrorText(output, error.message()); }
+
 
 // 文本提示 (物品栏上方)
 template <typename... Args>
-void sendTextTip(Player& p, std::string const& fmt, Args&&... args) {
+void sendTextTip(Player& p, std::string_view fmt, Args&&... args) {
     TextPacket pkt{};
     pkt.mType    = TextPacketType::Tip;
     pkt.mMessage = fmt_str(fmt, std::forward<Args>(args)...);
@@ -52,7 +61,7 @@ void sendTextTip(Player& p, std::string const& fmt, Args&&... args) {
 
 // ActionBar 提示 (物品栏上方)
 template <typename... Args>
-void sendActionBar(Player& p, std::string const& fmt, Args&&... args) {
+void sendActionBar(Player& p, std::string_view fmt, Args&&... args) {
     SetTitlePacket pkt{};
     pkt.mType      = SetTitlePacket::TitleType::Actionbar;
     pkt.mTitleText = fmt_str(fmt, std::forward<Args>(args)...);
@@ -60,10 +69,11 @@ void sendActionBar(Player& p, std::string const& fmt, Args&&... args) {
 }
 
 // Toast 弹窗 (成就消息)
-inline void sendToast(Player& p, std::string const& title, std::string const& content) {
+template <typename... Args>
+inline void sendToast(Player& p, std::string_view fmt, Args&&... args) {
     ToastRequestPacket pkt{};
-    pkt.mTitle   = title;
-    pkt.mContent = content;
+    pkt.mTitle   = "§b[PlotX]§r";
+    pkt.mContent = fmt_str(fmt, std::forward<Args>(args)...);
     pkt.sendTo(p);
 }
 
@@ -108,10 +118,10 @@ inline void askRetry(Player& player, ll::Error const& error, RetryCallback retry
 }
 
 template <typename... Args>
-void notifySuccess(Player& p, std::string const& title, std::string const& detail_fmt, Args&&... args) {
-    std::string detail = fmt_str(detail_fmt, std::forward<Args>(args)...);
-    sendToast(p, "§a" + title, detail);
-    p.sendMessage(fmt::format("§7[PlotX] {}: {}", title, detail));
+void notifySuccess(Player& p, std::string const& fmt, Args&&... args) {
+    std::string content = fmt_str(fmt, std::forward<Args>(args)...);
+    sendToast(p, "§a{}§r", content);
+    p.sendMessage(fmt_str("§7[PlotX] {}", content));
 }
 
 } // namespace plotx::feedback_utils

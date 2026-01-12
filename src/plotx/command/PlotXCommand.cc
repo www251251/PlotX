@@ -102,7 +102,7 @@ void PlotXCommand::setup() {
         auto& player     = GET_ENTITY_AS_PLAYER(origin);
         auto  localeCode = player.getLocaleCode();
         if (auto exp = PlotX::getInstance().getService()->switchPlayerDimension(player)) {
-            feedback_utils::notifySuccess(player, "切换维度"_trl(localeCode), "切换维度成功"_trl(localeCode));
+            feedback_utils::notifySuccess(player, "切换维度成功"_trl(localeCode));
         } else {
             feedback_utils::sendError(player, exp.error());
         }
@@ -145,7 +145,7 @@ void PlotXCommand::setup() {
             }
             auto localeCode = player.getLocaleCode();
             if (auto exp = PlotX::getInstance().getService()->teleportUnownedPlot(player)) {
-                feedback_utils::notifySuccess(player, "传送"_trl(localeCode), "已传送到无主地皮"_trl(localeCode));
+                feedback_utils::notifySuccess(player, "已传送到无主地皮"_trl(localeCode));
             } else {
                 feedback_utils::sendError(player, exp.error());
             }

@@ -53,7 +53,6 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
                 auto localeCode = player.getLocaleCode();
                 feedback_utils::notifySuccess(
                     player,
-                    "传送"_trl(localeCode),
                     "传送到地皮 {} 位置: {}"_trl(localeCode, handle->getName(), handle->getCoord().min.toString())
                 );
             } else {
@@ -71,7 +70,7 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
                     auto localeCode = player.getLocaleCode();
                     if (auto h = whandle.lock()) {
                         h->setPermTable(std::move(newTable));
-                        feedback_utils::notifySuccess(player, "权限管理"_trl(localeCode), "权限已更新"_trl(localeCode));
+                        feedback_utils::notifySuccess(player, "权限已更新"_trl(localeCode));
                     }
                 }
             );

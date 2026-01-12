@@ -55,7 +55,6 @@ void PlotShopGUI::showPlot(Player& player, std::shared_ptr<PlotHandle> handle) {
             auto localeCode = player.getLocaleCode();
             feedback_utils::notifySuccess(
                 player,
-                "传送"_trl(localeCode),
                 "传送到地皮 {} 位置: {}, 所有者: {}"_trl(
                     localeCode,
                     handle->getName(),
@@ -96,7 +95,6 @@ void PlotShopGUI::confirmBuyPlot(Player& player, std::shared_ptr<PlotHandle> han
                 if (auto exp = PlotX::getInstance().getService()->transferPlotTo(player, handle)) {
                     feedback_utils::notifySuccess(
                         player,
-                        "购买地皮"_trl(localeCode),
                         "您已获得地皮 {}(位置 {},{}) 的所有权"_trl(
                             localeCode,
                             handle->getName(),

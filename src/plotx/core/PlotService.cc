@@ -1,5 +1,6 @@
 #include "PlotService.hpp"
 
+#include "Config.hpp"
 #include "PlotHandle.hpp"
 #include "PlotRegistry.hpp"
 #include "plotx/PlotX.hpp"
@@ -118,6 +119,10 @@ ll::Expected<> PlotService::claimPlot(Player& player, PlotCoord coord) {
     }
     if (impl->registry.hasPlot(coord)) {
         return makeUserError("该地皮已被认领，您不能重复认领"_trl(localeCode));
+    }
+    if (auto economy = PlotX::getInstance().getEconomy();
+        economy && gConfig_.plot.sellPrice > 0 && !economy->reduce(player.getUuid(), gConfig_.plot.sellPrice)) {
+        return makeUserError("您的经济余额不足");
     }
 
     auto event = PlayerClaimPlotEvent{player, coord};

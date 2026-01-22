@@ -8,10 +8,10 @@ add_requires("levilamina "..LeviLaminaVersion, {configs = {target_type = "server
 add_requires("levibuildscript")
 
 -- iceblcokmc
-add_requires("economy_bridge main")
 add_requires("ll-bstats 0.1.2")
 
 includes("PermCore/static_lib.lua")
+includes("EconomyBridge/xmake.lua")
 
 if is_config("flavor", "mdim") then
     add_requires("more-dimensions 0.12.1")
@@ -32,7 +32,9 @@ option_end()
 target("PlotX") -- Change this to your mod name.
     set_license("AGPL-3.0")
     add_deps("PermCore")
+    add_deps("EconomyBridge")
     add_includedirs("PermCore/src")
+    add_includedirs("EconomyBridge/src")
     add_defines("FMT_HEADER_ONLY=1")
     add_rules("@levibuildscript/linkrule")
     add_rules("@levibuildscript/modpacker")

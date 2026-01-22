@@ -118,6 +118,7 @@ void PlotEventDriven::tick() const {
                     if (auto plot = PlotX::getInstance().getPlotRegistry()->getPlot(curPlot);
                         plot && plot->isOwner(uuid)) {
                         player->setAbility(AbilitiesIndex::MayFly, true);
+                        TextPacket::createJukeboxPopup("你已开启领地飞行", {}).sendTo(*player);
                     }
                 }
             }
@@ -147,6 +148,7 @@ void PlotEventDriven::tick() const {
                     if (auto plot = PlotX::getInstance().getPlotRegistry()->getPlot(curPlot);
                         plot && plot->isOwner(uuid)) {
                         player->setAbility(AbilitiesIndex::MayFly, true);
+                        TextPacket::createJukeboxPopup("你已开启领地飞行", {}).sendTo(*player);
                     }
                 }
             }

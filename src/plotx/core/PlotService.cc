@@ -128,7 +128,7 @@ ll::Expected<> PlotService::claimPlot(Player& player, PlotCoord coord) {
     auto count = impl->registry.getPlots(player.getUuid()).size();
     if (player.hasTag("vip4") && count >= 4) {
         return makeUserError("您已达到最大可认领数量"_trl(localeCode));
-    } else if (count >= 1) {
+    } else if (!player.hasTag("vip4") && count >= 1) {
         return makeUserError("您已达到最大可认领数量"_trl(localeCode));
     }
 

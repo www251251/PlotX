@@ -129,7 +129,7 @@ void PlotEventDriven::tick() const {
         if (curDimId != plotDimId) {
             continue;
         }
-        updateTip(player, curPos, curPlot);
+        // updateTip(player, curPos, curPlot);
 
         // 地皮变化
         if (curPlot != lastPlot) {

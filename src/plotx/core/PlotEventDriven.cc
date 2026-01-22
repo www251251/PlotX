@@ -1,5 +1,7 @@
 #include "PlotEventDriven.hpp"
 #include "plotx/PlotX.hpp"
+#include "plotx/core/PlotHandle.hpp"
+#include "plotx/core/PlotRegistry.hpp"
 #include "plotx/events/PlayerEnterPlotEvent.hpp"
 #include "plotx/events/PlayerLeavePlotEvent.hpp"
 #include "plotx/math/PlotCoord.hpp"
@@ -105,10 +107,19 @@ void PlotEventDriven::tick() const {
             // 当前不在地皮维度 & 上一次在地皮维度 & 上一次在地皮内 = 玩家离开地皮
             if (curDimId != plotDimId && lastDimId == plotDimId && lastPlot.isValid()) {
                 bus.publish(event::PlayerLeavePlotEvent{player, curPos, curDimId, curPlot, lastDimId, lastPlot});
+                if (!player->isCreative()) {
+                    player->setAbility(AbilitiesIndex::MayFly, false);
+                }
             }
             // 当前在地皮维度 & 上一次不在地皮维度 & 当前在地皮内 = 玩家进入地皮
             else if (curDimId == plotDimId && lastDimId != plotDimId && curPlot.isValid()) {
                 bus.publish(event::PlayerEnterPlotEvent{player, curPos, curDimId, curPlot, lastDimId, lastPlot});
+                if (!player->isCreative() && player->hasTag("vip")) {
+                    if (auto plot = PlotX::getInstance().getPlotRegistry()->getPlot(curPlot);
+                        plot && plot->isOwner(uuid)) {
+                        player->setAbility(AbilitiesIndex::MayFly, true);
+                    }
+                }
             }
             lastDimId = curDimId;
             lastPlot  = curPlot;
@@ -125,10 +136,19 @@ void PlotEventDriven::tick() const {
             // 上一次在地皮内 & 当前不在地皮内 = 玩家离开地皮
             if (lastPlot.isValid() && !curPlot.isValid()) {
                 bus.publish(event::PlayerLeavePlotEvent{player, curPos, curDimId, curPlot, lastDimId, lastPlot});
+                if (!player->isCreative()) {
+                    player->setAbility(AbilitiesIndex::MayFly, false);
+                }
             }
             // 上一次不在地皮内 & 当前在地皮内 = 玩家进入地皮
             else if (!lastPlot.isValid() && curPlot.isValid()) {
                 bus.publish(event::PlayerEnterPlotEvent{player, curPos, curDimId, curPlot, lastDimId, lastPlot});
+                if (!player->isCreative() && player->hasTag("vip")) {
+                    if (auto plot = PlotX::getInstance().getPlotRegistry()->getPlot(curPlot);
+                        plot && plot->isOwner(uuid)) {
+                        player->setAbility(AbilitiesIndex::MayFly, true);
+                    }
+                }
             }
             lastPlot = curPlot;
         }

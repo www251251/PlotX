@@ -37,14 +37,12 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
     auto f = ll::form::SimpleForm{};
     f.setTitle("PlotX - 地皮管理"_trl(localeCode));
     f.setContent(
-        "位置: {},{}\n所有者: {}\n名称: {}\n状态: {}"_trl(
+        "位置: {},{}\n所有者: {}\n名称: {}"_trl(
             localeCode,
             handle->getCoord().x,
             handle->getCoord().z,
             ownerInfo ? ownerInfo->name : handle->getOwner().asString(),
-            handle->getName(),
-            handle->isForSale() ? "出售中 (价格:{})"_trl(localeCode, handle->getSellingPrice())
-                                : "未出售"_trl(localeCode)
+            handle->getName()
         )
     );
     if (!isGuest) {
@@ -77,9 +75,6 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
         });
         f.appendButton("编辑名称"_trl(localeCode), "textures/ui/book_edit_default", "path", [handle](Player& player) {
             handleEditName(player, handle, std::nullopt);
-        });
-        f.appendButton("地皮出售"_trl(localeCode), "textures/ui/MCoin", "path", [handle](Player& player) {
-            handleEditSellStatus(player, handle);
         });
         f.appendButton("成员管理"_trl(localeCode), "textures/ui/share_microsoft", "path", [handle](Player& player) {
             showMembers(player, handle);

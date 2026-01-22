@@ -42,9 +42,6 @@ void MainGUI::sendTo(Player& player) {
             PlotManagerGUI::sendTo(player, handle);
         });
     });
-    fm.appendButton("地皮商店"_trl(localeCode), "textures/ui/store_home_icon", "path", [](Player& pl) {
-        PlotShopGUI::sendTo(pl);
-    });
     fm.appendButton("关闭"_trl(localeCode));
     fm.sendTo(player);
 }

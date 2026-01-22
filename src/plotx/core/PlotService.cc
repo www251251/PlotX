@@ -122,7 +122,14 @@ ll::Expected<> PlotService::claimPlot(Player& player, PlotCoord coord) {
     }
     if (auto economy = PlotX::getInstance().getEconomy();
         economy && gConfig_.plot.sellPrice > 0 && !economy->reduce(player.getUuid(), gConfig_.plot.sellPrice)) {
-        return makeUserError("您的经济余额不足");
+        return makeUserError("您的经济余额不足"_trl(localeCode));
+    }
+
+    auto count = impl->registry.getPlots(player.getUuid()).size();
+    if (player.hasTag("vip4") && count >= 4) {
+        return makeUserError("您已达到最大可认领数量"_trl(localeCode));
+    } else if (count >= 1) {
+        return makeUserError("您已达到最大可认领数量"_trl(localeCode));
     }
 
     auto event = PlayerClaimPlotEvent{player, coord};

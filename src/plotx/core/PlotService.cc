@@ -51,7 +51,7 @@ ll::Expected<> PlotService::teleportToPlot(Player& player, std::shared_ptr<PlotH
 
 ll::Expected<> PlotService::showPlotGUIFor(Player& player) const {
     auto coord = PlotCoord{player.getPosition()};
-    if (!coord.isValid() && player.getDimensionId() != PlotX::getDimensionId()) {
+    if (!coord.isValid() || player.getDimensionId() != PlotX::getDimensionId()) {
         return makeUserError("您当前所在的位置不是地皮"_trl(player.getLocaleCode()));
     }
     if (impl->registry.hasPlot(coord)) {
@@ -114,7 +114,7 @@ PlotService::modifyPlotMember(Player& player, std::shared_ptr<PlotHandle> handle
 
 ll::Expected<> PlotService::claimPlot(Player& player, PlotCoord coord) {
     auto localeCode = player.getLocaleCode();
-    if (!coord.isValid()) {
+    if (!coord.isValid() || player.getDimensionId() != PlotX::getDimensionId()) {
         return makeUserError("您当前所在的位置不是地皮"_trl(localeCode));
     }
     if (impl->registry.hasPlot(coord)) {

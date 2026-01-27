@@ -128,7 +128,7 @@ void PlotHandle::setSellingPrice(int price) {
 }
 
 bool PlotHandle::isMember(mce::UUID const& member) const {
-    return std::ranges::find(impl->data_.members_, member.asString()) == impl->data_.members_.end();
+    return std::ranges::find(impl->data_.members_, member.asString()) != impl->data_.members_.end();
 }
 
 std::vector<std::string> const& PlotHandle::getMembers() const { return impl->data_.members_; }

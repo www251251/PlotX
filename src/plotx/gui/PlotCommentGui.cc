@@ -42,7 +42,7 @@ void PlotCommentGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
         auto info = playerInfo.fromUuid(mce::UUID::fromString(comment.author_));
         f.appendButton(
             "{}\n{} - {}"_trl(localeCode, comment.content_, info ? info->name : comment.author_, comment.time_),
-            [handle = std::move(handle), id = comment.id_](Player& player) { showComment(player, handle, id); }
+            [handle, id = comment.id_](Player& player) { showComment(player, handle, id); }
         );
     }
     f.sendTo(player);

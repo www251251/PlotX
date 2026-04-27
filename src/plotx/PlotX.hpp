@@ -48,7 +48,6 @@ public:
     PXAPI void saveConfig() const;
 
     PXNDAPI static int                        getDimensionId();
-    PXNDAPI static bool                       isMoreDimensionsEnv();
     PXNDAPI static std::shared_ptr<Dimension> getPlotDimension();
 
 private:

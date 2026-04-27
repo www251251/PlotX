@@ -3,8 +3,8 @@ add_rules("mode.debug", "mode.release")
 add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 add_repositories("iceblcokmc https://github.com/IceBlcokMC/xmake-repo.git")
 
-LeviLaminaVersion = "1.7.7"
-add_requires("levilamina "..LeviLaminaVersion, {configs = {target_type = "server"}})
+add_requires("levilamina 1.7.6", {configs = {target_type = "server"}})
+add_requires("more-dimensions 0.12.0")
 add_requires("levibuildscript")
 
 -- iceblcokmc
@@ -13,23 +13,18 @@ add_requires("ll-bstats 0.1.2")
 includes("PermCore/static_lib.lua")
 includes("EconomyBridge/xmake.lua")
 
-if is_config("flavor", "mdim") then
-    add_requires("more-dimensions 0.12.1")
-    add_requireconfs("**.levilamina", { override=true, version=LeviLaminaVersion, configs = {target_type = "server"}})
-end
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")
 end
 
-option("flavor")
-    set_values("vanilla", "mdim") -- vanilla: 原版 mdim: 多维度
-    set_default("vanilla")
+option("plot2")
+    set_default(false)
     set_showmenu(true)
 option_end()
 
 
-target("PlotX") -- Change this to your mod name.
+target(is_config("plot2") and "PlotX2" or "PlotX") -- Change this to your mod name.
     set_license("AGPL-3.0")
     add_deps("PermCore")
     add_deps("EconomyBridge")
@@ -53,7 +48,8 @@ target("PlotX") -- Change this to your mod name.
     add_defines(
         "NOMINMAX",
         "UNICODE",
-        "PLOTX_EXPORT"
+        "PLOTX_EXPORT",
+        (is_config("plot2") and "USE_PLOTX2" or "USE_PLOTX")
     )
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")
@@ -70,26 +66,13 @@ target("PlotX") -- Change this to your mod name.
 
     add_packages(
         "levilamina",
+        "more-dimensions",
         "economy_bridge",
         "ll-bstats"
     )
 
     add_configfiles("src/BuildInfo.h.in")
     set_configdir("src/plotx")
-
-    if is_config("flavor", "vanilla") then
-        add_files("src-vanilla/**.cc")
-        set_configvar("IS_MORE_DIM", "false")
-        set_configvar("FLAVOR", "Vanilla")
-    end
-
-    if is_config("flavor", "mdim") then
-        add_files("src-mdim/**.cc")
-
-        add_packages("more-dimensions")
-        set_configvar("IS_MORE_DIM", "true")
-        set_configvar("FLAVOR", "MoreDimensions")
-    end
 
     after_build(function(target)
         local project_dir =  os.projectdir()

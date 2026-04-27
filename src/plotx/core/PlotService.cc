@@ -126,11 +126,19 @@ ll::Expected<> PlotService::claimPlot(Player& player, PlotCoord coord) {
     }
 
     auto count = impl->registry.getPlots(player.getUuid()).size();
+#if defined(USE_PLOTX)
     if (player.hasTag("vip4") && count >= 4) {
         return makeUserError("您已达到最大可认领数量"_trl(localeCode));
     } else if (!player.hasTag("vip4") && count >= 1) {
         return makeUserError("您已达到最大可认领数量"_trl(localeCode));
     }
+#elif defined(USE_PLOTX2)
+    if (player.hasTag("vip6") && count >= 1) {
+        return makeUserError("您已达到最大可认领数量"_trl(localeCode));
+    } else if (!player.hasTag("vip4")) {
+        return makeUserError("您未有权限认领"_trl(localeCode));
+    }
+#endif
 
     auto event = PlayerClaimPlotEvent{player, coord};
     ll::event::EventBus::getInstance().publish(event);

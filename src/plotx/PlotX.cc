@@ -183,14 +183,15 @@ void PlotX::saveConfig() const {
 }
 
 int PlotX::getDimensionId() {
-    if constexpr (BuildInfo::IsVanilla) {
-        return 0;
-    } else {
-        static int const dimensionId = VanillaDimensions::fromString("plotx");
-        return dimensionId;
-    }
+    static int const dimensionId = VanillaDimensions::fromString(
+#if defined(USE_PLOTX)
+        "plotx"
+#elif defined(USE_PLOTX2)
+        "plotx2"
+#endif
+    );
+    return dimensionId;
 }
-bool PlotX::isMoreDimensionsEnv() { return BuildInfo::IsMoreDimensions; }
 
 std::shared_ptr<Dimension> PlotX::getPlotDimension() {
     auto dimension =

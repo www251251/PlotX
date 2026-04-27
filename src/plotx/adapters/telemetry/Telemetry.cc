@@ -11,7 +11,7 @@ Telemetry::~Telemetry() = default;
 
 void Telemetry::initConstant() {
     ll_bstats::Telemetry::initConstant();
-    payload.addCustomChart(bstats::bukkit::SimplePie{"flavor", BuildInfo::Flavor.data()});
+    payload.addCustomChart(bstats::bukkit::SimplePie{"flavor", "mdim"});
 }
 
 

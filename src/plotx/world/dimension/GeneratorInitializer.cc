@@ -9,9 +9,9 @@ namespace plotx::world {
 
 ll::Expected<> GeneratorInitializer::operator()() {
     more_dimensions::CustomDimensionManager::getInstance().addDimension<world::PlotXDimension>(
-#if defined(USE_PLOTX)
+#ifdef USE_PLOTX
         "plotx"
-#elif defined(USE_PLOTX2)
+#elif USE_PLOTX2
         "plotx2"
 #endif
     );

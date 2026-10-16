@@ -63,9 +63,9 @@ struct AdminParam {
 void PlotXCommand::setup() {
     auto& handle = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
 #if defined(USE_PLOTX)
-        "plotx"
+        "plotx",
 #elif defined(USE_PLOTX2)
-        "plotx2"
+        "plotx2",
 #endif
         "PlotX - 地皮系统"_tr()
     );

@@ -24,7 +24,7 @@ option("plot2")
 option_end()
 
 
-target(is_config("plot2") and "PlotX2" or "PlotX") -- Change this to your mod name.
+target(has_config("plot2") and "PlotX2" or "PlotX") -- Change this to your mod name.
     set_license("AGPL-3.0")
     add_deps("PermCore")
     add_deps("EconomyBridge")
@@ -49,7 +49,8 @@ target(is_config("plot2") and "PlotX2" or "PlotX") -- Change this to your mod na
         "NOMINMAX",
         "UNICODE",
         "PLOTX_EXPORT",
-        (is_config("plot2") and "USE_PLOTX2" or "USE_PLOTX")
+        "PERMC_INTERCEPTOR_TRACE",
+        (has_config("plot2") and "USE_PLOTX2" or "USE_PLOTX")
     )
     set_exceptions("none") -- To avoid conflicts with /EHa.
     set_kind("shared")

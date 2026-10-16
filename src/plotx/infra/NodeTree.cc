@@ -1,5 +1,6 @@
 #include "NodeTree.hpp"
-
+#include "plotx/PlotX.hpp"
+#include "plotx/core/PlotRegistry.hpp"
 #include <cstddef>
 #include <queue>
 
@@ -41,7 +42,8 @@ std::optional<NodeTree::Node> NodeTree::findNearestUnmarkedNodeFromRoot(NodePair
         pq.pop();
 
         // 检查是否未被标记
-        if (nodes.find({current.x, current.z}) == nodes.end()) {
+        if (nodes.find({current.x, current.z}) == nodes.end()
+            && PlotX::getInstance().getPlotRegistry()->hasPlot(current.x, current.z)) {
             return current;
         }
 

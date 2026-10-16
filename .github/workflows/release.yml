@@ -8,9 +8,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flavor:
-          - vanilla
-          - mdim
+        plot2:
+          - true
+          - false
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,26 +21,18 @@ jobs:
         # with:
         #   xmake-version: branch@master
 
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/AppData/Local/.xmake
-          key: xmake-${{ hashFiles('xmake.lua') }}
-          restore-keys: |
-            xmake-
-
       - run: |
           xmake repo -u
 
       - run: |
-          xmake f -a x64 -m release -p windows -y --flavor=${{ matrix.flavor }}
+          xmake f -a x64 -m release -p windows -y --plot2=${{ matrix.plot2 }}
 
       - run: |
           xmake -w -y
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ matrix.flavor }}-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-windows-x64-${{ matrix.plot2 }}-${{ github.sha }}
           path: |
             bin/
 
@@ -68,26 +60,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flavor:
-          - vanilla
-          - mdim
+        plot2:
+          - true
+          - false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ matrix.flavor }}-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-windows-x64-${{ matrix.plot2 }}-${{ github.sha }}
           path: artifact
 
       - run: |
           cp CHANGELOG.md LICENSE README.md artifact/
 
       - run: |
-          zip -r ../${{ github.event.repository.name }}-windows-x64-${{ matrix.flavor }}.zip *
+          zip -r ../${{ github.event.repository.name }}-windows-x64-${{ matrix.plot2 }}.zip *
         working-directory: artifact
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ github.event.repository.name }}-windows-x64-${{ matrix.flavor }}.zip
+            ${{ github.event.repository.name }}-windows-x64-${{ matrix.plot2 }}.zip

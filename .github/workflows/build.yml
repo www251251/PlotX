@@ -8,9 +8,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flavor:
-          - vanilla
-          - mdim
+        plot2:
+          - true
+          - false
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,25 +21,17 @@ jobs:
         # with:
         #   xmake-version: branch@master
 
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/AppData/Local/.xmake
-          key: xmake-${{ hashFiles('xmake.lua') }}
-          restore-keys: |
-            xmake-
-
       - run: |
           xmake repo -u
 
       - run: |
-          xmake f -a x64 -m release -p windows -v -y --flavor=${{ matrix.flavor }}
+          xmake f -a x64 -m release -p windows -v -y --plot2=${{ matrix.plot2 }}
 
       - run: |
           xmake -v -y
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-windows-x64-${{ matrix.flavor }}-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-windows-x64-${{ matrix.plot2 }}-${{ github.sha }}
           path: |
             bin/

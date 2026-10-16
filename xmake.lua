@@ -2,6 +2,7 @@ add_rules("mode.debug", "mode.release")
 
 add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 add_repositories("iceblcokmc https://github.com/IceBlcokMC/xmake-repo.git")
+add_repositories("miracleforest https://github.com/MiracleForest/xmake-repo.git")
 
 add_requires("levilamina 1.7.6", {configs = {target_type = "server"}})
 add_requires("more-dimensions 0.12.0")

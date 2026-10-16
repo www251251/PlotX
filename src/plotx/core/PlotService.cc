@@ -11,6 +11,7 @@
 #include "plotx/events/PlayerChangePlotNameEvent.hpp"
 #include "plotx/events/PlayerClaimPlotEvent.hpp"
 #include "plotx/events/PlayerModifyPlotMemberEvent.hpp"
+#include "plotx/events/PlayerRemovePlotOwnerEvent.hpp"
 #include "plotx/events/PlotOwnershipTransferEvent.hpp"
 #include "plotx/gui/BuyPlotGui.hpp"
 #include "plotx/gui/PlotManagerGui.hpp"
@@ -30,8 +31,7 @@ struct PlotService::Impl {
     PlotX&        mod;
 };
 
-using ll::i18n_literals::operator""_tr;
-using ll::i18n_literals::operator""_trl;
+using namespace ll::i18n_literals;
 
 PlotService::PlotService(PlotRegistry& registry, PlotX& mod) : impl(std::make_unique<Impl>(registry, mod)) {}
 PlotService::~PlotService() {}
@@ -170,6 +170,48 @@ ll::Expected<> PlotService::transferPlotTo(Player& player, std::shared_ptr<PlotH
 
     handle->setOwner(player.getUuid());
     return {};
+}
+
+ll::Expected<std::shared_ptr<PlotHandle>> PlotService::removePlotOwner(Player& player) const {
+    auto localeCode = player.getLocaleCode();
+    if (!impl->registry.isAdmin(player.getUuid())) {
+        return makeUserError("您没有权限执行此操作"_trl(localeCode));
+    }
+
+    auto coord = PlotCoord{player.getPosition()};
+    if (!coord.isValid() || player.getDimensionId() != PlotX::getDimensionId()) {
+        return makeUserError("您当前所在的位置不是地皮"_trl(localeCode));
+    }
+    auto handle = impl->registry.getPlot(coord);
+    if (!handle) {
+        return makeUserError("当前位置的地皮无主"_trl(localeCode));
+    }
+    return removePlotOwner(player, std::move(handle));
+}
+
+ll::Expected<std::shared_ptr<PlotHandle>>
+PlotService::removePlotOwner(Player& player, std::shared_ptr<PlotHandle> handle) const {
+    auto localeCode = player.getLocaleCode();
+    if (!impl->registry.isAdmin(player.getUuid())) {
+        return makeUserError("您没有权限执行此操作"_trl(localeCode));
+    }
+    if (!handle || !impl->registry.hasPlot(handle->getCoord())) {
+        return makeUserError("当前位置的地皮无主"_trl(localeCode));
+    }
+
+    auto event = PlayerRemovePlotOwnerEvent{player, handle};
+    ll::event::EventBus::getInstance().publish(event);
+    if (event.isCancelled()) {
+        return makeUserError("操作被其它插件拦截"_trl(localeCode));
+    }
+
+    if (!impl->registry.removePlot(handle)) {
+        return makeSystemError(
+            "重置地皮失败，请稍后再试"_trl(localeCode),
+            "remove plot owner failed, PlotRegistry removePlot failed"
+        );
+    }
+    return handle;
 }
 
 ll::Expected<> PlotService::handleTeleportToPlot(Player& player, int x, int z) const {

@@ -107,7 +107,7 @@ void PlotCoord::removeBorderCorners() const {
         return;
     }
 
-    auto dim = ll::service::getLevel()->getDimension(PlotX::getDimensionId()).lock();
+    auto dim = ll::service::getLevel()->getOrCreateDimension(PlotX::getDimensionId()).lock();
     if (!dim) {
         return;
     }

@@ -92,7 +92,7 @@ inline void sendTitle(Player& p, std::string const& mainTitle, std::string const
 
 using RetryCallback = std::function<void(Player&)>;
 inline void askRetry(Player& p, std::string const& content, RetryCallback retry, RetryCallback cancel = nullptr) {
-    using ll::i18n_literals::operator""_trl;
+    using namespace ll::i18n_literals;
     auto localeCode = p.getLocaleCode();
     ll::form::ModalForm{
         "§bPlotX§r - §c操作失败"_trl(localeCode),

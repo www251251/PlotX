@@ -19,7 +19,7 @@
 
 namespace plotx {
 
-using ll::i18n_literals::operator""_trl;
+using namespace ll::i18n_literals;
 
 void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) {
     if (!handle) {
@@ -83,7 +83,49 @@ void PlotManagerGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) 
     f.appendButton("地皮评论"_trl(localeCode), "textures/ui/icon_sign", "path", [handle](Player& player) {
         PlotCommentGUI::sendTo(player, handle);
     });
+    if (isAdmin) {
+        f.appendButton("移除地皮主人"_trl(localeCode), "textures/ui/cancel", "path", [handle](Player& player) {
+            handleRemoveOwner(player, handle);
+        });
+    }
     f.sendTo(player);
+}
+
+void PlotManagerGUI::handleRemoveOwner(Player& player, std::shared_ptr<PlotHandle> handle) {
+    auto localeCode = player.getLocaleCode();
+
+    ll::form::ModalForm{
+        "PlotX - 移除地皮主人"_trl(localeCode),
+        "确定要移除该地皮的主人吗？地皮将变为无主状态，成员与权限配置会被清除，且此操作无法撤销"_trl(localeCode),
+        "移除主人"_trl(localeCode),
+        "取消"_trl(localeCode)
+    }
+        .sendTo(
+            player,
+            [handle](Player& player, ll::form::ModalFormResult const& result, auto) {
+                if (!result || !(bool)result.value()) {
+                    return;
+                }
+                auto exp = PlotX::getInstance().getService()->removePlotOwner(player, handle);
+                if (!exp) {
+                    feedback_utils::sendError(player, exp.error());
+                    return;
+                }
+                auto& removed    = exp.value();
+                auto& owner      = removed->getOwner();
+                auto  localeCode = player.getLocaleCode();
+                auto  ownerInfo  = ll::service::PlayerInfo::getInstance().fromUuid(owner);
+                feedback_utils::notifySuccess(
+                    player,
+                    "已移除地皮 {} 的主人 '{}'，该地皮已恢复为无主状态"_trl(
+                        localeCode,
+                        removed->getCoord().toString(),
+                        ownerInfo ? ownerInfo->name : owner.asString()
+                    )
+                );
+                PlotX::getInstance().getService()->showPlotGUIFor(player);
+            }
+        );
 }
 
 void PlotManagerGUI::handleEditName(

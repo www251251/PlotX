@@ -41,6 +41,7 @@
 16:08:46.692 INFO [Server] - /plotx admin <add|remove> <name: string>
 16:08:46.692 INFO [Server] - /plotx admins <add|remove> <players: target>
 16:08:46.692 INFO [Server] - /plotx current
+16:08:46.692 INFO [Server] - /plotx remove_owner
 16:08:46.692 INFO [Server] - /plotx switch_dimension
 16:08:46.692 INFO [Server] - /plotx teleport unowned_plot
 ```
@@ -65,6 +66,14 @@
 ### `/plotx current`
 
 管理当前所在位置的地皮(如果无主则显示购买界面)
+
+### `/plotx remove_owner`
+
+移除玩家脚下地皮的主人，使该地皮变为无主状态(可被重新认领)
+
+> 需要管理员权限(通过 `/plotx admin` 或 `/plotx admins` 添加)  
+> 仅玩家可使用，且需要站在已认领的地皮上  
+> 地皮上的成员、评论、权限配置会一并清除，此操作不可撤销
 
 ### `/plotx switch_dimension`
 

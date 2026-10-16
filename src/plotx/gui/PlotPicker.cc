@@ -12,7 +12,7 @@
 namespace plotx {
 
 void PlotPicker::sendTo(Player& player, std::function<void(Player&, std::shared_ptr<PlotHandle>)> const& callback) {
-    using ll::i18n_literals::operator""_trl;
+    using namespace ll::i18n_literals;
     auto localeCode = player.getLocaleCode();
 
     auto f = ll::form::SimpleForm{};

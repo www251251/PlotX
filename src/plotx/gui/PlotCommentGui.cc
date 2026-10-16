@@ -15,7 +15,7 @@
 
 namespace plotx {
 
-using ll::i18n_literals::operator""_trl;
+using namespace ll::i18n_literals;
 
 void PlotCommentGUI::sendTo(Player& player, std::shared_ptr<PlotHandle> handle) {
     auto localeCode = player.getLocaleCode();

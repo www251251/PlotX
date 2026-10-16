@@ -194,8 +194,9 @@ int PlotX::getDimensionId() {
 }
 
 std::shared_ptr<Dimension> PlotX::getPlotDimension() {
-    auto dimension =
-        ll::service::getLevel().transform([](Level& level) { return level.getDimension(getDimensionId()).lock(); });
+    auto dimension = ll::service::getLevel().transform([](Level& level) {
+        return level.getOrCreateDimension(getDimensionId()).lock();
+    });
     if (dimension.has_value()) {
         return *dimension;
     }

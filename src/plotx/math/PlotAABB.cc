@@ -60,7 +60,7 @@ void PlotAABB::forEachLayer(int y, std::function<bool(BlockPos const&)> const& f
 }
 
 bool PlotAABB::fillLayer(int y, Block const& block) const {
-    auto dim = ll::service::getLevel()->getDimension(PlotX::getDimensionId()).lock();
+    auto dim = ll::service::getLevel()->getOrCreateDimension(PlotX::getDimensionId()).lock();
     if (!dim) {
         return false;
     }
@@ -116,7 +116,7 @@ void PlotAABB::forEachEdgeLayer(int y, std::function<bool(BlockPos const&)> cons
 }
 
 bool PlotAABB::fillEdgeLayer(int y, Block const& block) const {
-    auto dim = ll::service::getLevel()->getDimension(PlotX::getDimensionId()).lock();
+    auto dim = ll::service::getLevel()->getOrCreateDimension(PlotX::getDimensionId()).lock();
     if (!dim) {
         return false;
     }

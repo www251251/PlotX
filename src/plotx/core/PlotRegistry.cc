@@ -144,6 +144,7 @@ struct PlotRegistry::Impl {
         if (it == plots_.end()) {
             return false;
         }
+        db_->del(buildStorageKey(it->second)); // 删除数据库中的记录，否则重启后地皮会被重新加载
         plots_.erase(it);
         tree_.remove(x, z);
         return true;

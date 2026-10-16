@@ -1,5 +1,6 @@
 #include "PlotXCommand.hpp"
 #include "plotx/PlotX.hpp"
+#include "plotx/core/PlotHandle.hpp"
 #include "plotx/core/PlotRegistry.hpp"
 #include "plotx/gui/MainGUI.hpp"
 #include "plotx/math/PlotCoord.hpp"
@@ -25,8 +26,7 @@
 
 namespace plotx {
 
-using ll::i18n_literals::operator""_tr;
-using ll::i18n_literals::operator""_trl;
+using namespace ll::i18n_literals;
 
 #define GET_ENTITY_AS_PLAYER(_ORI) static_cast<Player&>(*_ORI.getEntity())
 
@@ -100,6 +100,33 @@ void PlotXCommand::setup() {
             param.handle(output, player->getUuid(), player->getRealName());
         }
     );
+
+    // plotx remove_owner
+    handle.overload().text("remove_owner").execute([](CommandOrigin const& origin, CommandOutput& output) {
+        if (!ensurePlayerExecute(origin, output)) {
+            return;
+        }
+        auto& player = GET_ENTITY_AS_PLAYER(origin);
+
+        auto result = PlotX::getInstance().getService()->removePlotOwner(player);
+        if (!result) {
+            feedback_utils::sendError(player, result.error());
+            return;
+        }
+
+        auto& plot       = *result;
+        auto& owner      = plot->getOwner();
+        auto  localeCode = player.getLocaleCode();
+        auto  ownerInfo  = ll::service::PlayerInfo::getInstance().fromUuid(owner);
+        feedback_utils::notifySuccess(
+            player,
+            "已移除地皮 {} 的主人 '{}'，该地皮已恢复为无主状态"_trl(
+                localeCode,
+                plot->getCoord().toString(),
+                ownerInfo ? ownerInfo->name : owner.asString()
+            )
+        );
+    });
 
     // plotx switch_dimension
     handle.overload().text("switch_dimension").execute([](CommandOrigin const& origin, CommandOutput& output) {

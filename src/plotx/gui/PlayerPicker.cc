@@ -10,7 +10,7 @@
 
 namespace plotx {
 
-using ll::i18n_literals::operator""_trl;
+using namespace ll::i18n_literals;
 
 void PlayerPicker::sendTo(Player& player, std::function<void(Player& self, mce::UUID picked)> const& callback) {
     auto localeCode = player.getLocaleCode();

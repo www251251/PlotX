@@ -44,6 +44,21 @@ public:
 
     ll::Expected<> transferPlotTo(Player& player, std::shared_ptr<PlotHandle> handle);
 
+    /**
+     * 移除玩家脚下的地皮主人，将地皮重置为无主状态
+     * @note 仅地皮管理员可执行
+     * @return 被重置的地皮
+     */
+    ll::Expected<std::shared_ptr<PlotHandle>> removePlotOwner(Player& player) const;
+
+    /**
+     * 移除指定地皮的主人，将地皮重置为无主状态
+     * @note 仅地皮管理员可执行
+     * @return 被重置的地皮
+     */
+    ll::Expected<std::shared_ptr<PlotHandle>>
+    removePlotOwner(Player& player, std::shared_ptr<PlotHandle> handle) const;
+
 private:
     ll::Expected<> handleTeleportToPlot(Player& player, int x, int z) const;
 };

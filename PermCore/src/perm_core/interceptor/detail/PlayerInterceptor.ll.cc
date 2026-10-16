@@ -23,6 +23,7 @@
 #include "mc/world/level/block/HangingSignBlock.h"
 #include "mc/world/level/block/ShulkerBoxBlock.h"
 #include "mc/world/level/block/SmokerBlock.h"
+#include <algorithm>
 
 namespace permc {
 
@@ -170,6 +171,13 @@ void PermInterceptor::registerLLPlayerInterceptor(InterceptorConfig::ListenerCon
                         if (applyRoleInterceptor(role, *entry, ev)) {
                             return;
                         }
+                    }
+                }
+                // 手持方块(即尝试放置方块):上面的条目都没命中时,由 allowPlace 决定,
+                // 否则会被 postPolicy 直接拒绝(放置方块本身由 PlayerPlacingBlockEvent 判定)
+                if (ev.item().isBlock() || Block::tryGetFromRegistry(std::string_view{ev.item().getTypeName()})) {
+                    if (applyRoleInterceptor(role, table->role.allowPlace, ev)) {
+                        return;
                     }
                 }
             }

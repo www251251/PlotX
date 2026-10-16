@@ -23,7 +23,6 @@ option("plot2")
     set_showmenu(true)
 option_end()
 
-
 target(has_config("plot2") and "PlotX2" or "PlotX") -- Change this to your mod name.
     set_license("AGPL-3.0")
     add_deps("PermCore")
@@ -49,7 +48,6 @@ target(has_config("plot2") and "PlotX2" or "PlotX") -- Change this to your mod n
         "NOMINMAX",
         "UNICODE",
         "PLOTX_EXPORT",
-        "PERMC_INTERCEPTOR_TRACE",
         (has_config("plot2") and "USE_PLOTX2" or "USE_PLOTX")
     )
     set_exceptions("none") -- To avoid conflicts with /EHa.

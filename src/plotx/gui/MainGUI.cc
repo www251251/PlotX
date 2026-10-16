@@ -13,7 +13,7 @@
 namespace plotx {
 
 void MainGUI::sendTo(Player& player) {
-    using ll::i18n_literals::operator""_trl;
+    using namespace ll::i18n_literals;
     auto localeCode = player.getLocaleCode();
 
     auto fm = ll::form::SimpleForm{};

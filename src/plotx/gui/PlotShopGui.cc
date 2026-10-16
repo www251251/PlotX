@@ -16,7 +16,7 @@
 
 namespace plotx {
 
-using ll::i18n_literals::operator""_trl;
+using namespace ll::i18n_literals;
 
 void PlotShopGUI::sendTo(Player& player) {
     auto localeCode = player.getLocaleCode();
